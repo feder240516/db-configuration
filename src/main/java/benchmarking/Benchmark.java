@@ -1,0 +1,10 @@
+package benchmarking;
+
+public class Benchmark {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}
