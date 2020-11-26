@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+    id 'eclipse-wtp'
+}
+
+ 
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+        resources {
+            srcDir 'resources'
+            srcDir 'conf'
+        }
+    }
+    test {
+           java {
+               srcDir 'src/test/java'
+           }
+    }
+}
+
+ 
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+ 
+
+dependencies {
+    implementation 'ai.libs:mlplan-full:0.2.4'
+}
+
+ 
+
+repositories {
+    mavenCentral()
+}
