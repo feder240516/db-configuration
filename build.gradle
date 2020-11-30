@@ -28,10 +28,6 @@ targetCompatibility = 1.8
 dependencies {
     implementation 'ai.libs:mlplan-full:0.2.4'
     implementation 'ai.libs:hasco-core:0.2.4'
-    
-    api 'org.apache.commons:commons-math3:3.6.1'
-    implementation 'com.google.guava:guava:22.0'
-    testImplementation 'junit:junit:4.12'
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.1.2'
 }
 
