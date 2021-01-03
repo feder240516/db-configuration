@@ -20,17 +20,15 @@ public class MariaDBHandler implements IDatabase {
 	Process process;
 	public boolean ExecuteCommand(String cmdLine) {
 		ProcessBuilder pb = new ProcessBuilder();
-		//pb.command("cmd.exe", "/c", cmdLine);
-		pb.command("mysqld.exe");
+		pb.command("cmd.exe", "/c", cmdLine);
+		//pb.command("mysqld.exe");
 		
 		boolean success;
 		try {
 			process = pb.start();
 			System.out.println("Waiting");
 			TimeUnit.SECONDS.sleep(1);
-			
-			//process.waitFor();
-			//process.destroy();
+
 			success = true;
 		}catch (Exception e){
 			e.printStackTrace();
@@ -127,7 +125,7 @@ public class MariaDBHandler implements IDatabase {
 		String db = "employees";
 		String url = "jdbc:mariadb://localhost:3306/" + db;
 		String user = "root";
-		String password = "12345";
+		String password = "1234";
 		
 		Connection conn = null;
 		try {
