@@ -21,7 +21,7 @@ import ai.libs.jaicore.components.api.IComponentInstance;
 public abstract class ADatabaseHandle implements IDatabase {
 
 	List<String> queries = Arrays.asList("","");
-	protected int MAX_CONNECTION_RETRIES = 25;
+	protected int MAX_CONNECTION_RETRIES = 3;
 	protected int MAX_ALLOWED_PORTS;
 	//protected int firstPort;
 	protected int[] portsToUse;
@@ -178,7 +178,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 				conn = DriverManager.getConnection(dbUrl);
 			}
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			System.out.println(String.format("Error in port %d", port));
 			conn = null;
 		}
 		return conn;

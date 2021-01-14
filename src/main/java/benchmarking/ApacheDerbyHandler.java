@@ -26,9 +26,15 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	public static final String DATABASE_PAGE_SIZE = "DATABASE_PAGE_SIZE";
 	
 	HashMap<Integer, String> dbNames;
+	HashMap<Integer, String> directories;
 	
 	public ApacheDerbyHandler() {
 		super(1527);
+		dbNames = new HashMap<>();
+	}
+	
+	public ApacheDerbyHandler(int port, int numberOfPorts) {
+		super(port,numberOfPorts);
 		dbNames = new HashMap<>();
 	}
 	
@@ -36,10 +42,10 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	protected void createAndFillDatabase(int port) {
 		try {
 			dbNames.put(port, generateDbName());
-			
+			System.out.println(String.format("Using database %s for apache derby in port %d",dbNames.get(port),port));
 			Connection conn = getConnection(port);
-			int NUM_RESTAURANTS = 1000;
-			int NUM_WORKERS = 100000;
+			int NUM_RESTAURANTS = 10;
+			int NUM_WORKERS = 1000;
 			PreparedStatement ps;
 			conn.prepareStatement("create table restaurants(id int primary key, name varchar(255))").execute();
 			conn.prepareStatement("create table workers(id int primary key, name varchar(255), restId int REFERENCES restaurants(id))").execute();
@@ -111,9 +117,10 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	@Override
 	protected String[] getStartCommand(IComponentInstance component, int port) {
 		String derbyHome = System.getenv("DERBY_HOME");
+		System.out.println(String.format("Running in port %d", port));
 		if (derbyHome == null || derbyHome.equals("")) throw new RuntimeException("Environment Var DERBY_HOME must be configured to test apache derby");
 		//String[] comandoArray = {"java", "-jar", derbyHome + "\\lib\\derbyrun.jar", "server", "start"};
-		String[] comandoArray = {derbyHome + "/bin/startNetworkServer.bat"};
+		String[] comandoArray = {derbyHome + "/bin/startNetworkServer.bat", "-p", String.valueOf(port)};
 		return comandoArray;
 	}
 
@@ -135,7 +142,7 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 		try {
 			if (conn != null && !conn.isClosed()) conn.close();
 			String derbyHome = System.getenv("DERBY_HOME");
-			String[] comandoArray = {derbyHome + "/bin/stopNetworkServer.bat"};
+			String[] comandoArray = {derbyHome + "/bin/stopNetworkServer.bat", "-p", String.valueOf(port)};
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
 			processBuilder.start().waitFor();
 			
@@ -168,7 +175,7 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 		}
 		
 		String dbName = sb.toString();
-		System.out.println(String.format("Using database %s for apache derby",dbName));
+		
 		return dbName;
 	}
 	
