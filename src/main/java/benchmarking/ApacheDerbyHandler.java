@@ -125,7 +125,7 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	}
 
 	@Override
-	protected String getDbDirectory() {
+	protected String getDbDirectory(int port) {
 		String derbyHome = System.getenv("DERBY_HOME");
 		return derbyHome + "/bin";
 	}

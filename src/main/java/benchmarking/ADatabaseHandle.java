@@ -70,12 +70,13 @@ public abstract class ADatabaseHandle implements IDatabase {
 	
 	
 	protected abstract String[] getStartCommand(IComponentInstance component, int port);
-	protected abstract String getDbDirectory();
+	public abstract void stopServer(int port);
+	protected abstract String getDbDirectory(int port);
 	protected abstract void createAndFillDatabase(int port);
 	protected abstract void setupInitedDB(IComponentInstance component, int port);
-	public abstract void stopServer(int port);
+	
 	protected abstract String getQueryCommand(int numTest);
-	protected final int useNextAvailablePort() {
+	protected final synchronized int useNextAvailablePort() {
 		int triedPorts = 0;
 		int nextPort = -1;
 		boolean foundPort = false;
@@ -96,48 +97,49 @@ public abstract class ADatabaseHandle implements IDatabase {
 		_usedPorts.put(port, false);
 	}
 	
+	protected final boolean existsConnection(int port) {
+		Connection conn = connections.get(port);
+		try {
+			return (conn != null && !conn.isClosed());
+		} catch (SQLException e) {
+			return false;
+		}
+	}
+	
 	public int initiateServer(IComponentInstance component) {
 		System.out.println("Starting server");
-		//
 		int port = useNextAvailablePort();
-		String[] comandoArray = getStartCommand(component, port);
-		//
-		ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
-		processBuilder.directory(new File(getDbDirectory()));
-		try {
-			//processBuilder.redirectInput();
-			//processBuilder.redirectError();			
-			Process process = processBuilder.start();
-			InputStream inStream = process.getInputStream();
-			InputStream errStream = process.getErrorStream();
-
-			inStream.close();
-			errStream.close();
-			
-			
-			Connection conn = null;
-			// tries multiple connections to database
-			for(int i = 0; i < MAX_CONNECTION_RETRIES && conn == null; ++i) {
-				System.out.println("Trying to establish a connection...");
-				// wait 5 seconds to allow server to initiate
-				TimeUnit.SECONDS.sleep(5);
-				conn = getConnection(port);
+		if (!existsConnection(port)) { // create connection to port			
+			String[] comandoArray = getStartCommand(component, port);
+			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
+			processBuilder.directory(new File(getDbDirectory(port)));
+			try {
+				Process process = processBuilder.start();
+				processes.put(port, process);
+				InputStream inStream = process.getInputStream();
+				InputStream errStream = process.getErrorStream();
+				inStream.close();
+				errStream.close();
+				Connection conn = null;
+				// tries multiple connections to database
+				for(int i = 0; i < MAX_CONNECTION_RETRIES && conn == null; ++i) {
+					if (i != 0) { TimeUnit.SECONDS.sleep(5); } // wait 5 seconds to allow server to initiate
+					System.out.println("Trying to establish a connection...");
+					
+					conn = getConnection(port);
+				}
+				if (conn != null && !conn.isClosed()) {
+					createAndFillDatabase(port);
+					setupInitedDB(component, port);
+					System.out.println("Server has been inited");
+				} else {
+					throw new SQLException(String.format("Could not connect to database after %d tries",MAX_CONNECTION_RETRIES));
+				}
+			} catch (IOException | SQLException | InterruptedException e) {
+				e.printStackTrace();
 			}
-			if (conn != null && !conn.isClosed()) {
-				createAndFillDatabase(port);
-				setupInitedDB(component, port);
-				System.out.println("Server has been inited");
-			} else {
-				throw new SQLException(String.format("Could not connect to database after %d tries",MAX_CONNECTION_RETRIES));
-			}
-			
-			//process.waitFor();
-			//System.out.println(String.format("Exit value is %d", process.exitValue()));
-			//System.out.println(String.format("Exit value is %d", process.()));
-			
-		} catch (IOException | SQLException | InterruptedException e) {
-			e.printStackTrace();
 		}
+		
 		
 		return port;
 	}
@@ -152,7 +154,6 @@ public abstract class ADatabaseHandle implements IDatabase {
 				switch(numTest) {
 				case 1:
 					PreparedStatement ps = conn.prepareStatement(getQueryCommand(numTest));
-					//ps = conn.prepareStatement("select * from worker");
 					Date before = new Date();
 					ps.execute();
 					Date after = new Date();
@@ -166,6 +167,14 @@ public abstract class ADatabaseHandle implements IDatabase {
 			e.printStackTrace();
 		}
 		return score;
+	}
+	
+	public final void destroyHandler() {
+		for (int port: portsToUse) {
+			if(processes.get(port) != null) {
+				stopServer(port);
+			}
+		}
 	}
 
 	@Override
