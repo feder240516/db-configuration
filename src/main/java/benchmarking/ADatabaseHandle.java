@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -130,7 +131,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 				}
 				if (conn != null && !conn.isClosed()) {
 					createAndFillDatabase(port);
-					setupInitedDB(component, port);
+					
 					System.out.println("Server has been inited");
 				} else {
 					throw new SQLException(String.format("Could not connect to database after %d tries",MAX_CONNECTION_RETRIES));
@@ -138,9 +139,11 @@ public abstract class ADatabaseHandle implements IDatabase {
 			} catch (IOException | SQLException | InterruptedException e) {
 				e.printStackTrace();
 			}
+			
+			
 		}
 		
-		
+		setupInitedDB(component, port);
 		return port;
 	}
 	
@@ -153,11 +156,14 @@ public abstract class ADatabaseHandle implements IDatabase {
 			if (conn != null) {
 				switch(numTest) {
 				case 1:
-					PreparedStatement ps = conn.prepareStatement(getQueryCommand(numTest));
+					Statement ps = conn.createStatement();
+					//PreparedStatement ps = conn.prepareStatement(getQueryCommand(numTest));
 					Date before = new Date();
-					ps.execute();
+					//ps.execute();
+					ps.executeQuery(getQueryCommand(numTest));
 					Date after = new Date();
 					score = after.getTime() - before.getTime();
+					ps.close();
 					break;
 				default:
 					throw new AssertionError("Invalid test number");
@@ -185,6 +191,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 			if (conn == null || conn.isClosed()) {
 				String dbUrl = getConnectionString(port);
 				conn = DriverManager.getConnection(dbUrl);
+				connections.put(port,  conn);
 			}
 		} catch (SQLException e1) {
 			System.out.println(String.format("Error in port %d", port));

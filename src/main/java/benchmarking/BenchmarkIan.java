@@ -29,22 +29,31 @@ public class BenchmarkIan {
 		
 		IComponent comp = new Component("MariaDB");
 		Map<String, String> parameterValues = new HashMap<>();
-		parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "47");
+		parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "45");
 		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);
 		//ComponentSerialization serializer = new ComponentSerialization();
 		
 		IComponent comp2 = new Component("MariaDB");
 		Map<String, String> parameterValues2 = new HashMap<>();
-		parameterValues2.put("OPTIMIZER_SEARCH_DEPTH", "35");
+		parameterValues2.put("OPTIMIZER_SEARCH_DEPTH", "25");
 		Map<String, List<IComponentInstance>> reqInterfaces2 = new HashMap<>(); 
 		IComponentInstance i2 = new ComponentInstance(comp, parameterValues2, reqInterfaces2);
 		
-		double value1 = benchmark(i1, 3);
+		List<TestDescription> testdescriptions = new ArrayList<TestDescription>();
+        testdescriptions.add(new TestDescription(i1,1,53));
+        testdescriptions.add(new TestDescription(i2,1,50));
+        benchmark(testdescriptions);
+		double score = testdescriptions.get(0).testResults.getMean();
+		double score2 = testdescriptions.get(1).testResults.getMean();
+		System.out.println(String.format("score for mariadb has been %f", score));
+		System.out.println(String.format("score for mariadb 2 has been %f", score2));
+		
+		/*double value1 = benchmark(i1, 3);
 		double value2 = benchmark(i2, 3);
 		
 		System.out.println("value 1" + value1);
-		System.out.println("value 2" + value2);
+		System.out.println("value 2" + value2);*/
 		
 		/*int port = mariaDBHandler.initiateServer(i1);
 		double value = mariaDBHandler.benchmarkQuery(1, port);
@@ -52,7 +61,51 @@ public class BenchmarkIan {
 		mariaDBHandler.stopServer(port);*/
 	}
 	
-	public static double benchmark(IComponentInstance component, int numTests) {
+	public static void benchmark(List<TestDescription> tests) {
+		ADatabaseHandle dbHandler = new MariaDBHandler();
+		ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(3);
+		List<TestExecution> taskList = new ArrayList<>();
+		for(TestDescription td: tests) {
+			for(int i = 0; i < td.testAmounts; ++i) {
+				TestExecution task = new TestExecution(dbHandler,td.component,td.testNumbers);
+	            taskList.add(task);
+			}
+		}
+		
+        //Execute all tasks and get reference to Future objects
+        List<Future<Double>> resultList = null;
+ 
+        try {
+            resultList = executor.invokeAll(taskList);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        executor.shutdown();
+        
+        System.out.println("\n========Printing the results======");
+        
+        int count = 0;
+        for(TestDescription td: tests) {
+        	System.out.println("----------COMPONENT----------");
+			for(int j = 0; j < td.testAmounts; ++j) {
+				Future<Double> future = resultList.get(count);
+	            try {
+	            	DescriptiveStatistics ds = td.testResults;
+	                double result = future.get();
+	                ds.addValue(result);
+	                System.out.println(/*String.format("Adding value %f", */result + ", "/*)*/);
+	            } catch (InterruptedException | ExecutionException e) {
+	                e.printStackTrace();
+	            }
+	            count++;
+			}
+		}
+        
+        dbHandler.destroyHandler();
+	}
+	
+	
+	/*public static double benchmark(IComponentInstance component, int numTests) {
 		int testNumber = 1;
 		ADatabaseHandle mariaDBHandler = new MariaDBHandler();
 		
@@ -97,7 +150,7 @@ public class BenchmarkIan {
         System.out.println(String.format("mean value: %f",ds.getMean()));
         
 		return ds.getMean();
-	}
+	}*/
 	
 }
 

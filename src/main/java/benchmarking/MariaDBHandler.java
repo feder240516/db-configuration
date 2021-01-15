@@ -10,6 +10,7 @@ import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
@@ -134,10 +135,12 @@ public class MariaDBHandler extends ADatabaseHandle {
 		
 		Connection conn = getConnection(port);
 		try {
-			PreparedStatement ps = conn.prepareStatement(sqlBase);
-			ps.executeQuery();
+			//PreparedStatement ps = conn.prepareStatement(sqlBase);
+			Statement ps = conn.createStatement();
+			ps.executeQuery(sqlBase);
+			//ps.executeQuery();
 			ps.close();
-			conn.close();
+			//conn.close();
 			
 			success = true;
 		}catch(SQLException e) {
@@ -148,6 +151,7 @@ public class MariaDBHandler extends ADatabaseHandle {
 		return success;
 	}
 
+	/*
 	@Override
 	public int initiateServer(IComponentInstance component) {
 		System.out.println("Starting server...");
@@ -193,19 +197,13 @@ public class MariaDBHandler extends ADatabaseHandle {
 		}
 		
 		return port;
-	}
+	}*/
 
 	@Override
 	protected String[] getStartCommand(IComponentInstance component, int port) {
-		String directory = directories.get(port);
-		String[] cmdStart = {"mysqld --defaults-file=.cnf"};
+		//String directory = directories.get(port);
+		String[] cmdStart = {"cmd.exe", "/c", "mysqld --defaults-file=.cnf --query-cache-type=0 --query-cache-size=0"};
 		return cmdStart;
-	}
-
-	@Override
-	protected String getDbDirectory() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -267,6 +265,11 @@ public class MariaDBHandler extends ADatabaseHandle {
 		
 		String dbUrl = String.format("jdbc:mariadb://localhost:%d/%s?user=%s&password=%s", port, dbName, user, password);
 		return dbUrl;
+	}
+
+	@Override
+	protected String getDbDirectory(int port) {
+		return directories.get(port);
 	}
 
 }
