@@ -46,7 +46,7 @@ class TestExecution implements Callable<Double>{
 	public Double call() {
 		
 		int port = dbHandler.initiateServer(component);
-		double result = dbHandler.benchmarkQuery(numTest, port);
+		double result = dbHandler.benchmarkQuery(component);
 		dbHandler.freePort(port);
 		return result;
 	}

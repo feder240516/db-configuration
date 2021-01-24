@@ -15,9 +15,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
+import com.healthmarketscience.sqlbuilder.Query;
+
 import ai.libs.jaicore.components.api.IComponentInstance;
+import helpers.TestDescription;
 
 public abstract class ADatabaseHandle implements IDatabase {
 
@@ -30,13 +34,14 @@ public abstract class ADatabaseHandle implements IDatabase {
 	protected int _nextPortOffset;
 	protected HashMap<Integer, Process> processes = new HashMap<>();
 	protected HashMap<Integer, Connection> connections = new HashMap<>();
+	protected TestDescription testDescription;
 	
 	/**
 	 * Create a database handle allowing to use specified port and next 9 ports.
 	 * @param firstPort the first port to use
 	 */
-	public ADatabaseHandle(int firstPort) {
-		this(firstPort, 10);
+	public ADatabaseHandle(int firstPort, TestDescription testDescription) {
+		this(firstPort, 10, testDescription);
 	}
 	
 	/**
@@ -44,23 +49,25 @@ public abstract class ADatabaseHandle implements IDatabase {
 	 * @param firstPort The first port to be used
 	 * @param numberOfPorts the number of ports including firstPort that can be used
 	 */
-	public ADatabaseHandle(int firstPort, int numberOfPorts) {
+	public ADatabaseHandle(int firstPort, int numberOfPorts, TestDescription testDescription) {
 		if(numberOfPorts <= 0) throw new IllegalArgumentException("Number of ports used must be a positive integer");
 		portsToUse = new int[numberOfPorts];
 		for(int i = 0; i < numberOfPorts; ++i) {
 			portsToUse[i] = i + firstPort;
 		}
-		initHandler();		
+		initHandler(testDescription);		
 	}
 	
-	public ADatabaseHandle(int[] portsToUse) {
+	public ADatabaseHandle(int[] portsToUse, TestDescription testDescription) {
 		this.portsToUse = portsToUse;
-		initHandler();
+		initHandler(testDescription);
 	}
 	
 	
-	private void initHandler() {
+	private void initHandler(TestDescription testDescription) {
 		if(portsToUse == null || portsToUse.length == 0) throw new IllegalArgumentException("Database Handle cannot be initialized without an array of ports to be used.");
+		if(testDescription == null) throw new NullPointerException("You must provide a testDescription");
+		this.testDescription = testDescription;
 		_nextPortOffset = 0;
 		MAX_ALLOWED_PORTS = portsToUse.length;
 		_usedPorts = new HashMap<>();
@@ -69,14 +76,13 @@ public abstract class ADatabaseHandle implements IDatabase {
 		}
 	}
 	
-	
 	protected abstract String[] getStartCommand(IComponentInstance component, int port);
 	public abstract void stopServer(int port);
 	protected abstract String getDbDirectory(int port);
 	protected abstract void createAndFillDatabase(int port);
 	protected abstract void setupInitedDB(IComponentInstance component, int port);
-	
 	protected abstract String getQueryCommand(int numTest);
+	
 	protected final synchronized int useNextAvailablePort() {
 		int triedPorts = 0;
 		int nextPort = -1;
@@ -95,6 +101,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 	}
 	
 	public final void freePort(int port) {
+		stopServer(port);
 		_usedPorts.put(port, false);
 	}
 	
@@ -148,30 +155,31 @@ public abstract class ADatabaseHandle implements IDatabase {
 	}
 	
 	@Override
-	public double benchmarkQuery(int numTest, int port) {
-		double score = Double.MAX_VALUE;
-		try {
-			
-			Connection conn = getConnection(port);
+	public double benchmarkQuery(IComponentInstance instance) {
+		int port = initiateServer(instance);
+		double score = 0;
+		//Connection conn = null;
+		try (Connection conn = getConnection(port)) {
 			if (conn != null) {
-				switch(numTest) {
-				case 1:
-					Statement ps = conn.createStatement();
-					//PreparedStatement ps = conn.prepareStatement(getQueryCommand(numTest));
-					Date before = new Date();
-					//ps.execute();
-					ps.executeQuery(getQueryCommand(numTest));
-					Date after = new Date();
-					score = after.getTime() - before.getTime();
-					ps.close();
-					break;
-				default:
-					throw new AssertionError("Invalid test number");
+				//Statement ps = conn.createStatement();
+				for(Entry<Integer, List<Query>> entry: testDescription.queries.entrySet()) {
+					for(Query q: entry.getValue()) {
+						PreparedStatement ps = conn.prepareStatement(getQueryCommand(1));
+						Date before = new Date();
+						ps.execute();
+						//ps.executeQuery(getQueryCommand(1));
+						Date after = new Date();
+						score += after.getTime() - before.getTime();
+						ps.close();
+					}
 				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+			score = Double.MAX_VALUE;
 		}
+		
+		freePort(port);
 		return score;
 	}
 	
@@ -187,18 +195,13 @@ public abstract class ADatabaseHandle implements IDatabase {
 	public Connection getConnection(int port) {
 		Connection conn = null;
 		try {
-			conn = connections.get(port);
-			if (conn == null || conn.isClosed()) {
-				String dbUrl = getConnectionString(port);
-				conn = DriverManager.getConnection(dbUrl);
-				connections.put(port,  conn);
-			}
+			String dbUrl = getConnectionString(port);
+			conn = DriverManager.getConnection(dbUrl);	
 		} catch (SQLException e1) {
 			System.out.println(String.format("Error in port %d", port));
 			conn = null;
 		}
 		return conn;
-		//
 	}
 	
 	protected abstract String getConnectionString (int port);

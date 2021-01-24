@@ -29,8 +29,8 @@ dependencies {
     implementation 'ai.libs:mlplan-full:0.2.4'
     implementation 'ai.libs:hasco-core:0.2.4'
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.1.2'
-    // https://mvnrepository.com/artifact/org.apache.derby/derbyclient
     
+    // https://mvnrepository.com/artifact/org.apache.derby/derbyclient
     implementation 'org.apache.derby:derbyclient:10.15.2.0'
 	compile group: 'org.apache.derby', name: 'derbyclient', version: '10.15.2.0'
 	//runtime group: 'org.apache.derby', name: 'derbyclient', version: '10.15.2.0'
@@ -38,6 +38,8 @@ dependencies {
 	testCompile group: 'org.apache.derby', name: 'derby', version: '10.15.2.0'
 	
     
+    // https://mvnrepository.com/artifact/com.healthmarketscience.sqlbuilder/sqlbuilder
+	compile group: 'com.healthmarketscience.sqlbuilder', name: 'sqlbuilder', version: '3.0.1'
 }
 
  

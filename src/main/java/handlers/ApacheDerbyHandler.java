@@ -20,6 +20,7 @@ import java.util.List;
 
 
 import ai.libs.jaicore.components.api.IComponentInstance;
+import helpers.TestDescription;
 
 public class ApacheDerbyHandler extends ADatabaseHandle {
 	
@@ -28,13 +29,13 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	HashMap<Integer, String> dbNames;
 	HashMap<Integer, String> directories;
 	
-	public ApacheDerbyHandler() {
-		super(1527);
+	public ApacheDerbyHandler(TestDescription testDescription) {
+		super(1527,testDescription);
 		dbNames = new HashMap<>();
 	}
 	
-	public ApacheDerbyHandler(int port, int numberOfPorts) {
-		super(port,numberOfPorts);
+	public ApacheDerbyHandler(int port, int numberOfPorts, TestDescription testDescription) {
+		super(port,numberOfPorts,testDescription);
 		dbNames = new HashMap<>();
 	}
 	
