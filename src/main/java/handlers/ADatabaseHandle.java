@@ -121,8 +121,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 	
 	public int initiateServer(IComponentInstance component) {
 		System.out.println("Starting server");
-		int port = useNextAvailablePort();
-		if (!existsConnection(port)) { // create connection to port			
+		int port = useNextAvailablePort();	
 			String[] comandoArray = getStartCommand(component, port);
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
 			processBuilder.directory(new File(getDbDirectory(port)));
@@ -143,7 +142,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 				}
 				if (conn != null && !conn.isClosed()) {
 					createAndFillDatabase(port);
-					
+					setupInitedDB(component, port);
 					System.out.println("Server has been inited");
 				} else {
 					throw new SQLException(String.format("Could not connect to database after %d tries",MAX_CONNECTION_RETRIES));
@@ -151,11 +150,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 			} catch (IOException | SQLException | InterruptedException e) {
 				e.printStackTrace();
 			}
-			
-			
-		}
 		
-		setupInitedDB(component, port);
 		return port;
 	}
 	
@@ -174,6 +169,8 @@ public abstract class ADatabaseHandle implements IDatabase {
 						Date after = new Date();
 						score += after.getTime() - before.getTime();
 						ps.close();
+						
+						System.out.println("A query was executed");
 					}
 				}
 			}
