@@ -1,18 +1,14 @@
 package benchmarking;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
@@ -20,7 +16,6 @@ import ai.libs.jaicore.components.api.IComponent;
 import ai.libs.jaicore.components.api.IComponentInstance;
 import ai.libs.jaicore.components.model.Component;
 import ai.libs.jaicore.components.model.ComponentInstance;
-import ai.libs.jaicore.components.serialization.ComponentSerialization;
 
 public class BenchmarkIan {
 	
@@ -48,17 +43,6 @@ public class BenchmarkIan {
 		double score2 = testdescriptions.get(1).testResults.getMean();
 		System.out.println(String.format("score for mariadb has been %f", score));
 		System.out.println(String.format("score for mariadb 2 has been %f", score2));
-		
-		/*double value1 = benchmark(i1, 3);
-		double value2 = benchmark(i2, 3);
-		
-		System.out.println("value 1" + value1);
-		System.out.println("value 2" + value2);*/
-		
-		/*int port = mariaDBHandler.initiateServer(i1);
-		double value = mariaDBHandler.benchmarkQuery(1, port);
-		System.out.println("Value: " + value);
-		mariaDBHandler.stopServer(port);*/
 	}
 	
 	public static void benchmark(List<TestDescription> tests) {
@@ -77,10 +61,13 @@ public class BenchmarkIan {
  
         try {
             resultList = executor.invokeAll(taskList);
+            executor.shutdown();
+            executor.awaitTermination(9000, TimeUnit.DAYS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        executor.shutdown();
+        
+        
         
         System.out.println("\n========Printing the results======");
         
