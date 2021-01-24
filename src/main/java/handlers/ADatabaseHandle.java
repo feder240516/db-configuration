@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import com.healthmarketscience.sqlbuilder.Query;
@@ -28,19 +29,21 @@ public abstract class ADatabaseHandle implements IDatabase {
 	List<String> queries = Arrays.asList("","");
 	protected int MAX_CONNECTION_RETRIES = 3;
 	protected int MAX_ALLOWED_PORTS;
+	protected int allowedThreads;
 	protected int[] portsToUse;
 	protected HashMap<Integer, Boolean> _usedPorts; // var to check which ports are being used
 	protected int _nextPortOffset;
 	protected HashMap<Integer, Process> processes = new HashMap<>();
 	protected HashMap<Integer, Connection> connections = new HashMap<>();
 	protected TestDescription testDescription;
+	protected Semaphore semaphore;
 	
 	/**
 	 * Create a database handle allowing to use specified port and next 9 ports.
 	 * @param firstPort the first port to use
 	 */
-	public ADatabaseHandle(int firstPort, TestDescription testDescription) {
-		this(firstPort, 10, testDescription);
+	public ADatabaseHandle(int firstPort, int allowedThreads, TestDescription testDescription) {
+		this(firstPort, 10, allowedThreads, testDescription);
 	}
 	
 	/**
@@ -48,24 +51,26 @@ public abstract class ADatabaseHandle implements IDatabase {
 	 * @param firstPort The first port to be used
 	 * @param numberOfPorts the number of ports including firstPort that can be used
 	 */
-	public ADatabaseHandle(int firstPort, int numberOfPorts, TestDescription testDescription) {
+	public ADatabaseHandle(int firstPort, int numberOfPorts, int allowedThreads, TestDescription testDescription) {
 		if(numberOfPorts <= 0) throw new IllegalArgumentException("Number of ports used must be a positive integer");
 		portsToUse = new int[numberOfPorts];
 		for(int i = 0; i < numberOfPorts; ++i) {
 			portsToUse[i] = i + firstPort;
 		}
-		initHandler(testDescription);		
+		initHandler(allowedThreads, testDescription);		
 	}
 	
-	public ADatabaseHandle(int[] portsToUse, TestDescription testDescription) {
+	public ADatabaseHandle(int[] portsToUse, int allowedThreads, TestDescription testDescription) {
 		this.portsToUse = portsToUse;
-		initHandler(testDescription);
+		initHandler(allowedThreads, testDescription);
 	}
 	
 	
-	private void initHandler(TestDescription testDescription) {
+	private void initHandler(int allowedThreads, TestDescription testDescription) {
 		if(portsToUse == null || portsToUse.length == 0) throw new IllegalArgumentException("Database Handle cannot be initialized without an array of ports to be used.");
+		if(allowedThreads <= 0) throw new IllegalArgumentException("allowedThreads must be a positive value");
 		if(testDescription == null) throw new NullPointerException("You must provide a testDescription");
+		this.allowedThreads = allowedThreads;
 		this.testDescription = testDescription;
 		_nextPortOffset = 0;
 		MAX_ALLOWED_PORTS = portsToUse.length;
@@ -73,6 +78,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 		for(int port: portsToUse) {
 			_usedPorts.put(port, false);
 		}
+		this.semaphore = new Semaphore(allowedThreads, true);
 	}
 	
 	protected abstract String[] getStartCommand(IComponentInstance component, int port);
@@ -154,14 +160,15 @@ public abstract class ADatabaseHandle implements IDatabase {
 	}
 	
 	@Override
-	public double benchmarkQuery(IComponentInstance instance) {
+	public double benchmarkQuery(IComponentInstance instance) throws InterruptedException {
+		semaphore.acquire();
 		int port = initiateServer(instance);
 		double score = 0;
 		try (Connection conn = getConnection(port)) {
 			if (conn != null) {
 				for(Entry<Integer, List<Query>> entry: testDescription.queries.entrySet()) {
 					for(Query q: entry.getValue()) {
-						PreparedStatement ps = conn.prepareStatement(getQueryCommand(1));
+						PreparedStatement ps = conn.prepareStatement(q.toString());
 						Date before = new Date();
 						ps.execute();
 						Date after = new Date();
@@ -174,8 +181,8 @@ public abstract class ADatabaseHandle implements IDatabase {
 			e.printStackTrace();
 			score = Double.MAX_VALUE;
 		}
-		
 		freePort(port);
+		semaphore.release();
 		return score;
 	}
 	

@@ -24,8 +24,8 @@ public class MariaDBHandler extends ADatabaseHandle {
 
 	HashMap<Integer, String> directories = new HashMap<>();
 	
-	public MariaDBHandler(TestDescription testDescription) {
-		super(new int[]{3306, 3307, 3308}, testDescription);
+	public MariaDBHandler(TestDescription testDescription, int allowedThreads) {
+		super(new int[]{3306, 3307, 3308}, allowedThreads, testDescription);
 		directories.put(3306, "C:/Users/WIN/Desktop/MariaDB_Instances/instance1");
 		directories.put(3307, "C:/Users/WIN/Desktop/MariaDB_Instances/instance2");
 		directories.put(3308, "C:/Users/WIN/Desktop/MariaDB_Instances/instance3");

@@ -22,6 +22,7 @@ public class TestDescription {
 	}
 	
 	public void addQuery(int priority, Query query) {
+		query.validate();
 		if (queries.containsKey(priority)) {
 			queries.get(priority).add(query);
 		} else {

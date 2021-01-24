@@ -29,13 +29,13 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	HashMap<Integer, String> dbNames;
 	HashMap<Integer, String> directories;
 	
-	public ApacheDerbyHandler(TestDescription testDescription) {
-		super(1527,testDescription);
+	public ApacheDerbyHandler(int allowedThreads, TestDescription testDescription) {
+		super(1527,allowedThreads,testDescription);
 		dbNames = new HashMap<>();
 	}
 	
-	public ApacheDerbyHandler(int port, int numberOfPorts, TestDescription testDescription) {
-		super(port,numberOfPorts,testDescription);
+	public ApacheDerbyHandler(int port, int numberOfPorts,int allowedThreads, TestDescription testDescription) {
+		super(port,numberOfPorts,allowedThreads,testDescription);
 		dbNames = new HashMap<>();
 	}
 	
