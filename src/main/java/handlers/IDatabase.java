@@ -1,4 +1,4 @@
-package benchmarking;
+package handlers;
 
 import java.sql.Connection;
 

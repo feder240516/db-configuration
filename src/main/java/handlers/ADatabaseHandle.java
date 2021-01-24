@@ -1,4 +1,4 @@
-package benchmarking;
+package handlers;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -94,7 +94,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 		return nextPort;
 	}
 	
-	protected final void freePort(int port) {
+	public final void freePort(int port) {
 		_usedPorts.put(port, false);
 	}
 	

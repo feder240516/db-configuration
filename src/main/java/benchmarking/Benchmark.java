@@ -27,6 +27,8 @@ import ai.libs.jaicore.components.api.IComponent;
 import ai.libs.jaicore.components.api.IComponentInstance;
 import ai.libs.jaicore.components.model.Component;
 import ai.libs.jaicore.components.model.ComponentInstance;
+import handlers.ADatabaseHandle;
+import handlers.ApacheDerbyHandler;
 
 class TestExecution implements Callable<Double>{
 
