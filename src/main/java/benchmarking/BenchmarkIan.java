@@ -29,7 +29,6 @@ public class BenchmarkIan {
 		parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "45");
 		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);
-		//ComponentSerialization serializer = new ComponentSerialization();
 		
 		IComponent comp2 = new Component("MariaDB");
 		Map<String, String> parameterValues2 = new HashMap<>();
@@ -92,54 +91,6 @@ public class BenchmarkIan {
         
         dbHandler.destroyHandler();
 	}
-	
-	
-	/*public static double benchmark(IComponentInstance component, int numTests) {
-		int testNumber = 1;
-		ADatabaseHandle mariaDBHandler = new MariaDBHandler();
-		
-		ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(3);
-		 
-        List<TestExecution> taskList = new ArrayList<>();
-        for (int i = 0; i < numTests; i++) {
-        	TestExecution task = new TestExecution(mariaDBHandler,component,testNumber);
-            taskList.add(task);
-        }
-         
-        //Execute all tasks and get reference to Future objects
-        List<Future<Double>> resultList = null;
- 
-        try {
-            resultList = executor.invokeAll(taskList);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
- 
-        executor.shutdown();
- 
-        System.out.println("\n========Printing the results======");
-        
-        DescriptiveStatistics ds = new DescriptiveStatistics();
-         
-        for (int i = 0; i < resultList.size(); i++) {
-            Future<Double> future = resultList.get(i);
-            try {
-                double result = future.get();
-                ds.addValue(result);
-                System.out.println(String.format("Adding value %f", result));
-                
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-        
-        System.out.println(String.format("min value: %f",ds.getMin()));
-        System.out.println(String.format("max value: %f",ds.getMax()));
-        System.out.println(String.format("std value: %f",ds.getStandardDeviation()));
-        System.out.println(String.format("mean value: %f",ds.getMean()));
-        
-		return ds.getMean();
-	}*/
 	
 }
 

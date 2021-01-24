@@ -28,7 +28,6 @@ public abstract class ADatabaseHandle implements IDatabase {
 	List<String> queries = Arrays.asList("","");
 	protected int MAX_CONNECTION_RETRIES = 3;
 	protected int MAX_ALLOWED_PORTS;
-	//protected int firstPort;
 	protected int[] portsToUse;
 	protected HashMap<Integer, Boolean> _usedPorts; // var to check which ports are being used
 	protected int _nextPortOffset;
@@ -158,16 +157,13 @@ public abstract class ADatabaseHandle implements IDatabase {
 	public double benchmarkQuery(IComponentInstance instance) {
 		int port = initiateServer(instance);
 		double score = 0;
-		//Connection conn = null;
 		try (Connection conn = getConnection(port)) {
 			if (conn != null) {
-				//Statement ps = conn.createStatement();
 				for(Entry<Integer, List<Query>> entry: testDescription.queries.entrySet()) {
 					for(Query q: entry.getValue()) {
 						PreparedStatement ps = conn.prepareStatement(getQueryCommand(1));
 						Date before = new Date();
 						ps.execute();
-						//ps.executeQuery(getQueryCommand(1));
 						Date after = new Date();
 						score += after.getTime() - before.getTime();
 						ps.close();

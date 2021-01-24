@@ -77,7 +77,6 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 		String dbPageSizeStr = component.getParameterValue(DATABASE_PAGE_SIZE);
 		if (dbPageSizeStr == null) return;
 		Connection conn = getConnection(port);
-		//if (size <= 0) return;
 		
 		try(CallableStatement cs = 
 				  conn.prepareCall("CALL SYSCS_UTIL.SYSCS_SET_DATABASE_PROPERTY(?, ?)");){
@@ -87,40 +86,16 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 			cs.execute(); 
 			cs.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		 
 	}
-	
-	
-
-	// * need to fix
-	/*
-	@Override
-	public Connection getConnection() {
-		try {
-			if (conn == null || conn.isClosed()) {
-				String dbUrl = String.format("jdbc:derby://localhost:1527/%s;create=true", dbName);
-				conn = DriverManager.getConnection(dbUrl);
-				System.out.println(String.format("Conectado a db %s", dbName));
-			}
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			conn = null;
-		}
-		return conn;
-		//
-		
-	}*/
 
 	@Override
 	protected String[] getStartCommand(IComponentInstance component, int port) {
 		String derbyHome = System.getenv("DERBY_HOME");
 		System.out.println(String.format("Running in port %d", port));
 		if (derbyHome == null || derbyHome.equals("")) throw new RuntimeException("Environment Var DERBY_HOME must be configured to test apache derby");
-		//String[] comandoArray = {"java", "-jar", derbyHome + "\\lib\\derbyrun.jar", "server", "start"};
 		String[] comandoArray = {derbyHome + "/bin/startNetworkServer.bat", "-p", String.valueOf(port)};
 		return comandoArray;
 	}
@@ -148,11 +123,8 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 			processBuilder.start().waitFor();
 			
 		} catch (IOException | SQLException | InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//process.destroy();
-		
 	}
 
 	@Override

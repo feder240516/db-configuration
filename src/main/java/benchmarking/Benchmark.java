@@ -63,17 +63,6 @@ class TestDescription{
 		testNumbers = testNumber;
 		testAmounts = testAmount;
 		testResults = new DescriptiveStatistics();
-		
-		/*for(int testNumber: testsByTestNumber.keySet()) {
-			testNumbers.add(testNumber);
-			testAmounts.add(testsByTestNumber.get(testNumber));
-			testResults.add(new DescriptiveStatistics());
-		}*/
-		//this.testsByTestNumber = testsByTestNumber;
-		//this.resultsStatistics = new HashMap<>();
-		//for(int testNumber: testsByTestNumber.keySet()) {
-        //	  resultsStatistics.put(testNumber, new DescriptiveStatistics());
-		//}
 	}
 }
 
@@ -119,23 +108,6 @@ public class Benchmark {
 		}
         
         dbHandler.destroyHandler();
-        
-        /*for (int i = 0; i < resultList.size(); i++) {
-            Future<Double> future = resultList.get(i);
-            try {
-                double result = future.get();
-                ds.addValue(result);
-                System.out.println(String.format("Adding value %f", result));
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        }*/
-        
-        /*System.out.println(String.format("min value: %f",ds.getMin()));
-        System.out.println(String.format("max value: %f",ds.getMax()));
-        System.out.println(String.format("std value: %f",ds.getStandardDeviation()));
-        System.out.println(String.format("mean value: %f",ds.getMean()));*/
-        
 	}
 
 	public static void main(String[] args) {
