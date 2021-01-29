@@ -198,7 +198,8 @@ public abstract class ADatabaseHandle implements IDatabase {
 			String dbUrl = getConnectionString(port);
 			conn = DriverManager.getConnection(dbUrl);	
 		} catch (SQLException e1) {
-			System.out.println(String.format("Error in port %d", port));
+			e1.printStackTrace();
+			//System.out.println(String.format("Error in port %d", port));
 			conn = null;
 		}
 		return conn;

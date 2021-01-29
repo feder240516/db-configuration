@@ -56,7 +56,7 @@ public class Main {
 		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);
 		
-		MariaDBHandler handler = new MariaDBHandler(td, 3);
+		MariaDBHandler handler = new MariaDBHandler(new int[]{3306, 3307, 3308, 3309}, td, 3);
 		try {
 			double value = handler.benchmarkQuery(i1);
 			System.out.println("Score: " + value);

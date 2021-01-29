@@ -14,21 +14,71 @@ import java.sql.Statement;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import java.util.UUID;
 
 import ai.libs.jaicore.components.api.IComponentInstance;
 import helpers.TestDescription;
 
+import org.apache.commons.io.FileUtils;
+
 public class MariaDBHandler extends ADatabaseHandle {
 
+	String instancesPath = "C:/Users/WIN/Desktop/MariaDB_Handler/instances";
+	String baseDataPath = "C:/Users/WIN/Desktop/MariaDB_Handler/data";
 	HashMap<Integer, String> directories = new HashMap<>();
 	
-	public MariaDBHandler(TestDescription testDescription, int allowedThreads) {
-		super(new int[]{3306, 3307, 3308}, allowedThreads, testDescription);
-		directories.put(3306, "C:/Users/WIN/Desktop/MariaDB_Instances/instance1");
-		directories.put(3307, "C:/Users/WIN/Desktop/MariaDB_Instances/instance2");
-		directories.put(3308, "C:/Users/WIN/Desktop/MariaDB_Instances/instance3");
+	public MariaDBHandler(int[] portsToUse, TestDescription testDescription, int allowedThreads) {
+		super(portsToUse, allowedThreads, testDescription);
+		
+		initInstances(portsToUse);
+		
+		System.out.println("Available instances: ");
+		directories.entrySet().forEach(entry->{
+		    System.out.println(entry.getKey() + " " + entry.getValue());  
+		});
+	}
+	
+	public void initInstances(int[] portsToUse) {
+		File instancesDir = new File(instancesPath);
+		
+		if (!instancesDir.exists()) instancesDir.mkdirs();
+		
+		String[] instances = instancesDir.list();
+		int numberOfInstances = instances.length;
+		
+		for(int i = 0; i < numberOfInstances; i++){
+			for(int port: portsToUse) {
+				if(!directories.containsKey(port)) { 
+					directories.put(port, instancesDir.getPath() + "\\" + instances[i]); 
+					break;
+				}
+			}
+		}
+		
+		for(int port: portsToUse) {
+			if(!directories.containsKey(port)) { 
+				createDBInstance(port);
+			}
+		}
+	}
+	
+	public void createDBInstance(int port) {
+		File dataDir = new File(baseDataPath);
+		
+		String instancePath = instancesPath + "\\" + UUID.randomUUID();
+		File destDir = new File(instancePath);
+		
+		try {
+		    FileUtils.copyDirectoryToDirectory(dataDir, destDir);
+		    directories.put(port, instancePath);
+		    System.out.println("The instance " + instancePath + " on port " + port + " was created");
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
 	}
 	
 	public boolean executeCommand(String cmdLine) {
@@ -59,12 +109,9 @@ public class MariaDBHandler extends ADatabaseHandle {
 		
 		Connection conn = getConnection(port);
 		try {
-			//PreparedStatement ps = conn.prepareStatement(sqlBase);
-			Statement ps = conn.createStatement();
-			ps.executeQuery(sqlBase);
-			//ps.executeQuery();
+			PreparedStatement ps = conn.prepareStatement(sqlBase);
+			ps.executeQuery();
 			ps.close();
-			//conn.close();
 			
 			success = true;
 		}catch(SQLException e) {
@@ -77,7 +124,12 @@ public class MariaDBHandler extends ADatabaseHandle {
 
 	@Override
 	protected String[] getStartCommand(IComponentInstance component, int port) {
-		String[] cmdStart = {"cmd.exe", "/c", "mysqld --defaults-file=.cnf --query-cache-type=0 --query-cache-size=0"};
+		//String[] cmdStart = {"cmd.exe", "/c", "mysqld --defaults-file=.cnf --query-cache-type=0 --query-cache-size=0"};
+		
+		String dataDir = ".\\data";
+		String socketPath = ".\\mysql.sock";
+		
+		String[] cmdStart = {"cmd.exe", "/c", String.format("mysqld --datadir=%s --port=%s --socket=%s --query-cache-type=0 --query-cache-size=0", dataDir, port, socketPath)};
 		return cmdStart;
 	}
 
