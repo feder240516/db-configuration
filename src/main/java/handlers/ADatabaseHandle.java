@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -120,35 +122,57 @@ public abstract class ADatabaseHandle implements IDatabase {
 	}
 	
 	public int initiateServer(IComponentInstance component) {
-		System.out.println("Starting server");
-		int port = useNextAvailablePort();	
+		
+			int port = useNextAvailablePort();	
+			System.out.println("Starting server on port " + port);
 			String[] comandoArray = getStartCommand(component, port);
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
 			processBuilder.directory(new File(getDbDirectory(port)));
-			try {
-				Process process = processBuilder.start();
-				processes.put(port, process);
-				InputStream inStream = process.getInputStream();
-				InputStream errStream = process.getErrorStream();
-				inStream.close();
-				errStream.close();
-				Connection conn = null;
-				// tries multiple connections to database
-				for(int i = 0; i < MAX_CONNECTION_RETRIES && conn == null; ++i) {
-					if (i != 0) { TimeUnit.SECONDS.sleep(5); } // wait 5 seconds to allow server to initiate
-					System.out.println("Trying to establish a connection...");
-					
-					conn = getConnection(port);
+			
+			Process process = null;
+			while(process == null || !process.isAlive()) {
+				try {
+					process = processBuilder.start();
+					processes.put(port, process);
+					InputStream inStream = process.getInputStream();
+					InputStream errStream = process.getErrorStream();
+					inStream.close();
+					ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(1);
+					executor.submit(new Runnable(){
+						public void run() {
+							try {
+								BufferedReader br = new BufferedReader(new InputStreamReader(errStream));
+								String line;
+								while((line = br.readLine()) != null) {
+									System.out.println("--------> " + line + " PORT: " + port);
+								}
+								br.close();
+								System.out.println("-------->" + " STREAM CERRADO: " + port);
+							} catch( IOException e) {
+								e.printStackTrace();
+							}
+						}
+					});
+					//errStream.close();
+					Connection conn = null;
+					// tries multiple connections to database
+					for(int i = 0; i < MAX_CONNECTION_RETRIES && conn == null; ++i) {
+						if (i != 0) { TimeUnit.SECONDS.sleep(5); } // wait 5 seconds to allow server to initiate
+						System.out.println("Trying to establish a connection... on port " + port);
+						
+						conn = getConnection(port);
+					}
+					if (conn != null && !conn.isClosed()) {
+						createAndFillDatabase(port);
+						setupInitedDB(component, port);
+						System.out.println("Server has been inited on port " + port);
+					} else {
+						throw new SQLException(String.format("Could not connect to database after %d tries",MAX_CONNECTION_RETRIES));
+					}
+				} catch (IOException | SQLException | InterruptedException e) {
+					System.out.println("Could not connect to port " + port + " ... Restarting process");
+					//e.printStackTrace();
 				}
-				if (conn != null && !conn.isClosed()) {
-					createAndFillDatabase(port);
-					setupInitedDB(component, port);
-					System.out.println("Server has been inited");
-				} else {
-					throw new SQLException(String.format("Could not connect to database after %d tries",MAX_CONNECTION_RETRIES));
-				}
-			} catch (IOException | SQLException | InterruptedException e) {
-				e.printStackTrace();
 			}
 		
 		return port;
@@ -194,14 +218,16 @@ public abstract class ADatabaseHandle implements IDatabase {
 	@Override
 	public Connection getConnection(int port) {
 		Connection conn = null;
-		try {
-			String dbUrl = getConnectionString(port);
-			conn = DriverManager.getConnection(dbUrl);	
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-			//System.out.println(String.format("Error in port %d", port));
-			conn = null;
-		}
+		//while(conn == null) {
+			try {
+				String dbUrl = getConnectionString(port);
+				conn = DriverManager.getConnection(dbUrl);	
+			} catch (SQLException e1) {
+				//e1.printStackTrace();
+				System.out.println(String.format("Error in port %d", port));
+				conn = null;
+			}
+		//}
 		return conn;
 	}
 	

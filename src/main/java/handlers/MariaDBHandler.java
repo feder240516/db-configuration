@@ -53,7 +53,7 @@ public class MariaDBHandler extends ADatabaseHandle {
 		for(int i = 0; i < numberOfInstances; i++){
 			for(int port: portsToUse) {
 				if(!directories.containsKey(port)) { 
-					directories.put(port, instancesDir.getPath() + "\\" + instances[i]); 
+					directories.put(port, instancesDir.getPath() + "/" + instances[i]); 
 					break;
 				}
 			}
@@ -69,7 +69,7 @@ public class MariaDBHandler extends ADatabaseHandle {
 	public void createDBInstance(int port) {
 		File dataDir = new File(baseDataPath);
 		
-		String instancePath = instancesPath + "\\" + UUID.randomUUID();
+		String instancePath = instancesPath + "/" + UUID.randomUUID();
 		File destDir = new File(instancePath);
 		
 		try {
@@ -139,13 +139,13 @@ public class MariaDBHandler extends ADatabaseHandle {
 	@Override
 	protected void setupInitedDB(IComponentInstance component, int port) {
 		boolean isSuccessful = ApplyParameters(component, port);
-		String msg = (isSuccessful) ? "Se aplicaron los parametros": "No se aplicaron los parametros";
+		String msg = (isSuccessful) ? "Parameters were applied on port " + port: "Parameter were NOT applied " + port;
 		System.out.println(msg);
 	}
 
 	@Override
 	public void stopServer(int port) {
-		System.out.println("Stopping server");
+		System.out.println("Stopping server on port " + port);
 		
 		String cmdLine = String.format("mysqladmin -u root --password= --port=%d shutdown", port);
 		

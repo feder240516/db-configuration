@@ -1,8 +1,14 @@
 package main;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import com.healthmarketscience.sqlbuilder.InsertQuery;
 import com.healthmarketscience.sqlbuilder.SelectQuery;
@@ -22,7 +28,7 @@ import helpers.TestDescription;
 
 public class Main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException, ExecutionException {
 		// TODO Auto-generated method stub
 	    // create default schema
 	    DbSpec spec = new DbSpec();
@@ -56,13 +62,54 @@ public class Main {
 		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);
 		
-		MariaDBHandler handler = new MariaDBHandler(new int[]{3306, 3307, 3308, 3309}, td, 3);
-		try {
-			double value = handler.benchmarkQuery(i1);
-			System.out.println("Score: " + value);
+		MariaDBHandler handler = new MariaDBHandler(new int[]{3306, 3307, 3308, 3309}, td, 4);
+		
+		ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(20);
+		List<Callable<Double>> taskList = new ArrayList<>();
+		for(int i = 0; i < 10; i++) {
+			Callable<Double> task = new Callable<Double>() {
+				public Double call() {
+					try {
+						return handler.benchmarkQuery(i1);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						return Double.MAX_VALUE;
+					}
+					
+				}
+			};
+	        taskList.add(task);
+		}
+		
+        List<Future<Double>> resultList = null;
+ 
+        try {
+            resultList = executor.invokeAll(taskList);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        executor.shutdown();
+        
+        for(Future<Double> result: resultList) {
+        	System.out.println("Score: " + result.get());
+        }
+		
+		/*try {
+			double value1 = handler.benchmarkQuery(i1);
+			double value2 = handler.benchmarkQuery(i1);
+			double value3 = handler.benchmarkQuery(i1);
+			double value4 = handler.benchmarkQuery(i1);
+			double value5 = handler.benchmarkQuery(i1);
+			double value6 = handler.benchmarkQuery(i1);
+			System.out.println("Score: " + value1);
+			System.out.println("Score: " + value2);
+			System.out.println("Score: " + value3);
+			System.out.println("Score: " + value4);
+			System.out.println("Score: " + value5);
+			System.out.println("Score: " + value6);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}
+		}*/
 
 		
 	}
