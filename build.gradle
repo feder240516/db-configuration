@@ -29,6 +29,8 @@ dependencies {
     implementation 'ai.libs:mlplan-full:0.2.4'
     implementation 'ai.libs:hasco-core:0.2.4'
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.1.2'
+    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+	implementation group: 'mysql', name: 'mysql-connector-java', version: '5.1.13'
     
     // https://mvnrepository.com/artifact/org.apache.derby/derbyclient
     implementation 'org.apache.derby:derbyclient:10.15.2.0'

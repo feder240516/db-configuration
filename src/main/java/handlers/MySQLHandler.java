@@ -1,37 +1,26 @@
 package handlers;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import java.util.UUID;
+
+import org.apache.commons.io.FileUtils;
 
 import ai.libs.jaicore.components.api.IComponentInstance;
 import helpers.TestDescription;
 
-import org.apache.commons.io.FileUtils;
+public class MySQLHandler extends ADatabaseHandle{
 
-public class MariaDBHandler extends ADatabaseHandle {
-
-	String instancesPath = "C:/Users/WIN/Desktop/MariaDB_Handler/instances";
-	String baseDataPath = "C:/Users/WIN/Desktop/MariaDB_Handler/data";
+	String instancesPath = "C:/Users/WIN/Desktop/MySQLHandler/instances";
+	String baseDataPath = "C:/Users/WIN/Desktop/MySQLHandler/data";
 	HashMap<Integer, String> directories = new HashMap<>();
 	
-	public MariaDBHandler(int[] portsToUse, TestDescription testDescription, int allowedThreads) {
+	public MySQLHandler(int[] portsToUse, TestDescription testDescription, int allowedThreads) {
 		super(portsToUse, allowedThreads, testDescription);
 		
 		initInstances(portsToUse);
@@ -121,42 +110,31 @@ public class MariaDBHandler extends ADatabaseHandle {
 		
 		return success;
 	}
-
+	
+	
+	
 	@Override
 	protected String[] getStartCommand(IComponentInstance component, int port) {
-		//String[] cmdStart = {"cmd.exe", "/c", "mysqld --defaults-file=.cnf --query-cache-type=0 --query-cache-size=0"};
 		String extraPath = "bin\\mysqld";
-		String MariaDBHome = System.getenv("MARIADB_HOME");
+		String MYSQLHome = System.getenv("MYSQL_HOME");
 		
 		String dataDir = ".\\data";
-		String socketPath = ".\\mysql.sock";
+		String mysqldPath = String.format("\"%s%s\"", MYSQLHome, extraPath);
 		
-		String mariadbPath = String.format("\"%s%s\"", MariaDBHome, extraPath);
-		
-		String[] cmdStart = {"cmd.exe", "/c", String.format("%s --datadir=%s --port=%s --socket=%s --query-cache-type=0 --query-cache-size=0", mariadbPath, dataDir, port, socketPath)};
-		System.out.println("Start command on port " + port + ": " + String.format("%s --datadir=%s --port=%s --socket=%s --query-cache-type=0 --query-cache-size=0", mariadbPath, dataDir, port, socketPath));
+		String[] cmdStart = {"cmd.exe", "/c", String.format("%s --datadir=%s --port=%s", mysqldPath, dataDir, port)};
+		System.out.println("Start command on port " + port + ": " + String.format("%s --datadir=%s --port=%s", mysqldPath, dataDir, port));
 		return cmdStart;
-	}
-
-	@Override
-	protected void createAndFillDatabase(int port) {}
-
-	@Override
-	protected void setupInitedDB(IComponentInstance component, int port) {
-		boolean isSuccessful = ApplyParameters(component, port);
-		String msg = (isSuccessful) ? "Parameters were applied on port " + port: "Parameter were NOT applied " + port;
-		System.out.println(msg);
 	}
 
 	@Override
 	public void stopServer(int port) {
 		System.out.println("Stopping server on port " + port);
 		String extraPath = "bin\\mysqladmin";
-		String MariaDBHome = System.getenv("MARIADB_HOME");
+		String MYSQLHome = System.getenv("MYSQL_HOME");
 		
-		String mariadbPath = String.format("\"%s%s\"", MariaDBHome, extraPath);
+		String mysqldPath = String.format("\"%s%s\"", MYSQLHome, extraPath);
 		
-		String[] cmdStop = {"cmd.exe", "/c", String.format("%s -u root --password= --port=%d shutdown", mariadbPath, port)};
+		String[] cmdStop = {"cmd.exe", "/c", String.format("%s -u root --password= --port=%d shutdown", mysqldPath, port)};
 		//String cmdLine = String.format("mysqladmin -u root --password= --port=%d shutdown", port);
 		
 		Connection conn = getConnection(port);
@@ -172,6 +150,22 @@ public class MariaDBHandler extends ADatabaseHandle {
 		} catch (IOException | SQLException | InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	protected String getDbDirectory(int port) {
+		System.out.println(directories.get(port));
+		return directories.get(port);
+	}
+
+	@Override
+	protected void createAndFillDatabase(int port) {}
+
+	@Override
+	protected void setupInitedDB(IComponentInstance component, int port) {
+		boolean isSuccessful = ApplyParameters(component, port);
+		String msg = (isSuccessful) ? "Parameters were applied on port " + port: "Parameter were NOT applied " + port;
+		System.out.println(msg);
 	}
 
 	@Override
@@ -193,13 +187,8 @@ public class MariaDBHandler extends ADatabaseHandle {
 		String user = "root";
 		String password = "";
 		
-		String dbUrl = String.format("jdbc:mariadb://localhost:%d/%s?user=%s&password=%s", port, dbName, user, password);
+		String dbUrl = String.format("jdbc:mysql://localhost:%d/%s?user=%s&password=%s", port, dbName, user, password);
 		return dbUrl;
-	}
-
-	@Override
-	protected String getDbDirectory(int port) {
-		return directories.get(port);
 	}
 
 }
