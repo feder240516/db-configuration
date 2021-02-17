@@ -137,18 +137,33 @@ public abstract class ADatabaseHandle implements IDatabase {
 					processes.put(port, process);
 					InputStream inStream = process.getInputStream();
 					InputStream errStream = process.getErrorStream();
-					inStream.close();
-					ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(1);
+					//inStream.close();
+					ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(3);
 					executor.submit(new Runnable(){
 						public void run() {
 							try {
-								BufferedReader br = new BufferedReader(new InputStreamReader(errStream));
+								BufferedReader br = new BufferedReader(new InputStreamReader(inStream));
 								String line;
 								while((line = br.readLine()) != null) {
 									System.out.println("--------> " + line + " PORT: " + port);
 								}
 								br.close();
 								System.out.println("-------->" + " STREAM CERRADO: " + port);
+							} catch( IOException e) {
+								e.printStackTrace();
+							}
+						}
+					});
+					executor.submit(new Runnable(){
+						public void run() {
+							try {
+								BufferedReader br = new BufferedReader(new InputStreamReader(errStream));
+								String line;
+								while((line = br.readLine()) != null) {
+									System.err.println("--------> " + line + " PORT: " + port);
+								}
+								br.close();
+								System.err.println("-------->" + " STREAM CERRADO: " + port);
 							} catch( IOException e) {
 								e.printStackTrace();
 							}
@@ -185,7 +200,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 		semaphore.acquire();
 		int port = 0;
 		try {
-			initiateServer(instance);
+			port = initiateServer(instance);
 		} catch (IOException | SQLException | InterruptedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -238,7 +253,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 				String dbUrl = getConnectionString(port);
 				conn = DriverManager.getConnection(dbUrl);	
 			} catch (SQLException e1) {
-				//e1.printStackTrace();
+				e1.printStackTrace();
 				System.out.println(String.format("Error in port %d", port));
 				conn = null;
 			}

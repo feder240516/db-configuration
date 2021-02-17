@@ -46,6 +46,10 @@ dependencies {
 	// https://mvnrepository.com/artifact/commons-io/commons-io
 	compile group: 'commons-io', name: 'commons-io', version: '2.6'
 	
+	// https://mvnrepository.com/artifact/org.postgresql/postgresql
+	implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.18'
+	
+	
 	implementation 'org.jooq:jooq:3.14.7'
 }
 
