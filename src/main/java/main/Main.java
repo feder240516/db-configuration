@@ -24,17 +24,15 @@ import ai.libs.jaicore.components.api.IComponentInstance;
 import ai.libs.jaicore.components.model.Component;
 import ai.libs.jaicore.components.model.ComponentInstance;
 import handlers.MariaDBHandler;
+import handlers.MySQLHandler;
 import helpers.TestDescription;
 
 public class Main {
 
 	public static void main(String[] args) throws InterruptedException, ExecutionException {
-		// TODO Auto-generated method stub
-	    // create default schema
 	    DbSpec spec = new DbSpec();
 	    DbSchema schema = spec.addDefaultSchema();
 	 
-	    // add table with basic customer info
 	    DbTable employeeTable = schema.addTable("employees");
 	    DbColumn empNoCol = employeeTable.addColumn("emp_no", "int(11)", null);
 	    DbColumn empBirthCol = employeeTable.addColumn("birth_date", "date", null);
@@ -48,13 +46,10 @@ public class Main {
 	      .addColumns(empNoCol, empBirthCol, empfNameCol, emplNameCol, empGenderCol, empHireCol)
 	      .validate();
 		
-		//InsertQuery insertQuery = new InsertQuery(custOrderJoin);
-		
 		TestDescription td = new TestDescription(null);
 		td.addQuery(1, selectQuery);
 		td.addQuery(1, selectQuery);
 		td.addQuery(1, selectQuery);
-		//td.print();
 		
 		IComponent comp = new Component("MariaDB");
 		Map<String, String> parameterValues = new HashMap<>();
@@ -62,7 +57,20 @@ public class Main {
 		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);
 		
-		MariaDBHandler handler = new MariaDBHandler(new int[]{3306, 3307, 3308, 3309}, td, 4);
+		IComponent comp2 = new Component("MySQL");
+		Map<String, String> parameterValues2 = new HashMap<>();
+		parameterValues2.put("OPTIMIZER_SEARCH_DEPTH", "45");
+		Map<String, List<IComponentInstance>> reqInterfaces2 = new HashMap<>(); 
+		IComponentInstance i2 = new ComponentInstance(comp2, parameterValues2, reqInterfaces2);
+		
+		MySQLHandler handler = new MySQLHandler(new int[]{3313, 3314, 3315, 3316}, td, 4);
+		Double score = handler.benchmarkQuery(i1);
+		System.out.println("Score: " + score);
+		
+		/*MariaDBHandler handler = new MariaDBHandler(new int[]{3307, 3308, 3309}, td, 3);
+		Double score = handler.benchmarkQuery(i1);
+		System.out.println("Score: " + score);*/
+		
 		
 		ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(20);
 		List<Callable<Double>> taskList = new ArrayList<>();
@@ -93,25 +101,6 @@ public class Main {
         for(Future<Double> result: resultList) {
         	System.out.println("Score: " + result.get());
         }
-		
-		/*try {
-			double value1 = handler.benchmarkQuery(i1);
-			double value2 = handler.benchmarkQuery(i1);
-			double value3 = handler.benchmarkQuery(i1);
-			double value4 = handler.benchmarkQuery(i1);
-			double value5 = handler.benchmarkQuery(i1);
-			double value6 = handler.benchmarkQuery(i1);
-			System.out.println("Score: " + value1);
-			System.out.println("Score: " + value2);
-			System.out.println("Score: " + value3);
-			System.out.println("Score: " + value4);
-			System.out.println("Score: " + value5);
-			System.out.println("Score: " + value6);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}*/
-
-		
 	}
 
 }
