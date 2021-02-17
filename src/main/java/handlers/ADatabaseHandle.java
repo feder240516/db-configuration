@@ -121,13 +121,14 @@ public abstract class ADatabaseHandle implements IDatabase {
 		}
 	}
 	
-	public int initiateServer(IComponentInstance component) {
+	public int initiateServer(IComponentInstance component) throws IOException, SQLException, InterruptedException {
 		
 			int port = useNextAvailablePort();	
 			System.out.println("Starting server on port " + port);
 			String[] comandoArray = getStartCommand(component, port);
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
 			processBuilder.directory(new File(getDbDirectory(port)));
+			System.out.println(String.format("Iniciando desde directorio %s", getDbDirectory(port)));
 			
 			Process process = null;
 			while(process == null || !process.isAlive()) {
@@ -171,6 +172,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 					}
 				} catch (IOException | SQLException | InterruptedException e) {
 					System.out.println("Could not connect to port " + port + " ... Restarting process");
+					throw e;
 					//e.printStackTrace();
 				}
 			}
@@ -181,28 +183,41 @@ public abstract class ADatabaseHandle implements IDatabase {
 	@Override
 	public double benchmarkQuery(IComponentInstance instance) throws InterruptedException {
 		semaphore.acquire();
-		int port = initiateServer(instance);
+		int port = 0;
+		try {
+			initiateServer(instance);
+		} catch (IOException | SQLException | InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		double score = 0;
-		try (Connection conn = getConnection(port)) {
-			if (conn != null) {
-				for(Entry<Integer, List<Query>> entry: testDescription.queries.entrySet()) {
-					for(Query q: entry.getValue()) {
-						PreparedStatement ps = conn.prepareStatement(q.toString());
-						Date before = new Date();
-						ps.execute();
-						Date after = new Date();
-						score += after.getTime() - before.getTime();
-						ps.close();
-						
-						System.out.println("A query was executed");
+		if (port == 0) {
+			System.out.println("Server could not be intited");
+			score = Double.MAX_VALUE;
+		}else {
+			try (Connection conn = getConnection(port)) {
+				if (conn != null) {
+					for(Entry<Integer, List<Query>> entry: testDescription.queries.entrySet()) {
+						for(Query q: entry.getValue()) {
+							PreparedStatement ps = conn.prepareStatement(q.toString());
+							Date before = new Date();
+							ps.execute();
+							Date after = new Date();
+							score += after.getTime() - before.getTime();
+							ps.close();
+							
+							
+							System.out.println("A query was executed");
+							System.out.println(String.format("Score %f for port %d",score,port));
+						}
 					}
 				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+				score = Double.MAX_VALUE;
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			score = Double.MAX_VALUE;
+			freePort(port);
 		}
-		freePort(port);
 		semaphore.release();
 		return score;
 	}

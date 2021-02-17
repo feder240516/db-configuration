@@ -23,6 +23,8 @@ import ai.libs.jaicore.components.api.IComponent;
 import ai.libs.jaicore.components.api.IComponentInstance;
 import ai.libs.jaicore.components.model.Component;
 import ai.libs.jaicore.components.model.ComponentInstance;
+import handlers.ADatabaseHandle;
+import handlers.ApacheDerbyHandler;
 import handlers.MariaDBHandler;
 import helpers.TestDescription;
 
@@ -62,7 +64,7 @@ public class Main {
 		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);
 		
-		MariaDBHandler handler = new MariaDBHandler(new int[]{3306, 3307, 3308, 3309}, td, 4);
+		ADatabaseHandle handler = new ApacheDerbyHandler(new int[]{3307,3308,3309,3310,3311,3312,3313,3314,3315,3316,3317,3318,3319,3320}, 10, td);
 		
 		ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(20);
 		List<Callable<Double>> taskList = new ArrayList<>();

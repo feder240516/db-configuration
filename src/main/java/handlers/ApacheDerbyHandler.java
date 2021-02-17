@@ -15,9 +15,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
-
-
+import org.apache.commons.io.FileUtils;
 
 import ai.libs.jaicore.components.api.IComponentInstance;
 import helpers.TestDescription;
@@ -26,52 +26,72 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	
 	public static final String DATABASE_PAGE_SIZE = "DATABASE_PAGE_SIZE";
 	
-	HashMap<Integer, String> dbNames;
-	HashMap<Integer, String> directories;
+	// HashMap<Integer, String> dbNames;
+	HashMap<Integer, String> directories = new HashMap<>();
+	String instancesPath = System.getenv("DERBY_HOME") + "/db/instances";
+	String baseDataPath = System.getenv("DERBY_HOME") + "/db/data";
 	
 	public ApacheDerbyHandler(int allowedThreads, TestDescription testDescription) {
 		super(1527,allowedThreads,testDescription);
-		dbNames = new HashMap<>();
+		initHandler();
+	}
+	
+	public ApacheDerbyHandler(int[] portsToUse, int allowedThreads, TestDescription testDescription) {
+		super(portsToUse,allowedThreads,testDescription);
+		initHandler();
 	}
 	
 	public ApacheDerbyHandler(int port, int numberOfPorts,int allowedThreads, TestDescription testDescription) {
 		super(port,numberOfPorts,allowedThreads,testDescription);
-		dbNames = new HashMap<>();
+		initHandler();
+	}
+	
+	private void initHandler() {
+		// dbNames = new HashMap<>();
+		initInstances(this.portsToUse);
+	}
+	
+	protected void initInstances(int[] portsToUse) {
+		File instancesDir = new File(instancesPath);
+		
+		if (!instancesDir.exists()) instancesDir.mkdirs();
+		
+		String[] instances = instancesDir.list();
+		int numberOfInstances = instances.length;
+		
+		for(int i = 0; i < numberOfInstances; i++){
+			for(int port: portsToUse) {
+				if(!directories.containsKey(port)) { 
+					directories.put(port, instancesDir.getPath() + "/" + instances[i]); 
+					break;
+				}
+			}
+		}
+		
+		for(int port: portsToUse) {
+			if(!directories.containsKey(port)) { 
+				createDBInstance(port);
+			}
+		}
+	}
+	
+	public void createDBInstance(int port) {
+		File dataDir = new File(baseDataPath);
+		
+		String instancePath = instancesPath + "/" + UUID.randomUUID();
+		File destDir = new File(instancePath);
+		
+		try {
+		    FileUtils.copyDirectory(dataDir, destDir);
+		    directories.put(port, instancePath);
+		    System.out.println("The instance " + instancePath + " on port " + port + " was created");
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
 	}
 	
 	@Override
-	protected void createAndFillDatabase(int port) {
-		try {
-			dbNames.put(port, generateDbName());
-			System.out.println(String.format("Using database %s for apache derby in port %d",dbNames.get(port),port));
-			Connection conn = getConnection(port);
-			int NUM_RESTAURANTS = 10;
-			int NUM_WORKERS = 1000;
-			PreparedStatement ps;
-			conn.prepareStatement("create table restaurants(id int primary key, name varchar(255))").execute();
-			conn.prepareStatement("create table workers(id int primary key, name varchar(255), restId int REFERENCES restaurants(id))").execute();
-			ps = conn.prepareStatement("insert into restaurants values(?, ?)");
-			for (int i = 0; i < NUM_RESTAURANTS; ++i) {
-				
-				ps.setInt(1, i+1);
-				ps.setString(2, "a");
-				ps.execute();
-			}
-			ps = conn.prepareStatement("insert into workers values(?, ?, ?)");
-			for (int i = 0; i < NUM_WORKERS; ++i) {
-				
-				ps.setInt(1, i+1);
-				ps.setString(2, "b");
-				ps.setInt(3, ((i+1) % NUM_RESTAURANTS)+1);
-				ps.execute();
-				if (i%10000 == 0) System.out.println(i);
-			}
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	protected void createAndFillDatabase(int port) {}
 	
 	private void setDatabasePageSize(IComponentInstance component, int port) {
 		String dbPageSizeStr = component.getParameterValue(DATABASE_PAGE_SIZE);
@@ -102,8 +122,8 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 
 	@Override
 	protected String getDbDirectory(int port) {
-		String derbyHome = System.getenv("DERBY_HOME");
-		return derbyHome + "/bin";
+		//String derbyHome = System.getenv("DERBY_HOME");
+		return directories.get(port);
 	}
 
 	@Override
@@ -154,8 +174,8 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	
 	@Override
 	protected String getConnectionString (int port) {
-		String dbName = dbNames.get(port);
-		String dbUrl = String.format("jdbc:derby://localhost:%d/%s;create=true", port, dbName);
+		String directory = directories.get(port);
+		String dbUrl = String.format("jdbc:derby://localhost:%d/%s", port, "employees");
 		return dbUrl;
 	}
 	
