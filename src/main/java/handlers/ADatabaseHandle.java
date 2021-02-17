@@ -137,8 +137,8 @@ public abstract class ADatabaseHandle implements IDatabase {
 					processes.put(port, process);
 					InputStream inStream = process.getInputStream();
 					InputStream errStream = process.getErrorStream();
-					//inStream.close();
-					ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(3);
+					inStream.close();
+					/*ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(3);
 					executor.submit(new Runnable(){
 						public void run() {
 							try {
@@ -168,8 +168,8 @@ public abstract class ADatabaseHandle implements IDatabase {
 								e.printStackTrace();
 							}
 						}
-					});
-					//errStream.close();
+					});*/
+					errStream.close();
 					Connection conn = null;
 					// tries multiple connections to database
 					for(int i = 0; i < MAX_CONNECTION_RETRIES && conn == null; ++i) {
