@@ -153,8 +153,8 @@ public abstract class ADatabaseHandle implements IDatabase {
 								e.printStackTrace();
 							}
 						}
-					});
-					executor.submit(new Runnable(){
+					});*/
+					/*executor.submit(new Runnable(){
 						public void run() {
 							try {
 								BufferedReader br = new BufferedReader(new InputStreamReader(errStream));
@@ -253,8 +253,8 @@ public abstract class ADatabaseHandle implements IDatabase {
 				String dbUrl = getConnectionString(port);
 				conn = DriverManager.getConnection(dbUrl);	
 			} catch (SQLException e1) {
-				e1.printStackTrace();
-				System.out.println(String.format("Error in port %d", port));
+				//e1.printStackTrace();
+				System.out.println(String.format("Could not connect to port %d", port));
 				conn = null;
 			}
 		//}
