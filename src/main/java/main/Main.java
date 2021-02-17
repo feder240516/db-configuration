@@ -28,6 +28,7 @@ import handlers.ApacheDerbyHandler;
 import handlers.MariaDBHandler;
 import handlers.MySQLHandler;
 import handlers.PostgreSQLHandle;
+import handlers.PostgreSQLHandle;
 import helpers.TestDescription;
 
 public class Main {
@@ -67,12 +68,13 @@ public class Main {
 		Map<String, List<IComponentInstance>> reqInterfaces2 = new HashMap<>(); 
 		IComponentInstance i2 = new ComponentInstance(comp2, parameterValues2, reqInterfaces2);
 		
-		ADatabaseHandle handler = new PostgreSQLHandle(new int[]{3800}, 1, td);
+		//ADatabaseHandle handler = new PostgreSQLHandle(new int[]{3800}, 1, td);
 		//Double score = handler.benchmarkQuery(i1);
 		//System.out.println("Score: " + score);
 		
-		/*MariaDBHandler handler = new MariaDBHandler(new int[]{3307, 3308, 3309}, td, 3);
-		Double score = handler.benchmarkQuery(i1);
+		//MariaDBHandler handler = new MariaDBHandler(new int[]{3307, 3308, 3309}, td, 3);
+		MySQLHandler handler = new MySQLHandler(new int[]{3313, 3314, 3315}, td, 3);
+		/*Double score = handler.benchmarkQuery(i1);
 		System.out.println("Score: " + score);*/
 		
 

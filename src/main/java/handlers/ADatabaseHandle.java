@@ -137,8 +137,8 @@ public abstract class ADatabaseHandle implements IDatabase {
 					processes.put(port, process);
 					InputStream inStream = process.getInputStream();
 					InputStream errStream = process.getErrorStream();
-					//inStream.close();
-					ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(3);
+					inStream.close();
+					/*ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(3);
 					executor.submit(new Runnable(){
 						public void run() {
 							try {
@@ -153,8 +153,8 @@ public abstract class ADatabaseHandle implements IDatabase {
 								e.printStackTrace();
 							}
 						}
-					});
-					executor.submit(new Runnable(){
+					});*/
+					/*executor.submit(new Runnable(){
 						public void run() {
 							try {
 								BufferedReader br = new BufferedReader(new InputStreamReader(errStream));
@@ -168,8 +168,8 @@ public abstract class ADatabaseHandle implements IDatabase {
 								e.printStackTrace();
 							}
 						}
-					});
-					//errStream.close();
+					});*/
+					errStream.close();
 					Connection conn = null;
 					// tries multiple connections to database
 					for(int i = 0; i < MAX_CONNECTION_RETRIES && conn == null; ++i) {
@@ -253,8 +253,8 @@ public abstract class ADatabaseHandle implements IDatabase {
 				String dbUrl = getConnectionString(port);
 				conn = DriverManager.getConnection(dbUrl);	
 			} catch (SQLException e1) {
-				e1.printStackTrace();
-				System.out.println(String.format("Error in port %d", port));
+				//e1.printStackTrace();
+				System.out.println(String.format("Could not connect to port %d", port));
 				conn = null;
 			}
 		//}
