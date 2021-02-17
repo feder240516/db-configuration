@@ -31,18 +31,8 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	String instancesPath = System.getenv("DERBY_HOME") + "/db/instances";
 	String baseDataPath = System.getenv("DERBY_HOME") + "/db/data";
 	
-	public ApacheDerbyHandler(int allowedThreads, TestDescription testDescription) {
-		super(1527,allowedThreads,testDescription);
-		initHandler();
-	}
-	
-	public ApacheDerbyHandler(int[] portsToUse, int allowedThreads, TestDescription testDescription) {
+	public ApacheDerbyHandler(int[] portsToUse, TestDescription testDescription, int allowedThreads) {
 		super(portsToUse,allowedThreads,testDescription);
-		initHandler();
-	}
-	
-	public ApacheDerbyHandler(int port, int numberOfPorts,int allowedThreads, TestDescription testDescription) {
-		super(port,numberOfPorts,allowedThreads,testDescription);
 		initHandler();
 	}
 	

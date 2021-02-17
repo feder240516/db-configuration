@@ -12,7 +12,6 @@ import com.healthmarketscience.sqlbuilder.Query;
 import ai.libs.jaicore.components.api.IComponentInstance;
 
 public class TestDescription {
-	int testAmounts;
 	DescriptiveStatistics testResults;
 	public TreeMap<Integer,List<Query>> queries;
 	

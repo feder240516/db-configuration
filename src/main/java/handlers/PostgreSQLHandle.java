@@ -21,18 +21,8 @@ public static final String DATABASE_PAGE_SIZE = "DATABASE_PAGE_SIZE";
 	String instancesPath = "D:\\Bibliotecas\\Documents\\_Programming_Assets\\Postgresql\\instances";
 	String baseDataPath = "D:\\Bibliotecas\\Documents\\_Programming_Assets\\Postgresql\\data";
 	
-	public PostgreSQLHandle(int allowedThreads, TestDescription testDescription) {
-		super(1527,allowedThreads,testDescription);
-		initHandler();
-	}
-	
-	public PostgreSQLHandle(int[] portsToUse, int allowedThreads, TestDescription testDescription) {
+	public PostgreSQLHandle(int[] portsToUse, TestDescription testDescription, int allowedThreads) {
 		super(portsToUse,allowedThreads,testDescription);
-		initHandler();
-	}
-	
-	public PostgreSQLHandle(int port, int numberOfPorts,int allowedThreads, TestDescription testDescription) {
-		super(port,numberOfPorts,allowedThreads,testDescription);
 		initHandler();
 	}
 	
@@ -89,8 +79,6 @@ public static final String DATABASE_PAGE_SIZE = "DATABASE_PAGE_SIZE";
 		System.out.println(String.format("Running in port %d", port));
 		if (postgresqlHome == null || postgresqlHome.equals("")) throw new RuntimeException("Environment Var postgresqlHome must be configured to test PostgreSQL");
 		String[] comandoArray = {"\"" + postgresqlHome + "/bin/pg_ctl" + "\"", "-D", directories.get(port), "-l", directories.get(port) + "/log.txt", "-o", String.format("\"-F -p %d\"", port), "start"};
-		System.out.print("Comando: ");
-		for(String s: comandoArray) { System.out.print(s + " "); }
 		return comandoArray;
 	}
 
@@ -112,10 +100,6 @@ public static final String DATABASE_PAGE_SIZE = "DATABASE_PAGE_SIZE";
 			if (conn != null && !conn.isClosed()) conn.close();
 			String postgresqlHome = System.getenv("POSTGRESQL_HOME");
 			String[] comandoArray = {postgresqlHome + "/bin/pg_ctl", "-D", directories.get(port), "-l", directories.get(port) + "/log.txt", String.format("-o \"-F -p %d\"", port), "stop"};
-			System.out.println(String.format("Detener puerto %d:",port));
-			for(String s: comandoArray) {
-				System.out.print(s + " ");
-			}
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
 			processBuilder.start().waitFor();
 			

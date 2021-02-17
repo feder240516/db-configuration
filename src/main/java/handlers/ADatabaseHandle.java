@@ -67,7 +67,6 @@ public abstract class ADatabaseHandle implements IDatabase {
 		initHandler(allowedThreads, testDescription);
 	}
 	
-	
 	private void initHandler(int allowedThreads, TestDescription testDescription) {
 		if(portsToUse == null || portsToUse.length == 0) throw new IllegalArgumentException("Database Handle cannot be initialized without an array of ports to be used.");
 		if(allowedThreads <= 0) throw new IllegalArgumentException("allowedThreads must be a positive value");
@@ -128,7 +127,6 @@ public abstract class ADatabaseHandle implements IDatabase {
 			String[] comandoArray = getStartCommand(component, port);
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
 			processBuilder.directory(new File(getDbDirectory(port)));
-			System.out.println(String.format("Iniciando desde directorio %s", getDbDirectory(port)));
 			
 			Process process = null;
 			while(process == null || !process.isAlive()) {
@@ -138,57 +136,24 @@ public abstract class ADatabaseHandle implements IDatabase {
 					InputStream inStream = process.getInputStream();
 					InputStream errStream = process.getErrorStream();
 					inStream.close();
-					/*ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(3);
-					executor.submit(new Runnable(){
-						public void run() {
-							try {
-								BufferedReader br = new BufferedReader(new InputStreamReader(inStream));
-								String line;
-								while((line = br.readLine()) != null) {
-									System.out.println("--------> " + line + " PORT: " + port);
-								}
-								br.close();
-								System.out.println("-------->" + " STREAM CERRADO: " + port);
-							} catch( IOException e) {
-								e.printStackTrace();
-							}
-						}
-					});*/
-					/*executor.submit(new Runnable(){
-						public void run() {
-							try {
-								BufferedReader br = new BufferedReader(new InputStreamReader(errStream));
-								String line;
-								while((line = br.readLine()) != null) {
-									System.err.println("--------> " + line + " PORT: " + port);
-								}
-								br.close();
-								System.err.println("-------->" + " STREAM CERRADO: " + port);
-							} catch( IOException e) {
-								e.printStackTrace();
-							}
-						}
-					});*/
 					errStream.close();
 					Connection conn = null;
 					// tries multiple connections to database
 					for(int i = 0; i < MAX_CONNECTION_RETRIES && conn == null; ++i) {
-						if (i != 0) { TimeUnit.SECONDS.sleep(5); } // wait 5 seconds to allow server to initiate
-						System.out.println("Trying to establish a connection... on port " + port);
-						
+						TimeUnit.SECONDS.sleep(5); // wait 5 seconds to allow server to initiate
+						//System.out.println("Trying to establish a connection... on port " + port);
 						conn = getConnection(port);
 					}
 					if (conn != null && !conn.isClosed()) {
-						createAndFillDatabase(port);
 						setupInitedDB(component, port);
-						System.out.println("Server has been inited on port " + port);
+						//System.out.println("Server has been inited on port " + port);
 					} else {
 						throw new SQLException(String.format("Could not connect to database after %d tries",MAX_CONNECTION_RETRIES));
 					}
 				} catch (IOException | SQLException | InterruptedException e) {
 					System.out.println("Could not connect to port " + port + " ... Restarting process");
-					throw e;
-					//e.printStackTrace();
+					// throw e;
+					// e.printStackTrace();
 				}
 			}
 		
@@ -202,8 +167,8 @@ public abstract class ADatabaseHandle implements IDatabase {
 		try {
 			port = initiateServer(instance);
 		} catch (IOException | SQLException | InterruptedException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
+			port = 0;
 		}
 		double score = 0;
 		if (port == 0) {

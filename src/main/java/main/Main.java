@@ -10,6 +10,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+
 import com.healthmarketscience.sqlbuilder.InsertQuery;
 import com.healthmarketscience.sqlbuilder.SelectQuery;
 import com.healthmarketscience.sqlbuilder.dbspec.Column;
@@ -30,6 +32,7 @@ import handlers.MySQLHandler;
 import handlers.PostgreSQLHandle;
 import handlers.PostgreSQLHandle;
 import helpers.TestDescription;
+import managers.Benchmarker;
 
 public class Main {
 
@@ -60,7 +63,6 @@ public class Main {
 		parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "45");
 		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);
-		
 
 		IComponent comp2 = new Component("MySQL");
 		Map<String, String> parameterValues2 = new HashMap<>();
@@ -68,46 +70,15 @@ public class Main {
 		Map<String, List<IComponentInstance>> reqInterfaces2 = new HashMap<>(); 
 		IComponentInstance i2 = new ComponentInstance(comp2, parameterValues2, reqInterfaces2);
 		
-		//ADatabaseHandle handler = new PostgreSQLHandle(new int[]{3800}, 1, td);
-		//Double score = handler.benchmarkQuery(i1);
-		//System.out.println("Score: " + score);
+		IComponent comp3 = new Component("PostgreSQL");
+		Map<String, String> parameterValues3 = new HashMap<>();
+		parameterValues2.put("OPTIMIZER_SEARCH_DEPTH", "45");
+		Map<String, List<IComponentInstance>> reqInterfaces3 = new HashMap<>(); 
+		IComponentInstance i3 = new ComponentInstance(comp3, parameterValues3, reqInterfaces3);
 		
-		//MariaDBHandler handler = new MariaDBHandler(new int[]{3307, 3308, 3309}, td, 3);
-		MySQLHandler handler = new MySQLHandler(new int[]{3313, 3314, 3315}, td, 3);
-		/*Double score = handler.benchmarkQuery(i1);
-		System.out.println("Score: " + score);*/
-		
-
-		
-		ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(20);
-		List<Callable<Double>> taskList = new ArrayList<>();
-		for(int i = 0; i < 3; i++) {
-			Callable<Double> task = new Callable<Double>() {
-				public Double call() {
-					try {
-						return handler.benchmarkQuery(i1);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-						return Double.MAX_VALUE;
-					}
-					
-				}
-			};
-	        taskList.add(task);
-		}
-		
-        List<Future<Double>> resultList = null;
- 
-        try {
-            resultList = executor.invokeAll(taskList);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        executor.shutdown();
-        
-        for(Future<Double> result: resultList) {
-        	System.out.println("Score: " + result.get());
-        }
+		Benchmarker benchmarker = new Benchmarker();
+		DescriptiveStatistics stats = benchmarker.benchmark(i3, td, 3, 3);
+		System.out.println(String.format("Mean of test: %f",stats.getMean()));
 	}
 
 }
