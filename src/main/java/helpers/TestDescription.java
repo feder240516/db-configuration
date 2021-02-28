@@ -14,10 +14,13 @@ import ai.libs.jaicore.components.api.IComponentInstance;
 public class TestDescription {
 	DescriptiveStatistics testResults;
 	public TreeMap<Integer,List<Query>> queries;
+	public int numberOfTests;
+	
 	
 	public TestDescription(IComponentInstance component) {
 		testResults = new DescriptiveStatistics();
 		queries = new TreeMap<>();
+		this.numberOfTests = 1;
 	}
 	
 	public void addQuery(int priority, Query query) {

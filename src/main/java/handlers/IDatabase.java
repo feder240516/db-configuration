@@ -11,4 +11,5 @@ public interface IDatabase {
 	public void stopServer(int port);
 	public double benchmarkQuery(IComponentInstance instance) throws InterruptedException;
 	public Connection getConnection(int port);
+	public void cleanup();
 }

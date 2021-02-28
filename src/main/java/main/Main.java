@@ -76,9 +76,10 @@ public class Main {
 		Map<String, List<IComponentInstance>> reqInterfaces3 = new HashMap<>(); 
 		IComponentInstance i3 = new ComponentInstance(comp3, parameterValues3, reqInterfaces3);
 		
-		Benchmarker benchmarker = new Benchmarker();
-		DescriptiveStatistics stats = benchmarker.benchmark(i3, td, 3, 3);
-		System.out.println(String.format("Mean of test: %f",stats.getMean()));
+		Benchmarker benchmarker = new Benchmarker(td, 10);
+		
+		double results = benchmarker.benchmark(i3);
+		//System.out.println(String.format("Mean of test: %f",stats.getMean()));
 	}
 
 }

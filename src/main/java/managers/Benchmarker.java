@@ -10,6 +10,7 @@ import java.util.concurrent.Future;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
+import EDU.oswego.cs.dl.util.concurrent.Semaphore;
 import ai.libs.jaicore.components.api.IComponentInstance;
 import handlers.ADatabaseHandle;
 import helpers.TestDescription;
@@ -39,11 +40,22 @@ class TestExecutor implements Callable<Double>{
 }
 
 public class Benchmarker {
-	public DescriptiveStatistics benchmark(IComponentInstance componentInstance, TestDescription test, int numberOfTests, int maxThreads) throws InterruptedException, ExecutionException {
-		ADatabaseHandle dbHandle = DBSystemFactory.createHandle(componentInstance, test, maxThreads);
+	TestDescription test;
+	Semaphore semaphore;
+	public Benchmarker(TestDescription test, int maxThreads) {
+		semaphore = new Semaphore(maxThreads);
+		this.test = test;
+		
+		
+	}
+	
+	public double benchmark(IComponentInstance componentInstance) throws InterruptedException, ExecutionException {
+		semaphore.acquire();
+		
+		ADatabaseHandle dbHandle = DBSystemFactory.createHandle(componentInstance, test);
 		ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(20);
 		List<Callable<Double>> taskList = new ArrayList<>();
-		for(int i = 0; i < numberOfTests; i++) {
+		for(int i = 0; i < test.numberOfTests; i++) {
 			Callable<Double> task = new TestExecutor(dbHandle,test, componentInstance);
 	        taskList.add(task);
 		}
@@ -60,6 +72,7 @@ public class Benchmarker {
         	System.out.println("Score: " + value);
         }
         
-        return stats;
+        semaphore.release();
+        return stats.getMean();
 	}
 }

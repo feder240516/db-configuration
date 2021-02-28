@@ -191,4 +191,10 @@ public class MySQLHandler extends ADatabaseHandle{
 		return dbUrl;
 	}
 
+	@Override
+	public void cleanup() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

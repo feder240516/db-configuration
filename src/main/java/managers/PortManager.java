@@ -10,21 +10,21 @@ import helpers.Port;
 
 public class PortManager {
 	
-	/*private static PortManager _instance = new PortManager();
+	private static PortManager _instance = new PortManager();
 	public static PortManager getInstance() {
 		return _instance;
-	}*/
+	}
 	
-	private static Map<Integer,Port> ports = new HashMap<>();
-	private static int[] portsNumbers;
+	private Map<Integer,Port> ports = new HashMap<>();
+	private int[] portsNumbers;
 	
-	public static void setupAvailablePorts(int[] newPorts) {
+	public void setupAvailablePorts(int[] newPorts) {
 		for(int port: newPorts) {
 			if (!ports.containsKey(port)) { ports.put(port,new Port(port)); }
 		}
 	}
 	
-	public static synchronized int acquireAnyPort() throws UnavailablePortsException {
+	public synchronized int acquireAnyPort() throws UnavailablePortsException {
 		for(Port port: ports.values()) {
 			if (port.available) {
 				port.available = false;
@@ -34,7 +34,7 @@ public class PortManager {
 		throw new UnavailablePortsException("There are no available ports");
 	}
 	
-	public static synchronized void releasePort(int port) {
+	public synchronized void releasePort(int port) {
 		ports.get(port).available = true;
 	}
 }

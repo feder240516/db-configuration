@@ -124,4 +124,10 @@ public static final String DATABASE_PAGE_SIZE = "DATABASE_PAGE_SIZE";
 		String dbUrl = String.format("jdbc:postgresql://localhost:%d/%s?user=%s&password=%s", port, "employees", "feder", "root");
 		return dbUrl;
 	}
+
+	@Override
+	public void cleanup() {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -168,5 +168,11 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 		String dbUrl = String.format("jdbc:derby://localhost:%d/%s", port, "employees");
 		return dbUrl;
 	}
+
+	@Override
+	public void cleanup() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

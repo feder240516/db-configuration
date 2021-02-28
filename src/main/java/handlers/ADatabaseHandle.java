@@ -30,15 +30,16 @@ public abstract class ADatabaseHandle implements IDatabase {
 
 	List<String> queries = Arrays.asList("","");
 	protected int MAX_CONNECTION_RETRIES = 3;
-	protected int MAX_ALLOWED_PORTS;
+	//protected int MAX_ALLOWED_PORTS;
 	protected int allowedThreads;
-	protected int[] portsToUse;
-	protected HashMap<Integer, Boolean> _usedPorts; // var to check which ports are being used
+	//protected int[] portsToUse;
+	//protected HashMap<Integer, Boolean> _usedPorts; // var to check which ports are being used
 	protected int _nextPortOffset;
 	protected HashMap<Integer, Process> processes = new HashMap<>();
 	protected HashMap<Integer, Connection> connections = new HashMap<>();
 	protected TestDescription testDescription;
 	protected Semaphore semaphore;
+	protected IComponentInstance componentInstance;
 	
 	/**
 	 * Create a database handle allowing to use specified port and next 9 ports.
