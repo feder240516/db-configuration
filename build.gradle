@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'eclipse-wtp'
 }
-
+  
 sourceSets {
     main {
         java {
@@ -38,7 +38,7 @@ dependencies {
 	//runtime group: 'org.apache.derby', name: 'derbyclient', version: '10.15.2.0'
 	// https://mvnrepository.com/artifact/org.apache.derby/derby
 	testCompile group: 'org.apache.derby', name: 'derby', version: '10.15.2.0'
-	
+	implementation 'org.hsqldb:hsqldb:2.5.0'
     
     // https://mvnrepository.com/artifact/com.healthmarketscience.sqlbuilder/sqlbuilder
 	compile group: 'com.healthmarketscience.sqlbuilder', name: 'sqlbuilder', version: '3.0.1'
@@ -51,6 +51,11 @@ dependencies {
 	
 	
 	implementation 'org.jooq:jooq:3.14.7'
+    
+    compile group: 'com.h2database', name: 'h2', version: '1.4.199'
+    
+    compile("com.h2database:h2")
+
 }
 
  

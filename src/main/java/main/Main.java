@@ -1,5 +1,10 @@
 package main;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +32,7 @@ import ai.libs.jaicore.components.model.Component;
 import ai.libs.jaicore.components.model.ComponentInstance;
 import handlers.ADatabaseHandle;
 import handlers.ApacheDerbyHandler;
+import handlers.HSQLDBHandle;
 import handlers.MariaDBHandler;
 import handlers.MySQLHandler;
 import handlers.PostgreSQLHandle;
@@ -76,6 +82,8 @@ public class Main {
 		Map<String, List<IComponentInstance>> reqInterfaces3 = new HashMap<>(); 
 		IComponentInstance i3 = new ComponentInstance(comp3, parameterValues3, reqInterfaces3);
 		
+		HSQLDBHandle handler = new HSQLDBHandle(new int[]{9902, 9903, 9904}, td, 3);
+	
 		Benchmarker benchmarker = new Benchmarker(td, 10);
 		
 		double results = benchmarker.benchmark(i3);
