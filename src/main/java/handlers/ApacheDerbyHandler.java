@@ -20,6 +20,7 @@ import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 
 import ai.libs.jaicore.components.api.IComponentInstance;
+import exceptions.UnavailablePortsException;
 import helpers.TestDescription;
 
 public class ApacheDerbyHandler extends ADatabaseHandle {
@@ -31,17 +32,23 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	String instancesPath = System.getenv("DERBY_HOME") + "/db/instances";
 	String baseDataPath = System.getenv("DERBY_HOME") + "/db/data";
 	
-	public ApacheDerbyHandler(int[] portsToUse, TestDescription testDescription, int allowedThreads) {
+	/*public ApacheDerbyHandler(int[] portsToUse, TestDescription testDescription, int allowedThreads) {
 		super(portsToUse,allowedThreads,testDescription);
 		initHandler();
+	}*/
+	
+	public ApacheDerbyHandler(IComponentInstance ci) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
+		super(ci);
+		//initHandler();
+		createDBInstance();
 	}
 	
-	private void initHandler() {
+	/*private void initHandler() {
 		// dbNames = new HashMap<>();
-		initInstances(this.portsToUse);
-	}
+		
+	}*/
 	
-	protected void initInstances(int[] portsToUse) {
+	/*protected void initInstances(int[] portsToUse) {
 		File instancesDir = new File(instancesPath);
 		
 		if (!instancesDir.exists()) instancesDir.mkdirs();
@@ -63,9 +70,9 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 				createDBInstance(port);
 			}
 		}
-	}
+	}*/
 	
-	public void createDBInstance(int port) {
+	public void createDBInstance() {
 		File dataDir = new File(baseDataPath);
 		
 		String instancePath = instancesPath + "/" + UUID.randomUUID();
@@ -81,16 +88,14 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	}
 	
 	@Override
-	protected void createAndFillDatabase(int port) {}
+	protected void createAndFillDatabase() {}
 	
 	private void setDatabasePageSize(IComponentInstance component, int port) {
 		String dbPageSizeStr = component.getParameterValue(DATABASE_PAGE_SIZE);
 		if (dbPageSizeStr == null) return;
-		Connection conn = getConnection(port);
-		
-		try(CallableStatement cs = 
+		try(Connection conn = getConnection();
+				CallableStatement cs = 
 				  conn.prepareCall("CALL SYSCS_UTIL.SYSCS_SET_DATABASE_PROPERTY(?, ?)");){
-
 			cs.setString(1, "derby.storage.pageSize"); 
 			cs.setString(2, dbPageSizeStr); 
 			cs.execute(); 
@@ -124,7 +129,7 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	@Override
 	public void stopServer(int port) {
 		System.out.println("Stopping server");
-		Connection conn = getConnection(port);
+		Connection conn = getConnection();
 		try {
 			if (conn != null && !conn.isClosed()) conn.close();
 			String derbyHome = System.getenv("DERBY_HOME");
@@ -163,7 +168,7 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	}
 	
 	@Override
-	protected String getConnectionString (int port) {
+	protected String getConnectionString () {
 		String directory = directories.get(port);
 		String dbUrl = String.format("jdbc:derby://localhost:%d/%s", port, "employees");
 		return dbUrl;
