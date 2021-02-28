@@ -27,6 +27,7 @@ import ai.libs.jaicore.components.api.IComponentInstance;
 import exceptions.UnavailablePortsException;
 import helpers.TestDescription;
 import managers.PortManager;
+import scala.NotImplementedError;
 
 public abstract class ADatabaseHandle implements IDatabase {
 
@@ -141,6 +142,10 @@ public abstract class ADatabaseHandle implements IDatabase {
 			}
 		//}
 		return conn;
+	}
+	
+	public void cleanup() {
+		throw new NotImplementedError();
 	}
 	
 	

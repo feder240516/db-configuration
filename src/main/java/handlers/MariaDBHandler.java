@@ -202,10 +202,4 @@ public class MariaDBHandler extends ADatabaseHandle {
 		return directories.get(port);
 	}
 
-	@Override
-	public void cleanup() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
