@@ -18,7 +18,7 @@ public class TestDescription {
 	public int numberOfTests;
 	
 	
-	public TestDescription(IComponentInstance component, List<Query> schemaQueries) {
+	public TestDescription(List<Query> schemaQueries) {
 		testResults = new DescriptiveStatistics();
 		queries = new TreeMap<>();
 		this.numberOfTests = 1;
