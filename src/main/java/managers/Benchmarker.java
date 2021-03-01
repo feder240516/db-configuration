@@ -60,15 +60,17 @@ public class Benchmarker {
 		double score = 0;
 		ADatabaseHandle dbHandle = DBSystemFactory.createHandle(componentInstance, test);
 		try {
-			for(List<Query> lq: test.queries.values()) {
-				if (lq.size() == 1) {
-					dbHandle.initiateServer();
-					score += dbHandle.benchmarkQuery(lq.get(0));
-					dbHandle.stopServer();
-				}else {
-					// TODO: Handle multiple concurrent queries
-					throw new UnsupportedOperationException();
+			for(int i = 0; i < test.numberOfTests; ++i) {
+				dbHandle.initiateServer();
+				for(List<Query> lq: test.queries.values()) {
+					if (lq.size() == 1) {
+						score += dbHandle.benchmarkQuery(lq.get(0));
+					}else {
+						// TODO: Handle multiple concurrent queries
+						throw new UnsupportedOperationException();
+					}
 				}
+				dbHandle.stopServer();
 			}
 		} catch (IOException | SQLException | InterruptedException | UnavailablePortsException e) {
 			e.printStackTrace();

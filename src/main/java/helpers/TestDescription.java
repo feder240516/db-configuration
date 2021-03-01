@@ -14,10 +14,11 @@ import ai.libs.jaicore.components.api.IComponentInstance;
 public class TestDescription {
 	DescriptiveStatistics testResults;
 	public TreeMap<Integer,List<Query>> queries;
+	public List<Query> schemaBuildQueries;
 	public int numberOfTests;
 	
 	
-	public TestDescription(IComponentInstance component) {
+	public TestDescription(IComponentInstance component, List<Query> schemaQueries) {
 		testResults = new DescriptiveStatistics();
 		queries = new TreeMap<>();
 		this.numberOfTests = 1;
@@ -31,6 +32,23 @@ public class TestDescription {
 			List<Query> list = new ArrayList<Query>();
 			list.add(query);
 			queries.put(priority, list);
+		}
+	}
+	
+	private int getMaxPriority() {
+		if(queries.isEmpty()) return 0;
+		else return queries.lastKey();
+	}
+	
+	public void addIndividualQuery(Query query) {
+		int newPriority = getMaxPriority() + 1;
+		addQuery(newPriority, query);
+	}
+	
+	public void addConcurrentQueries(List<Query> queries) {
+		int newPriority = getMaxPriority() + 1;
+		for (Query query: queries) {
+			addQuery(newPriority, query);
 		}
 	}
 	
