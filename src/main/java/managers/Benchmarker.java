@@ -1,5 +1,7 @@
 package managers;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -9,9 +11,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.xml.utils.UnImplNode;
+
+import com.healthmarketscience.sqlbuilder.Query;
 
 import EDU.oswego.cs.dl.util.concurrent.Semaphore;
 import ai.libs.jaicore.components.api.IComponentInstance;
+import exceptions.UnavailablePortsException;
 import handlers.ADatabaseHandle;
 import helpers.TestDescription;
 
@@ -51,9 +57,25 @@ public class Benchmarker {
 	
 	public double benchmark(IComponentInstance componentInstance) throws InterruptedException, ExecutionException {
 		semaphore.acquire();
-		
+		double score = 0;
 		ADatabaseHandle dbHandle = DBSystemFactory.createHandle(componentInstance, test);
-		ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(20);
+		try {
+			for(List<Query> lq: test.queries.values()) {
+				if (lq.size() == 1) {
+					dbHandle.initiateServer();
+					score += dbHandle.benchmarkQuery(lq.get(0));
+					dbHandle.stopServer();
+				}else {
+					// TODO: Handle multiple concurrent queries
+					throw new UnsupportedOperationException();
+				}
+			}
+		} catch (IOException | SQLException | InterruptedException | UnavailablePortsException e) {
+			e.printStackTrace();
+			score = Double.MAX_VALUE;
+		}
+		dbHandle.cleanup();
+		/*ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(20);
 		List<Callable<Double>> taskList = new ArrayList<>();
 		for(int i = 0; i < test.numberOfTests; i++) {
 			Callable<Double> task = new TestExecutor(dbHandle,test, componentInstance);
@@ -70,9 +92,9 @@ public class Benchmarker {
         	double value = result.get();
         	stats.addValue(value);
         	System.out.println("Score: " + value);
-        }
+        }*/
         
         semaphore.release();
-        return stats.getMean();
+        return score;
 	}
 }

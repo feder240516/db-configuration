@@ -39,59 +39,13 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	
 	public ApacheDerbyHandler(IComponentInstance ci) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
 		super(ci);
-		//initHandler();
-		createDBInstance();
-	}
-	
-	/*private void initHandler() {
-		// dbNames = new HashMap<>();
-		
-	}*/
-	
-	/*protected void initInstances(int[] portsToUse) {
-		File instancesDir = new File(instancesPath);
-		
-		if (!instancesDir.exists()) instancesDir.mkdirs();
-		
-		String[] instances = instancesDir.list();
-		int numberOfInstances = instances.length;
-		
-		for(int i = 0; i < numberOfInstances; i++){
-			for(int port: portsToUse) {
-				if(!directories.containsKey(port)) { 
-					directories.put(port, instancesDir.getPath() + "/" + instances[i]); 
-					break;
-				}
-			}
-		}
-		
-		for(int port: portsToUse) {
-			if(!directories.containsKey(port)) { 
-				createDBInstance(port);
-			}
-		}
-	}*/
-	
-	public void createDBInstance() {
-		File dataDir = new File(baseDataPath);
-		
-		String instancePath = instancesPath + "/" + UUID.randomUUID();
-		File destDir = new File(instancePath);
-		
-		try {
-		    FileUtils.copyDirectory(dataDir, destDir);
-		    directories.put(port, instancePath);
-		    System.out.println("The instance " + instancePath + " on port " + port + " was created");
-		} catch (IOException e) {
-		    e.printStackTrace();
-		}
 	}
 	
 	@Override
 	protected void createAndFillDatabase() {}
 	
-	private void setDatabasePageSize(IComponentInstance component, int port) {
-		String dbPageSizeStr = component.getParameterValue(DATABASE_PAGE_SIZE);
+	private void setDatabasePageSize() {
+		String dbPageSizeStr = componentInstance.getParameterValue(DATABASE_PAGE_SIZE);
 		if (dbPageSizeStr == null) return;
 		try(Connection conn = getConnection();
 				CallableStatement cs = 
@@ -107,7 +61,7 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	}
 
 	@Override
-	protected String[] getStartCommand(IComponentInstance component, int port) {
+	protected String[] getStartCommand() {
 		String derbyHome = System.getenv("DERBY_HOME");
 		System.out.println(String.format("Running in port %d", port));
 		if (derbyHome == null || derbyHome.equals("")) throw new RuntimeException("Environment Var DERBY_HOME must be configured to test apache derby");
@@ -116,39 +70,27 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	}
 
 	@Override
-	protected String getDbDirectory(int port) {
+	protected String getDbDirectory() {
 		//String derbyHome = System.getenv("DERBY_HOME");
 		return directories.get(port);
 	}
 
 	@Override
-	protected void setupInitedDB(IComponentInstance component, int port) {
-		setDatabasePageSize(component, port);
+	protected void setupInitedDB() {
+		setDatabasePageSize();
 	}
 
 	@Override
-	public void stopServer(int port) {
+	public void stopServer() {
 		System.out.println("Stopping server");
-		Connection conn = getConnection();
 		try {
-			if (conn != null && !conn.isClosed()) conn.close();
 			String derbyHome = System.getenv("DERBY_HOME");
 			String[] comandoArray = {derbyHome + "/bin/stopNetworkServer.bat", "-p", String.valueOf(port)};
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
 			processBuilder.start().waitFor();
 			
-		} catch (IOException | SQLException | InterruptedException e) {
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
-		}
-	}
-
-	@Override
-	protected String getQueryCommand(int numTest) {
-		switch(numTest) {
-		case 1:
-			return "select * from restaurants join workers on restaurants.id = workers.restid";
-		default:
-			throw new RuntimeException("Test inexistente");
 		}
 	}
 
@@ -170,14 +112,19 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	@Override
 	protected String getConnectionString () {
 		String directory = directories.get(port);
-		String dbUrl = String.format("jdbc:derby://localhost:%d/%s", port, "employees");
+		String dbUrl = String.format("jdbc:derby://localhost:%d/%s", port, "db");
 		return dbUrl;
 	}
 
 	@Override
-	public void cleanup() {
+	protected String getInstancesPath() {
+		return instancesPath;
+	}
+
+	@Override
+	protected String getBasePath() {
 		// TODO Auto-generated method stub
-		
+		return baseDataPath;
 	}
 	
 }
