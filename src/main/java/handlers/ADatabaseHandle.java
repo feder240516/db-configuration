@@ -79,8 +79,9 @@ public abstract class ADatabaseHandle implements IDatabase {
 			String[] comandoArray = getStartCommand();
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
 			processBuilder.directory(new File(createdInstancePath));
+			System.out.println("createdInstancePath: " + createdInstancePath);
 			process = null;
-			while(process == null || !process.isAlive()) {
+			while(process == null /*|| !process.isAlive()*/) {
 				Connection conn = null;
 				try {
 					this.process = processBuilder.start();
@@ -88,6 +89,8 @@ public abstract class ADatabaseHandle implements IDatabase {
 					InputStream errStream = process.getErrorStream();
 					inStream.close();
 					errStream.close();
+					
+					System.out.println("Server has been inited");
 					// tries multiple connections to database
 					for(int i = 0; i < MAX_CONNECTION_RETRIES && conn == null; ++i) {
 						TimeUnit.SECONDS.sleep(5); // wait 5 seconds to allow server to initiate
@@ -114,6 +117,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 	}
 	
 	public void createDBInstance() throws IOException {
+		System.out.println(getBasePath());
 		File dataDir = new File(getBasePath());
 		createdInstancePath = getInstancesPath() + "/" + UUID.randomUUID();
 		File destDir = new File(createdInstancePath);
@@ -153,6 +157,6 @@ public abstract class ADatabaseHandle implements IDatabase {
 	 * Delete instance from disk and free port
 	 */
 	public void cleanup() {
-		throw new NotImplementedError();
+		//throw new NotImplementedError();
 	}
 }

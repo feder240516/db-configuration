@@ -63,8 +63,8 @@ public class MariaDBHandler extends ADatabaseHandle {
 		String extraPath = "bin\\mysqld";
 		String MariaDBHome = System.getenv("MARIADB_HOME");
 		
-		String dataDir = createdInstancePath + "\\data";
-		String socketPath = createdInstancePath + "\\mysql.sock";
+		String dataDir = /*createdInstancePath +*/ createdInstancePath;
+		String socketPath = /*createdInstancePath +*/ createdInstancePath + ".\\mysql.sock";
 		
 		String mariadbPath = String.format("\"%s%s\"", MariaDBHome, extraPath);
 		
@@ -124,12 +124,12 @@ public class MariaDBHandler extends ADatabaseHandle {
 
 	@Override
 	protected String getInstancesPath() {
-		return instancesPath;
+		return "C:/Users/WIN/Desktop/MariaDB_Handler/instances";
 	}
 
 	@Override
 	protected String getBasePath() {
-		return baseDataPath;
+		return "C:/Users/WIN/Desktop/MariaDB_Handler/data";
 	}
 
 }
