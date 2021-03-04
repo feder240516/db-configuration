@@ -47,6 +47,7 @@ public class Benchmarker {
 				dbHandle.initiateServer();
 				for(List<Query> lq: test.queries.values()) {
 					if (lq.size() == 1) {
+						System.out.println(String.format("query: %s",lq.get(0).toString()));
 						score += dbHandle.benchmarkQuery(lq.get(0));
 					}else {
 						// TODO: Handle multiple concurrent queries
@@ -58,6 +59,7 @@ public class Benchmarker {
 		} catch (Exception e) {
 			e.printStackTrace();
 			score = Double.MAX_VALUE;
+			dbHandle.stopServer();
 		} finally {
 			if (dbHandle != null) { dbHandle.cleanup(); }
 			semaphore.release();

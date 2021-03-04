@@ -84,13 +84,17 @@ public abstract class ADatabaseHandle implements IDatabase {
 			while(process == null /*|| !process.isAlive()*/) {
 				Connection conn = null;
 				try {
-					this.process = processBuilder.start();
-					InputStream inStream = process.getInputStream();
-					InputStream errStream = process.getErrorStream();
-					inStream.close();
-					errStream.close();
-					
-					System.out.println("Server has been inited");
+					if (process == null) {
+						this.process = processBuilder.start();
+						InputStream inStream = process.getInputStream();
+						InputStream errStream = process.getErrorStream();
+						inStream.close();
+						errStream.close();
+						
+						System.out.println("Server has been inited");
+					} else {
+						System.out.println("Retry for process");
+					}
 					// tries multiple connections to database
 					for(int i = 0; i < MAX_CONNECTION_RETRIES && conn == null; ++i) {
 						TimeUnit.SECONDS.sleep(5); // wait 5 seconds to allow server to initiate

@@ -17,6 +17,11 @@ public class TestDescription {
 	public List<Query> schemaBuildQueries;
 	public int numberOfTests;
 	
+	public TestDescription() {
+		testResults = new DescriptiveStatistics();
+		queries = new TreeMap<>();
+		this.numberOfTests = 1;
+	}
 	
 	public TestDescription(List<Query> schemaQueries) {
 		testResults = new DescriptiveStatistics();

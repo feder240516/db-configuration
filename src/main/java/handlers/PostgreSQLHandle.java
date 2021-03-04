@@ -15,8 +15,8 @@ import exceptions.UnavailablePortsException;
 import helpers.TestDescription;
 
 public class PostgreSQLHandle extends ADatabaseHandle {
-	String instancesPath = "D:\\Bibliotecas\\Documents\\_Programming_Assets\\Postgresql\\instances";
-	String baseDataPath = "D:\\Bibliotecas\\Documents\\_Programming_Assets\\Postgresql\\data";
+	static String instancesPath = "D:\\Bibliotecas\\Documents\\_Programming_Assets\\Postgresql\\instances";
+	static String baseDataPath = "D:\\Bibliotecas\\Documents\\_Programming_Assets\\Postgresql\\data";
 	
 	public PostgreSQLHandle(IComponentInstance componentInstance) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
 		super(componentInstance);

@@ -29,8 +29,8 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	
 	// HashMap<Integer, String> dbNames;
 	HashMap<Integer, String> directories = new HashMap<>();
-	String instancesPath = System.getenv("DERBY_HOME") + "/db/instances";
-	String baseDataPath = System.getenv("DERBY_HOME") + "/db/data";
+	static String instancesPath = System.getenv("DERBY_HOME") + "/db/instances";
+	static String baseDataPath = System.getenv("DERBY_HOME") + "/db/data";
 	
 	/*public ApacheDerbyHandler(int[] portsToUse, TestDescription testDescription, int allowedThreads) {
 		super(portsToUse,allowedThreads,testDescription);
@@ -112,7 +112,7 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	@Override
 	protected String getConnectionString () {
 		String directory = directories.get(port);
-		String dbUrl = String.format("jdbc:derby://localhost:%d/%s", port, "db");
+		String dbUrl = String.format("jdbc:derby://localhost:%d/%s", port, "employees");
 		return dbUrl;
 	}
 

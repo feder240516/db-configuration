@@ -57,7 +57,7 @@ class DataProvider implements ArgumentsProvider {
 
 	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
-		String[] instances = {"MariaDB", "HSQLDB"};
+		String[] instances = {"PostgreSQL", "HSQLDB", "MariaDB", "ApacheDerby"};
 		List<Query> queries = getQueries();
 		
 		List<Arguments> args = new ArrayList<Arguments>();
