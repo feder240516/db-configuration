@@ -21,12 +21,17 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.jooq.DatePart;
 
 import com.healthmarketscience.sqlbuilder.BinaryCondition;
+import com.healthmarketscience.sqlbuilder.CustomSql;
 import com.healthmarketscience.sqlbuilder.ExtractExpression;
+import com.healthmarketscience.sqlbuilder.FunctionCall;
 import com.healthmarketscience.sqlbuilder.InsertQuery;
+import com.healthmarketscience.sqlbuilder.InsertSelectQuery;
 import com.healthmarketscience.sqlbuilder.SelectQuery;
 import com.healthmarketscience.sqlbuilder.SelectQuery.JoinType;
 import com.healthmarketscience.sqlbuilder.SqlObject;
+import com.healthmarketscience.sqlbuilder.Subquery;
 import com.healthmarketscience.sqlbuilder.dbspec.Column;
+import com.healthmarketscience.sqlbuilder.dbspec.Function;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbJoin;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSchema;
@@ -98,14 +103,30 @@ public class Main {
 	    		.validate();
 	    System.out.println(selectSalaries.toString()); 
 	    
+	    
+	    SelectQuery selectSalaries2 = new SelectQuery().addCustomColumns(FunctionCall.max().addColumnParams(employees_empNoCol));
+	    System.out.println(selectSalaries2.toString());
 	    InsertQuery insertEmployee = new InsertQuery(employeesTable)
-	    		.addColumn(employees_empNoCol, 500001)
+	    		.addColumn(employees_empNoCol, 0)
 	    		.addColumn(employees_empBirthCol, "2000-12-18")
 	    		.addColumn(employees_empfNameCol, "Federico")
 	    		.addColumn(employees_emplNameCol, "Reina")
 	    		.addColumn(employees_empGenderCol, 'M')
 	    		.addColumn(employees_empHireCol, new Date(System.currentTimeMillis()))
 	    		.validate();
+	    
+	    String birthDate = "2000-12-18";
+	    String fName = "Federico";
+	    String lName = "Reina";
+	    char gender = 'M';
+	    Date hireDate = new Date(System.currentTimeMillis());
+	    
+	    InsertSelectQuery insertEmployee2 = new InsertSelectQuery(employeesTable)
+	    		.addColumns(employees_empNoCol, employees_empBirthCol, employees_empfNameCol, employees_emplNameCol, employees_empGenderCol, employees_empHireCol)
+	    		.setSelectQuery(new SelectQuery()
+	    				.addCustomColumns(new CustomSql(String.format("%s%s", FunctionCall.max().addColumnParams(employees_empNoCol), "+1")), birthDate,fName, lName,gender,  new CustomSql(String.format("'%s' %s", hireDate, "FROM employees t0")))).validate();
+	    
+	    System.out.println("insertEmployee2: " + insertEmployee2.toString());
 	    
 	    InsertQuery insertSalary = new InsertQuery(salariesTable)
 	    		.addColumn(salaries_empNoCol, 500001)
@@ -131,8 +152,7 @@ public class Main {
 	    System.out.println(insertEmployee.toString());   
 	    System.out.println(insertSalary.toString());   
 	    System.out.println(insertTitle.toString());   
-	    System.out.println(insertDeptEmp.toString()); 
-	    
+	    System.out.println(insertDeptEmp.toString());
 	    
 	    TestDescription td = new TestDescription(null);
 	    td.addQuery(1, selectSalaries);
@@ -143,7 +163,7 @@ public class Main {
 		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);
 		
-		int[] ports = new int[3];
+		/*int[] ports = new int[3];
 		ports[0] = 9901;
 		ports[1] = 9902;
 		ports[2] = 9903;
@@ -152,7 +172,7 @@ public class Main {
 	    Benchmarker b = new Benchmarker(td, 1);
 	    
 	    double score = b.benchmark(i1);
-	    System.out.println(score);
+	    System.out.println(score);*/
 	    
 		/*SelectQuery selectQuery = new SelectQuery()
 	      .addColumns(employees_empNoCol, employees_empBirthCol, employees_empfNameCol, employees_emplNameCol, employees_empGenderCol, employees_empHireCol)

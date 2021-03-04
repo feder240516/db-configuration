@@ -50,6 +50,7 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
 	testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: "5.7.1"
     testCompile group: 'org.junit.platform', name: 'junit-platform-launcher', version: "1.7.1"
+    testCompile("org.junit.jupiter:junit-jupiter-params:5.7.0")
 	
 	// https://mvnrepository.com/artifact/org.mockito/mockito-core
 	testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.8.0'

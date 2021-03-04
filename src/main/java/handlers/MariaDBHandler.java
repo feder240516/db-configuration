@@ -34,7 +34,7 @@ public class MariaDBHandler extends ADatabaseHandle {
 	}
 	
 	private boolean ApplyParameters(IComponentInstance component) {
-		Map<String, String> parameters = component.getParameterValues();
+		/*Map<String, String> parameters = component.getParameterValues();
 		String sqlBase = "";
 		
 		boolean success;
@@ -54,8 +54,8 @@ public class MariaDBHandler extends ADatabaseHandle {
 			e.printStackTrace();
 			success = false;
 		}
-		
-		return success;
+		*/
+		return true;
 	}
 
 	@Override
