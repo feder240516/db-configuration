@@ -56,6 +56,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 		this.componentInstance = ci;
 		this.port = PortManager.getInstance().acquireAnyPort();
 		createDBInstance();
+		createAndFillDatabase();
 		//initHandler();
 	}
 	
