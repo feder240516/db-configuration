@@ -21,30 +21,6 @@ import exceptions.UnavailablePortsException;
 import handlers.ADatabaseHandle;
 import helpers.TestDescription;
 
-class TestExecutor implements Callable<Double>{
-
-	ADatabaseHandle dbHandle;
-	TestDescription test;
-	IComponentInstance componentInstance;
-	
-	public TestExecutor(ADatabaseHandle dbHandle, TestDescription test, IComponentInstance componentInstance) {
-		this.dbHandle = dbHandle;
-		this.test = test;
-		this.componentInstance = componentInstance;
-	}
-	
-	@Override
-	public Double call() throws Exception {
-		try {
-			return dbHandle.benchmarkQuery(componentInstance);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			return Double.MAX_VALUE;
-		}
-	}
-	
-}
-
 public class Benchmarker {
 	DBSystemFactory dbSystemFactory;
 	TestDescription test;
@@ -82,24 +58,6 @@ public class Benchmarker {
 			score = Double.MAX_VALUE;
 		}
 		dbHandle.cleanup();
-		/*ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(20);
-		List<Callable<Double>> taskList = new ArrayList<>();
-		for(int i = 0; i < test.numberOfTests; i++) {
-			Callable<Double> task = new TestExecutor(dbHandle,test, componentInstance);
-	        taskList.add(task);
-		}
-		
-        List<Future<Double>> resultList = null;
-        resultList = executor.invokeAll(taskList);
-        executor.shutdown();
-        
-        DescriptiveStatistics stats = new DescriptiveStatistics();
-        
-        for(Future<Double> result: resultList) {
-        	double value = result.get();
-        	stats.addValue(value);
-        	System.out.println("Score: " + value);
-        }*/
         
         semaphore.release();
         return score;
