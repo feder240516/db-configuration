@@ -55,7 +55,7 @@ public class Benchmarker {
 		
 	}
 	
-	public double benchmark(IComponentInstance componentInstance) throws InterruptedException, ExecutionException {
+	public double benchmark(IComponentInstance componentInstance) throws InterruptedException, ExecutionException, UnavailablePortsException, IOException, SQLException {
 		semaphore.acquire();
 		double score = 0;
 		ADatabaseHandle dbHandle = DBSystemFactory.createHandle(componentInstance, test);

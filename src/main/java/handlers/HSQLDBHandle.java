@@ -38,7 +38,7 @@ public class HSQLDBHandle extends ADatabaseHandle {
 		String extraPath = "lib\\hsqldb.jar";
 		String HSQLDBHome = System.getenv("HSQLDB_HOME");
 		
-		String dataDir = createdInstancePath + "\\data\\db";
+		String dataDir = createdInstancePath + "\\db"/*+ "\\data\\db"*/;
 		
 		String hsqldbdbPath = String.format("\"%s%s\"", HSQLDBHome, extraPath);
 		
@@ -107,11 +107,11 @@ public class HSQLDBHandle extends ADatabaseHandle {
 
 	@Override
 	protected String getInstancesPath() {
-		return instancesPath;
+		return "C:/Users/WIN/Desktop/HSQLDB_Instances/instances";
 	}
 
 	@Override
 	protected String getBasePath() {
-		return baseDataPath;
+		return "C:/Users/WIN/Desktop/HSQLDB_Instances/data";
 	}
 }

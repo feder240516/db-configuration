@@ -1,5 +1,6 @@
 package main;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -36,6 +37,7 @@ import ai.libs.jaicore.components.api.IComponent;
 import ai.libs.jaicore.components.api.IComponentInstance;
 import ai.libs.jaicore.components.model.Component;
 import ai.libs.jaicore.components.model.ComponentInstance;
+import exceptions.UnavailablePortsException;
 import handlers.ADatabaseHandle;
 import handlers.ApacheDerbyHandler;
 import handlers.HSQLDBHandle;
@@ -45,10 +47,11 @@ import handlers.PostgreSQLHandle;
 import handlers.PostgreSQLHandle;
 import helpers.TestDescription;
 import managers.Benchmarker;
+import managers.PortManager;
 
 public class Main {
 
-	public static void main(String[] args) throws InterruptedException, ExecutionException {
+	public static void main(String[] args) throws InterruptedException, ExecutionException, UnavailablePortsException, IOException, SQLException {
 	    DbSpec spec = new DbSpec();
 	    DbSchema schema = spec.addDefaultSchema();
 	 
@@ -130,8 +133,26 @@ public class Main {
 	    System.out.println(insertTitle.toString());   
 	    System.out.println(insertDeptEmp.toString()); 
 	    
-	    //TestDescription td = new TestDescription();
 	    
+	    TestDescription td = new TestDescription(null);
+	    td.addQuery(1, selectSalaries);
+	    
+	    IComponent comp = new Component("HSQLDB");
+		Map<String, String> parameterValues = new HashMap<>();
+		//parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "45");
+		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);
+		
+		int[] ports = new int[3];
+		ports[0] = 9901;
+		ports[1] = 9902;
+		ports[2] = 9903;
+		PortManager.getInstance().setupAvailablePorts(ports);
+		
+	    Benchmarker b = new Benchmarker(td, 1);
+	    
+	    double score = b.benchmark(i1);
+	    System.out.println(score);
 	    
 		/*SelectQuery selectQuery = new SelectQuery()
 	      .addColumns(employees_empNoCol, employees_empBirthCol, employees_empfNameCol, employees_emplNameCol, employees_empGenderCol, employees_empHireCol)
