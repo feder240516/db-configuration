@@ -18,7 +18,14 @@ import helpers.TestDescription;
 
 public class DBSystemFactory {
 	
-	public static ADatabaseHandle createHandle(IComponentInstance componentInstance, TestDescription test) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
+	private static DBSystemFactory _instance;
+	
+	public static DBSystemFactory getInstance() {
+		if(_instance == null) { _instance = new DBSystemFactory(); }
+		return _instance;
+	}
+	
+	public ADatabaseHandle createHandle(IComponentInstance componentInstance, TestDescription test) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
 		String componentName = componentInstance.getComponent().getName();
 		switch(componentName) {
 		case "MariaDB":

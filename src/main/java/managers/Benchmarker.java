@@ -46,19 +46,24 @@ class TestExecutor implements Callable<Double>{
 }
 
 public class Benchmarker {
+	DBSystemFactory dbSystemFactory;
 	TestDescription test;
 	Semaphore semaphore;
+	
 	public Benchmarker(TestDescription test, int maxThreads) {
+		this(test,maxThreads,DBSystemFactory.getInstance());
+	}
+	
+	public Benchmarker(TestDescription test, int maxThreads, DBSystemFactory dbSystemFactory) {
 		semaphore = new Semaphore(maxThreads);
 		this.test = test;
-		
-		
+		this.dbSystemFactory = dbSystemFactory;
 	}
 	
 	public double benchmark(IComponentInstance componentInstance) throws InterruptedException, ExecutionException, UnavailablePortsException, IOException, SQLException {
 		semaphore.acquire();
 		double score = 0;
-		ADatabaseHandle dbHandle = DBSystemFactory.createHandle(componentInstance, test);
+		ADatabaseHandle dbHandle = dbSystemFactory.createHandle(componentInstance, test);
 		try {
 			for(int i = 0; i < test.numberOfTests; ++i) {
 				dbHandle.initiateServer();
