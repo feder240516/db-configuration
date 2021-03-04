@@ -157,6 +157,12 @@ public abstract class ADatabaseHandle implements IDatabase {
 	 * Delete instance from disk and free port
 	 */
 	public void cleanup() {
+		try {
+			PortManager.getInstance().releasePort(port);
+			FileUtils.deleteDirectory(new File(createdInstancePath));
+		} catch(Exception | Error e) {
+			e.printStackTrace();
+		}
 		//throw new NotImplementedError();
 	}
 }

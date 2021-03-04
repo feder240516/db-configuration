@@ -20,6 +20,7 @@ import ai.libs.jaicore.components.api.IComponentInstance;
 import exceptions.UnavailablePortsException;
 import handlers.ADatabaseHandle;
 import helpers.TestDescription;
+import junit.framework.AssertionFailedError;
 
 public class Benchmarker {
 	DBSystemFactory dbSystemFactory;
@@ -39,8 +40,9 @@ public class Benchmarker {
 	public double benchmark(IComponentInstance componentInstance) throws InterruptedException, ExecutionException, UnavailablePortsException, IOException, SQLException {
 		semaphore.acquire();
 		double score = 0;
-		ADatabaseHandle dbHandle = dbSystemFactory.createHandle(componentInstance, test);
+		ADatabaseHandle dbHandle = null;
 		try {
+			dbHandle = dbSystemFactory.createHandle(componentInstance, test);
 			for(int i = 0; i < test.numberOfTests; ++i) {
 				dbHandle.initiateServer();
 				for(List<Query> lq: test.queries.values()) {
@@ -53,13 +55,14 @@ public class Benchmarker {
 				}
 				dbHandle.stopServer();
 			}
-		} catch (IOException | SQLException | InterruptedException | UnavailablePortsException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			score = Double.MAX_VALUE;
+		} finally {
+			if (dbHandle != null) { dbHandle.cleanup(); }
+			semaphore.release();
+			System.out.println(String.format("Semaphore released"));
 		}
-		dbHandle.cleanup();
-        
-        semaphore.release();
         return score;
 	}
 }
