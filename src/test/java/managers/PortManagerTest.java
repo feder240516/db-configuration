@@ -1,4 +1,4 @@
-package handlers;
+package managers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -7,16 +7,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.*;
 
-@ExtendWith(MockitoExtension.class)
-class ADatabaseHandleTest {
+class PortManagerTest {
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
-		
 	}
 
 	@AfterAll
@@ -25,7 +20,6 @@ class ADatabaseHandleTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		
 	}
 
 	@AfterEach
@@ -33,9 +27,8 @@ class ADatabaseHandleTest {
 	}
 
 	@Test
-	void testInitiateServer() {
+	void test() {
 		fail("Not yet implemented");
-		
 	}
 
 }
