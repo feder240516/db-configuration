@@ -30,6 +30,7 @@ import com.healthmarketscience.sqlbuilder.SelectQuery;
 import com.healthmarketscience.sqlbuilder.SelectQuery.JoinType;
 import com.healthmarketscience.sqlbuilder.SqlObject;
 import com.healthmarketscience.sqlbuilder.Subquery;
+import com.healthmarketscience.sqlbuilder.UpdateQuery;
 import com.healthmarketscience.sqlbuilder.dbspec.Column;
 import com.healthmarketscience.sqlbuilder.dbspec.Function;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
@@ -104,7 +105,34 @@ public class Main {
 	    System.out.println(selectSalaries.toString()); 
 	    
 	    
-	    SelectQuery selectSalaries2 = new SelectQuery().addCustomColumns(FunctionCall.max().addColumnParams(employees_empNoCol));
+	    SelectQuery selectAvgSalaryTitles = new SelectQuery()
+	    		.addCustomColumns(titles_titleCol, FunctionCall.avg().addColumnParams(salaries_salaryCol))
+	    		.addJoin(JoinType.INNER, salariesTable, titlesTable, BinaryCondition.equalTo(salaries_empNoCol, titles_empNoCol))
+	    		.addCondition(BinaryCondition.equalTo(new ExtractExpression(DatePart.YEAR, salaries_toDateCol), 9999))
+	    		.addGroupings(titles_titleCol).validate();
+	    		
+	    System.out.println("Select AVG query new: " + selectAvgSalaryTitles);
+	    
+	    SelectQuery selectAvgSalaryTitlesGender = new SelectQuery()
+	    		.addCustomColumns(titles_titleCol, employees_empGenderCol, FunctionCall.avg().addColumnParams(salaries_salaryCol))
+	    		.addJoin(JoinType.INNER, salariesTable, titlesTable, BinaryCondition.equalTo(salaries_empNoCol, titles_empNoCol))
+	    		.addJoin(JoinType.INNER, salariesTable, employeesTable, BinaryCondition.equalTo(salaries_empNoCol, employees_empNoCol))
+	    		.addCondition(BinaryCondition.equalTo(new ExtractExpression(DatePart.YEAR, salaries_toDateCol), 9999))
+	    		.addGroupings(employees_empGenderCol, titles_titleCol).validate();
+	    
+	    System.out.println("Select AVG Gender Title query new: " + selectAvgSalaryTitlesGender);
+	    
+	    /*UpdateQuery updateSalaries = new UpdateQuery(salariesTable)
+	    		.addSetClause(salaries_salaryCol, new CustomSql(String.format("%s + (%s*20/100)", salaries_salaryCol, salaries_salaryCol)))
+	    		.addCondition(BinaryCondition.equalTo(titles_titleCol, "Staff"))
+	    		.addCommonTableExpression("hello").validate();
+	    
+	    System.out.println("UpdateQuery: " + updateSalaries);*/
+	    		
+	    		
+	    		
+	    
+	    /*SelectQuery selectSalaries2 = new SelectQuery().addCustomColumns(FunctionCall.max().addColumnParams(employees_empNoCol));
 	    System.out.println(selectSalaries2.toString());
 	    InsertQuery insertEmployee = new InsertQuery(employeesTable)
 	    		.addColumn(employees_empNoCol, 0)
@@ -113,7 +141,7 @@ public class Main {
 	    		.addColumn(employees_emplNameCol, "Reina")
 	    		.addColumn(employees_empGenderCol, 'M')
 	    		.addColumn(employees_empHireCol, new Date(System.currentTimeMillis()))
-	    		.validate();
+	    		.validate();*/
 	    
 	    String birthDate = "2000-12-18";
 	    String fName = "Federico";
@@ -128,7 +156,7 @@ public class Main {
 	    
 	    System.out.println("insertEmployee2: " + insertEmployee2.toString());
 	    
-	    InsertQuery insertSalary = new InsertQuery(salariesTable)
+	    /*InsertQuery insertSalary = new InsertQuery(salariesTable)
 	    		.addColumn(salaries_empNoCol, 500001)
 	    		.addColumn(salaries_salaryCol, 75000)
 	    		.addColumn(salaries_fromDateCol, new Date(System.currentTimeMillis()))
@@ -152,7 +180,7 @@ public class Main {
 	    System.out.println(insertEmployee.toString());   
 	    System.out.println(insertSalary.toString());   
 	    System.out.println(insertTitle.toString());   
-	    System.out.println(insertDeptEmp.toString());
+	    System.out.println(insertDeptEmp.toString());*/
 	    
 	    TestDescription td = new TestDescription(null);
 	    td.addQuery(1, selectSalaries);
