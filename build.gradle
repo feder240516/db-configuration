@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'eclipse-wtp'
+    id "org.sonarqube" version "3.1.1"
 }
   
 sourceSets {
@@ -74,4 +75,12 @@ dependencies {
 repositories {
     mavenCentral()
     jcenter()
+}
+
+sonarqube {
+  properties {
+    property 'sonar.host.url', 'feder240516_db-configuration'
+    property 'sonar.organization', 'federico-reina'
+    property 'sonar.projectKey', 'SonarSource_sonarcloud-github-action-samples'
+  }
 }
