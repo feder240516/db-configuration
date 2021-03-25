@@ -15,245 +15,141 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
+
 import com.healthmarketscience.sqlbuilder.Query;
 
 import ai.libs.jaicore.components.api.IComponentInstance;
+import exceptions.UnavailablePortsException;
 import helpers.TestDescription;
+import managers.PortManager;
+import scala.NotImplementedError;
 
 public abstract class ADatabaseHandle implements IDatabase {
 
-	List<String> queries = Arrays.asList("","");
+	//List<String> queries = Arrays.asList("","");
+	
+	//protected int MAX_ALLOWED_PORTS;
+	//protected int allowedThreads;
+	//protected int[] portsToUse;
+	//protected HashMap<Integer, Boolean> _usedPorts; // var to check which ports are being used
+	//protected int _nextPortOffset;
+	//protected HashMap<Integer, Process> processes = new HashMap<>();
+	//protected HashMap<Integer, Connection> connections = new HashMap<>();
+	//protected TestDescription testDescription;
+	//protected Semaphore semaphore;
 	protected int MAX_CONNECTION_RETRIES = 3;
-	protected int MAX_ALLOWED_PORTS;
-	protected int allowedThreads;
-	protected int[] portsToUse;
-	protected HashMap<Integer, Boolean> _usedPorts; // var to check which ports are being used
-	protected int _nextPortOffset;
-	protected HashMap<Integer, Process> processes = new HashMap<>();
-	protected HashMap<Integer, Connection> connections = new HashMap<>();
-	protected TestDescription testDescription;
-	protected Semaphore semaphore;
+	protected Process process;
+	//protected Connection connection;
+	protected IComponentInstance componentInstance;
+	protected String createdInstancePath;
+	protected int port;
 	
-	/**
-	 * Create a database handle allowing to use specified port and next 9 ports.
-	 * @param firstPort the first port to use
-	 */
-	public ADatabaseHandle(int firstPort, int allowedThreads, TestDescription testDescription) {
-		this(firstPort, 10, allowedThreads, testDescription);
+	public ADatabaseHandle(IComponentInstance ci) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
+		this.componentInstance = ci;
+		this.port = PortManager.getInstance().acquireAnyPort();
+		createDBInstance();
+		createAndFillDatabase();
+		//initHandler();
 	}
 	
-	/**
-	 * Create a database handle allowing to use specified port and the next specified ports. 
-	 * @param firstPort The first port to be used
-	 * @param numberOfPorts the number of ports including firstPort that can be used
-	 */
-	public ADatabaseHandle(int firstPort, int numberOfPorts, int allowedThreads, TestDescription testDescription) {
-		if(numberOfPorts <= 0) throw new IllegalArgumentException("Number of ports used must be a positive integer");
-		portsToUse = new int[numberOfPorts];
-		for(int i = 0; i < numberOfPorts; ++i) {
-			portsToUse[i] = i + firstPort;
-		}
-		initHandler(allowedThreads, testDescription);		
-	}
+	/*private void initHandler() throws UnavailablePortsException, IOException, SQLException, InterruptedException {
+		initiateServer(); // ! Posiblemente haya que pasarlo a metodo benchmark
+	}*/
 	
-	public ADatabaseHandle(int[] portsToUse, int allowedThreads, TestDescription testDescription) {
-		this.portsToUse = portsToUse;
-		initHandler(allowedThreads, testDescription);
-	}
+	protected abstract String[] getStartCommand();
+	public abstract void stopServer();
+	protected abstract void createAndFillDatabase();
+	protected abstract void setupInitedDB();
+	protected abstract String getConnectionString ();
+	protected abstract String getInstancesPath();
+	protected abstract String getBasePath();
+	protected abstract String getDbDirectory(); // unused
 	
-	
-	private void initHandler(int allowedThreads, TestDescription testDescription) {
-		if(portsToUse == null || portsToUse.length == 0) throw new IllegalArgumentException("Database Handle cannot be initialized without an array of ports to be used.");
-		if(allowedThreads <= 0) throw new IllegalArgumentException("allowedThreads must be a positive value");
-		if(testDescription == null) throw new NullPointerException("You must provide a testDescription");
-		this.allowedThreads = allowedThreads;
-		this.testDescription = testDescription;
-		_nextPortOffset = 0;
-		MAX_ALLOWED_PORTS = portsToUse.length;
-		_usedPorts = new HashMap<>();
-		for(int port: portsToUse) {
-			_usedPorts.put(port, false);
-		}
-		this.semaphore = new Semaphore(allowedThreads, true);
-	}
-	
-	protected abstract String[] getStartCommand(IComponentInstance component, int port);
-	public abstract void stopServer(int port);
-	protected abstract String getDbDirectory(int port);
-	protected abstract void createAndFillDatabase(int port);
-	protected abstract void setupInitedDB(IComponentInstance component, int port);
-	protected abstract String getQueryCommand(int numTest);
-	
-	protected final synchronized int useNextAvailablePort() {
-		int triedPorts = 0;
-		int nextPort = -1;
-		boolean foundPort = false;
-		while(triedPorts < MAX_ALLOWED_PORTS && !foundPort) {
-			nextPort = portsToUse[_nextPortOffset];
-			if (!_usedPorts.get(nextPort)) {
-				_usedPorts.put(nextPort, true);
-				foundPort = true;
-			}
-			triedPorts++;
-			_nextPortOffset = (_nextPortOffset + 1) % MAX_ALLOWED_PORTS;
-		}
-		if(!foundPort) throw new RuntimeException("There are no free ports to use");
-		return nextPort;
-	}
-	
-	public final void freePort(int port) {
-		stopServer(port);
-		_usedPorts.put(port, false);
-	}
-	
-	protected final boolean existsConnection(int port) {
-		Connection conn = connections.get(port);
-		try {
-			return (conn != null && !conn.isClosed());
-		} catch (SQLException e) {
-			return false;
-		}
-	}
-	
-	public int initiateServer(IComponentInstance component) throws IOException, SQLException, InterruptedException {
-		
-			int port = useNextAvailablePort();	
+	// ! ya no hace falta que retorne el puerto
+	public void initiateServer() throws IOException, SQLException, InterruptedException, UnavailablePortsException {
 			System.out.println("Starting server on port " + port);
-			String[] comandoArray = getStartCommand(component, port);
+			String[] comandoArray = getStartCommand();
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
-			processBuilder.directory(new File(getDbDirectory(port)));
-			System.out.println(String.format("Iniciando desde directorio %s", getDbDirectory(port)));
-			
-			Process process = null;
-			while(process == null || !process.isAlive()) {
+			processBuilder.directory(new File(createdInstancePath));
+			System.out.println("createdInstancePath: " + createdInstancePath);
+			process = null;
+			while(process == null /*|| !process.isAlive()*/) {
+				Connection conn = null;
 				try {
-					process = processBuilder.start();
-					processes.put(port, process);
-					InputStream inStream = process.getInputStream();
-					InputStream errStream = process.getErrorStream();
-					inStream.close();
-					/*ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(3);
-					executor.submit(new Runnable(){
-						public void run() {
-							try {
-								BufferedReader br = new BufferedReader(new InputStreamReader(inStream));
-								String line;
-								while((line = br.readLine()) != null) {
-									System.out.println("--------> " + line + " PORT: " + port);
-								}
-								br.close();
-								System.out.println("-------->" + " STREAM CERRADO: " + port);
-							} catch( IOException e) {
-								e.printStackTrace();
-							}
-						}
-					});*/
-					/*executor.submit(new Runnable(){
-						public void run() {
-							try {
-								BufferedReader br = new BufferedReader(new InputStreamReader(errStream));
-								String line;
-								while((line = br.readLine()) != null) {
-									System.err.println("--------> " + line + " PORT: " + port);
-								}
-								br.close();
-								System.err.println("-------->" + " STREAM CERRADO: " + port);
-							} catch( IOException e) {
-								e.printStackTrace();
-							}
-						}
-					});*/
-					errStream.close();
-					Connection conn = null;
+					if (process == null) {
+						this.process = processBuilder.start();
+						InputStream inStream = process.getInputStream();
+						InputStream errStream = process.getErrorStream();
+						inStream.close();
+						errStream.close();
+						
+						System.out.println("Server has been inited");
+					} else {
+						System.out.println("Retry for process");
+					}
 					// tries multiple connections to database
 					for(int i = 0; i < MAX_CONNECTION_RETRIES && conn == null; ++i) {
-						if (i != 0) { TimeUnit.SECONDS.sleep(5); } // wait 5 seconds to allow server to initiate
-						System.out.println("Trying to establish a connection... on port " + port);
-						
-						conn = getConnection(port);
+						TimeUnit.SECONDS.sleep(5); // wait 5 seconds to allow server to initiate
+						//System.out.println("Trying to establish a connection... on port " + port);
+						conn = getConnection();
 					}
 					if (conn != null && !conn.isClosed()) {
-						createAndFillDatabase(port);
-						setupInitedDB(component, port);
-						System.out.println("Server has been inited on port " + port);
+						setupInitedDB();
+						//System.out.println("Server has been inited on port " + port);
 					} else {
 						throw new SQLException(String.format("Could not connect to database after %d tries",MAX_CONNECTION_RETRIES));
 					}
+					conn.close();
 				} catch (IOException | SQLException | InterruptedException e) {
 					System.out.println("Could not connect to port " + port + " ... Restarting process");
-					throw e;
-					//e.printStackTrace();
+					// throw e;
+					// e.printStackTrace();
+				} finally {
+					if (conn != null && !conn.isClosed()) { conn.close(); }
 				}
 			}
 		
-		return port;
+		// return port; // ! ya no debería retornar port
 	}
 	
-	@Override
-	public double benchmarkQuery(IComponentInstance instance) throws InterruptedException {
-		semaphore.acquire();
-		int port = 0;
-		try {
-			port = initiateServer(instance);
-		} catch (IOException | SQLException | InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		double score = 0;
-		if (port == 0) {
-			System.out.println("Server could not be intited");
-			score = Double.MAX_VALUE;
-		}else {
-			try (Connection conn = getConnection(port)) {
-				if (conn != null) {
-					for(Entry<Integer, List<Query>> entry: testDescription.queries.entrySet()) {
-						for(Query q: entry.getValue()) {
-							PreparedStatement ps = conn.prepareStatement(q.toString());
-							Date before = new Date();
-							ps.execute();
-							Date after = new Date();
-							score += after.getTime() - before.getTime();
-							ps.close();
-							
-							
-							System.out.println("A query was executed");
-							System.out.println(String.format("Score %f for port %d",score,port));
-						}
-					}
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-				score = Double.MAX_VALUE;
-			}
-			freePort(port);
-		}
-		semaphore.release();
-		return score;
+	public void createDBInstance() throws IOException {
+		System.out.println(getBasePath());
+		File dataDir = new File(getBasePath());
+		createdInstancePath = getInstancesPath() + "/" + UUID.randomUUID();
+		File destDir = new File(createdInstancePath);
+	    FileUtils.copyDirectory(dataDir, destDir);
+	    System.out.println("The instance " + createdInstancePath + " on port " + port + " was created");
 	}
 	
-	public final void destroyHandler() {
-		for (int port: portsToUse) {
-			if(processes.get(port) != null) {
-				stopServer(port);
-			}
-		}
+	public double benchmarkQuery(Query query) throws InterruptedException, SQLException {
+		try (Connection conn = getConnection()){
+			PreparedStatement ps = conn.prepareStatement(query.toString());
+			Date before = new Date();
+			ps.execute();
+			Date after = new Date();
+			double score = after.getTime() - before.getTime();
+			ps.close();
+			System.out.println("A query was executed");
+			System.out.println(String.format("Score %f for port %d",score,port));
+			return score;
+		}	
 	}
-
-	@Override
-	public Connection getConnection(int port) {
+	
+	protected Connection getConnection() {
 		Connection conn = null;
 		//while(conn == null) {
 			try {
-				String dbUrl = getConnectionString(port);
+				String dbUrl = getConnectionString();
 				conn = DriverManager.getConnection(dbUrl);	
 			} catch (SQLException e1) {
-				//e1.printStackTrace();
 				System.out.println(String.format("Could not connect to port %d", port));
 				conn = null;
 			}
@@ -261,6 +157,16 @@ public abstract class ADatabaseHandle implements IDatabase {
 		return conn;
 	}
 	
-	protected abstract String getConnectionString (int port);
-
+	/**
+	 * Delete instance from disk and free port
+	 */
+	public void cleanup() {
+		try {
+			PortManager.getInstance().releasePort(port);
+			FileUtils.deleteDirectory(new File(createdInstancePath));
+		} catch(Exception | Error e) {
+			e.printStackTrace();
+		}
+		//throw new NotImplementedError();
+	}
 }
