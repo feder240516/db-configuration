@@ -23,9 +23,11 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import com.healthmarketscience.sqlbuilder.BinaryCondition;
+import com.healthmarketscience.sqlbuilder.CustomSql;
 import com.healthmarketscience.sqlbuilder.ExtractExpression;
 import com.healthmarketscience.sqlbuilder.FunctionCall;
 import com.healthmarketscience.sqlbuilder.InsertQuery;
+import com.healthmarketscience.sqlbuilder.InsertSelectQuery;
 import com.healthmarketscience.sqlbuilder.Query;
 import com.healthmarketscience.sqlbuilder.SelectQuery;
 import com.healthmarketscience.sqlbuilder.SelectQuery.JoinType;
@@ -149,10 +151,22 @@ class DataProvider implements ArgumentsProvider {
 	    		.addJoin(JoinType.INNER, salariesTable, employeesTable, BinaryCondition.equalTo(salaries_empNoCol, employees_empNoCol))
 	    		.addCondition(BinaryCondition.equalTo(new ExtractExpression(DatePart.YEAR, salaries_toDateCol), 9999))
 	    		.addGroupings(employees_empGenderCol, titles_titleCol).validate();
+	   
+	    String birthDate = "2000-12-18";
+	    String fName = "Federico";
+	    String lName = "Reina";
+	    char gender = 'M';
+	    Date hireDate = new Date(System.currentTimeMillis());
+	    
+	    InsertSelectQuery insertEmployee2 = new InsertSelectQuery(employeesTable)
+	    		.addColumns(employees_empNoCol, employees_empBirthCol, employees_empfNameCol, employees_emplNameCol, employees_empGenderCol, employees_empHireCol)
+	    		.setSelectQuery(new SelectQuery()
+	    				.addCustomColumns(new CustomSql(String.format("%s%s", FunctionCall.max().addColumnParams(employees_empNoCol), "+1")), birthDate,fName, lName,gender,  new CustomSql(String.format("'%s' %s", hireDate, "FROM employees t0")))).validate();
 
 	    queries.add(selectSalaries);
 	    queries.add(selectAvgSalaryTitles);
 	    queries.add(selectAvgSalaryTitlesGender);
+	    queries.add(insertEmployee2);
 	    
 	    return queries;
 	}

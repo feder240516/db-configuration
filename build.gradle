@@ -73,8 +73,12 @@ dependencies {
  
 
 repositories {
+	mavenLocal()
     mavenCentral()
     jcenter()
+    maven { url "https://jitpack.io" } 
+    maven { url "https://clojars.org/repo/" }
+    maven { url "https://plugins.gradle.org/m2/" }
 }
 
 sonarqube {
