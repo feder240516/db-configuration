@@ -17,10 +17,9 @@ import helpers.TestDescription;
 
 public class DBSystemFactory {
 	
-	private static DBSystemFactory _instance;
+	private static final DBSystemFactory _instance = new DBSystemFactory();
 	
 	public static DBSystemFactory getInstance() {
-		if(_instance == null) { _instance = new DBSystemFactory(); }
 		return _instance;
 	}
 	

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import ai.libs.jaicore.components.api.IComponentInstance;
 import exceptions.UnavailablePortsException;
+import managers.db.parameters.MariaDBParameterManager;
 
 public class MariaDBHandler extends ADatabaseHandle {
 
@@ -15,7 +16,7 @@ public class MariaDBHandler extends ADatabaseHandle {
 	static String baseDataPath = "D:/Bibliotecas/Documents/_Programming_Assets/MariaDB/data";
 	
 	public MariaDBHandler(IComponentInstance ci) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
-		super(ci);
+		super(ci, new MariaDBParameterManager());
 	}
 	
 	public boolean executeCommand(String cmdLine) {
@@ -31,31 +32,6 @@ public class MariaDBHandler extends ADatabaseHandle {
 			success = false;
 		}
 		return success;
-	}
-	
-	private boolean ApplyParameters(IComponentInstance component) {
-		/*Map<String, String> parameters = component.getParameterValues();
-		String sqlBase = "";
-		
-		boolean success;
-		for(String keyParam : parameters.keySet()) {
-			String valueParam = parameters.get(keyParam);
-			
-			sqlBase += "SET " + keyParam + " = " + valueParam + "; ";
-		}
-		
-		try(Connection conn = getConnection();) {
-			PreparedStatement ps = conn.prepareStatement(sqlBase);
-			ps.executeQuery();
-			ps.close();
-			
-			success = true;
-		}catch(SQLException e) {
-			e.printStackTrace();
-			success = false;
-		}
-		*/
-		return true;
 	}
 
 	@Override
@@ -75,13 +51,6 @@ public class MariaDBHandler extends ADatabaseHandle {
 
 	@Override
 	protected void createAndFillDatabase() {}
-
-	@Override
-	protected void setupInitedDB() {
-		boolean isSuccessful = ApplyParameters(componentInstance);
-		String msg = (isSuccessful) ? "Parameters were applied on port " + port: "Parameter were NOT applied " + port;
-		System.out.println(msg);
-	}
 
 	@Override
 	public void stopServer() {

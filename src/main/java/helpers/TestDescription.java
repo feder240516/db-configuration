@@ -18,15 +18,17 @@ public class TestDescription {
 	public int numberOfTests;
 	
 	public TestDescription() {
-		testResults = new DescriptiveStatistics();
-		queries = new TreeMap<>();
-		this.numberOfTests = 1;
+		this(1);
 	}
 	
-	public TestDescription(List<Query> schemaQueries) {
+	public TestDescription(int numberOfTests) {
+		this(numberOfTests, null);
+	}
+	
+	public TestDescription(int numberOfTests, List<Query> schemaQueries) {
 		testResults = new DescriptiveStatistics();
 		queries = new TreeMap<>();
-		this.numberOfTests = 1;
+		this.numberOfTests = numberOfTests;
 	}
 	
 	public void addQuery(int priority, Query query) {

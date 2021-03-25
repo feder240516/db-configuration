@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -20,7 +21,9 @@ import ai.libs.jaicore.components.api.IComponentInstance;
 import exceptions.UnavailablePortsException;
 import handlers.ADatabaseHandle;
 import helpers.TestDescription;
+import helpers.TestResult;
 import junit.framework.AssertionFailedError;
+import services.CSVService;
 
 public class Benchmarker {
 	DBSystemFactory dbSystemFactory;
@@ -39,22 +42,31 @@ public class Benchmarker {
 	
 	public double benchmark(IComponentInstance componentInstance) throws InterruptedException, ExecutionException, UnavailablePortsException, IOException, SQLException {
 		semaphore.acquire();
-		double score = 0;
+		double score = 0, singleScore = 0, repetitionScore = 0;
 		ADatabaseHandle dbHandle = null;
+		UUID handleID = null;
 		try {
+			
 			dbHandle = dbSystemFactory.createHandle(componentInstance, test);
+			handleID = dbHandle.getUUID();
+			System.out.println(String.format("Number of tests programmed: %d", test.numberOfTests));
 			for(int i = 0; i < test.numberOfTests; ++i) {
+				repetitionScore = 0;
 				dbHandle.initiateServer();
 				for(List<Query> lq: test.queries.values()) {
 					if (lq.size() == 1) {
 						System.out.println(String.format("query: %s",lq.get(0).toString()));
-						score += dbHandle.benchmarkQuery(lq.get(0));
+						singleScore = dbHandle.benchmarkQuery(lq.get(0));
+						repetitionScore += singleScore;
+						
 					}else {
 						// TODO: Handle multiple concurrent queries
 						throw new UnsupportedOperationException();
 					}
 				}
 				dbHandle.stopServer();
+				score += repetitionScore;
+				CSVService.getInstance().writeTest(new TestResult(handleID.toString(),repetitionScore,componentInstance));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -65,6 +77,10 @@ public class Benchmarker {
 			semaphore.release();
 			System.out.println(String.format("Semaphore released"));
 		}
+		if (handleID != null) {
+			// CSVService.getInstance().writeTest(new TestResult(handleID.toString(),score,componentInstance.getComponent().getName()));
+		}
+		
         return score;
 	}
 }

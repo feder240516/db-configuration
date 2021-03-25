@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import ai.libs.jaicore.components.api.IComponentInstance;
 import exceptions.UnavailablePortsException;
+import managers.db.parameters.HSQLDBParameterManager;
 
 public class HSQLDBHandle extends ADatabaseHandle {
 
@@ -15,7 +16,7 @@ public class HSQLDBHandle extends ADatabaseHandle {
 	static String baseDataPath = "D:/Bibliotecas/Documents/_Programming_Assets/HSQLDB/data";
 	
 	public HSQLDBHandle(IComponentInstance ci) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
-		super(ci);
+		super(ci, new HSQLDBParameterManager());
 	}
 
 	public boolean executeCommand(String cmdLine) {
@@ -80,9 +81,6 @@ public class HSQLDBHandle extends ADatabaseHandle {
 
 	@Override
 	protected void createAndFillDatabase() {}
-
-	@Override
-	protected void setupInitedDB() {}
 
 	@Override
 	protected String getConnectionString() {

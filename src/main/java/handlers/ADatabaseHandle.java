@@ -30,9 +30,11 @@ import com.healthmarketscience.sqlbuilder.Query;
 import ai.libs.jaicore.components.api.IComponentInstance;
 import exceptions.UnavailablePortsException;
 import helpers.TestDescription;
+import helpers.TestResult;
 import managers.PortManager;
 import managers.db.parameters.IDatabaseParameterManager;
 import scala.NotImplementedError;
+import services.CSVService;
 
 public abstract class ADatabaseHandle implements IDatabase {
 	protected int MAX_CONNECTION_RETRIES = 3;
@@ -41,10 +43,12 @@ public abstract class ADatabaseHandle implements IDatabase {
 	protected String createdInstancePath;
 	protected int port;
 	protected IDatabaseParameterManager databaseParameterManager;
+	protected UUID ID;
 	
 	public ADatabaseHandle(IComponentInstance ci, IDatabaseParameterManager databaseParameterManager) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
 		this.componentInstance = ci;
 		this.databaseParameterManager = databaseParameterManager;
+		this.ID = UUID.randomUUID();
 		this.port = PortManager.getInstance().acquireAnyPort();
 		createDBInstance();
 		initiateServer();
@@ -53,6 +57,10 @@ public abstract class ADatabaseHandle implements IDatabase {
 		stopServer();
 		TimeUnit.SECONDS.sleep(5);
 		//initHandler();
+	}
+	
+	public UUID getUUID() {
+		return ID;
 	}
 	
 	/*private void initHandler() throws UnavailablePortsException, IOException, SQLException, InterruptedException {
@@ -67,10 +75,12 @@ public abstract class ADatabaseHandle implements IDatabase {
 		try (Connection conn = getConnection()){
 			
 			for(String param: params.keySet()) {
-				String configurationQuery = databaseParameterManager.getCommand(param, params.get(param)); 
-				PreparedStatement ps = conn.prepareStatement(configurationQuery);
-				ps.execute();
-				ps.close();
+				String configurationQuery = databaseParameterManager.getCommand(param, params.get(param));
+				if (configurationQuery != null) {
+					PreparedStatement ps = conn.prepareStatement(configurationQuery);
+					ps.execute();
+					ps.close();
+				}
 			}
 			//ps.execute();
 			
@@ -134,7 +144,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 	public void createDBInstance() throws IOException {
 		System.out.println(getBasePath());
 		File dataDir = new File(getBasePath());
-		createdInstancePath = getInstancesPath() + "/" + UUID.randomUUID();
+		createdInstancePath = getInstancesPath() + "/" + ID;
 		File destDir = new File(createdInstancePath);
 	    FileUtils.copyDirectory(dataDir, destDir);
 	    System.out.println("The instance " + createdInstancePath + " on port " + port + " was created");
@@ -154,16 +164,23 @@ public abstract class ADatabaseHandle implements IDatabase {
 		}	
 	}
 	
+	protected Connection resillientGetConnection(int retries) throws InterruptedException {
+		Connection conn = null;
+		for(int i = 0; i < retries && conn == null; ++i) {
+			TimeUnit.SECONDS.sleep(5); // wait 5 seconds to allow server to initiate
+			conn = getConnection();
+		}
+		return conn;
+	}
+	
 	protected Connection getConnection() {
 		Connection conn = null;
-		while(conn == null) {
-			try {
-				String dbUrl = getConnectionString();
-				conn = DriverManager.getConnection(dbUrl);	
-			} catch (SQLException e1) {
-				System.out.println(String.format("Could not connect to port %d", port));
-				conn = null;
-			}
+		try {
+			String dbUrl = getConnectionString();
+			conn = DriverManager.getConnection(dbUrl);	
+		} catch (SQLException e1) {
+			System.out.println(String.format("Could not connect to port %d", port));
+			conn = null;
 		}
 		return conn;
 	}
