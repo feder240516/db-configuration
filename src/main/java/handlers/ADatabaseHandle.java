@@ -63,15 +63,17 @@ public abstract class ADatabaseHandle implements IDatabase {
 	public abstract void stopServer();
 	protected abstract void createAndFillDatabase();
 	protected void setupInitedDB() throws SQLException {
-		Map<String, String> params = componentInstance.getParameterValues();
-		String configurationQuery = "";
-		for(String param: params.keySet()) {
-			configurationQuery += databaseParameterManager.getCommand(param, params.get(param));
-		}
+		Map<String, String> params = componentInstance.getParameterValues();		
 		try (Connection conn = getConnection()){
-			PreparedStatement ps = conn.prepareStatement(configurationQuery);
-			ps.execute();
-			ps.close();
+			
+			for(String param: params.keySet()) {
+				String configurationQuery = databaseParameterManager.getCommand(param, params.get(param)); 
+				PreparedStatement ps = conn.prepareStatement(configurationQuery);
+				ps.execute();
+				ps.close();
+			}
+			//ps.execute();
+			
 			
 			System.out.println("Parameters were applied successfully");
 		}
