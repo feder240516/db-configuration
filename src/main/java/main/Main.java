@@ -48,8 +48,6 @@ import handlers.ADatabaseHandle;
 import handlers.ApacheDerbyHandler;
 import handlers.HSQLDBHandle;
 import handlers.MariaDBHandler;
-import handlers.MySQLHandler;
-import handlers.PostgreSQLHandle;
 import handlers.PostgreSQLHandle;
 import helpers.TestDescription;
 import managers.Benchmarker;
@@ -102,16 +100,12 @@ public class Main {
 	    		.addJoin(JoinType.INNER, employeesTable, salariesTable, BinaryCondition.equalTo(employees_empNoCol, salaries_empNoCol))
 	    		.addCondition(BinaryCondition.equalTo(new ExtractExpression(DatePart.YEAR, salaries_toDateCol), 9999))
 	    		.validate();
-	    System.out.println(selectSalaries.toString()); 
-	    
 	    
 	    SelectQuery selectAvgSalaryTitles = new SelectQuery()
 	    		.addCustomColumns(titles_titleCol, FunctionCall.avg().addColumnParams(salaries_salaryCol))
 	    		.addJoin(JoinType.INNER, salariesTable, titlesTable, BinaryCondition.equalTo(salaries_empNoCol, titles_empNoCol))
 	    		.addCondition(BinaryCondition.equalTo(new ExtractExpression(DatePart.YEAR, salaries_toDateCol), 9999))
 	    		.addGroupings(titles_titleCol).validate();
-	    		
-	    System.out.println("Select AVG query new: " + selectAvgSalaryTitles);
 	    
 	    SelectQuery selectAvgSalaryTitlesGender = new SelectQuery()
 	    		.addCustomColumns(titles_titleCol, employees_empGenderCol, FunctionCall.avg().addColumnParams(salaries_salaryCol))
@@ -120,121 +114,51 @@ public class Main {
 	    		.addCondition(BinaryCondition.equalTo(new ExtractExpression(DatePart.YEAR, salaries_toDateCol), 9999))
 	    		.addGroupings(employees_empGenderCol, titles_titleCol).validate();
 	    
-	    System.out.println("Select AVG Gender Title query new: " + selectAvgSalaryTitlesGender);
-	    
 	    /*UpdateQuery updateSalaries = new UpdateQuery(salariesTable)
 	    		.addSetClause(salaries_salaryCol, new CustomSql(String.format("%s + (%s*20/100)", salaries_salaryCol, salaries_salaryCol)))
 	    		.addCondition(BinaryCondition.equalTo(titles_titleCol, "Staff"))
 	    		.addCommonTableExpression("hello").validate();
-	    
 	    System.out.println("UpdateQuery: " + updateSalaries);*/
 	    		
-	    		
-	    		
-	    
-	    /*SelectQuery selectSalaries2 = new SelectQuery().addCustomColumns(FunctionCall.max().addColumnParams(employees_empNoCol));
-	    System.out.println(selectSalaries2.toString());
-	    InsertQuery insertEmployee = new InsertQuery(employeesTable)
-	    		.addColumn(employees_empNoCol, 0)
-	    		.addColumn(employees_empBirthCol, "2000-12-18")
-	    		.addColumn(employees_empfNameCol, "Federico")
-	    		.addColumn(employees_emplNameCol, "Reina")
-	    		.addColumn(employees_empGenderCol, 'M')
-	    		.addColumn(employees_empHireCol, new Date(System.currentTimeMillis()))
-	    		.validate();*/
-	    
 	    String birthDate = "2000-12-18";
 	    String fName = "Federico";
 	    String lName = "Reina";
 	    char gender = 'M';
 	    Date hireDate = new Date(System.currentTimeMillis());
 	    
-	    InsertSelectQuery insertEmployee2 = new InsertSelectQuery(employeesTable)
+	    InsertSelectQuery insertEmployee = new InsertSelectQuery(employeesTable)
 	    		.addColumns(employees_empNoCol, employees_empBirthCol, employees_empfNameCol, employees_emplNameCol, employees_empGenderCol, employees_empHireCol)
 	    		.setSelectQuery(new SelectQuery()
 	    				.addCustomColumns(new CustomSql(String.format("%s%s", FunctionCall.max().addColumnParams(employees_empNoCol), "+1")), birthDate,fName, lName,gender,  new CustomSql(String.format("'%s' %s", hireDate, "FROM employees t0")))).validate();
 	    
-	    System.out.println("insertEmployee2: " + insertEmployee2.toString());
-	    
-	    /*InsertQuery insertSalary = new InsertQuery(salariesTable)
-	    		.addColumn(salaries_empNoCol, 500001)
-	    		.addColumn(salaries_salaryCol, 75000)
-	    		.addColumn(salaries_fromDateCol, new Date(System.currentTimeMillis()))
-	    		.addColumn(salaries_toDateCol, "9999-01-01")
-	    		.validate();
-	    
-	    InsertQuery insertTitle = new InsertQuery(titlesTable)
-	    		.addColumn(titles_empNoCol, 500001)
-	    		.addColumn(titles_titleCol, "Senior Engineer")
-	    		.addColumn(titles_fromDateCol, "2006-07-01")
-	    		.addColumn(titles_toDateCol, new Date(System.currentTimeMillis()))
-	    		.validate();
-	    
-	    InsertQuery insertDeptEmp = new InsertQuery(deptEmpTable)
-	    		.addColumn(deptEmp_empNoCol, 500001)
-	    		.addColumn(deptEmp_deptNoCol, "d005")
-	    		.addColumn(deptEmp_fromDateCol, new Date(System.currentTimeMillis()))
-	    		.addColumn(deptEmp_toDateCol, "9999-01-01")
-	    		.validate();
-	    
-	    System.out.println(insertEmployee.toString());   
-	    System.out.println(insertSalary.toString());   
-	    System.out.println(insertTitle.toString());   
-	    System.out.println(insertDeptEmp.toString());*/
-	    
 	    TestDescription td = new TestDescription(null);
 	    td.addQuery(1, selectSalaries);
 	    
-	    IComponent comp = new Component("HSQLDB");
-		Map<String, String> parameterValues = new HashMap<>();
-		//parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "45");
-		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
-		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);
-		
-		/*int[] ports = new int[3];
-		ports[0] = 9901;
+	    int[] ports = new int[3];
+		ports[0] = 3307;
 		ports[1] = 9902;
 		ports[2] = 9903;
 		PortManager.getInstance().setupAvailablePorts(ports);
 		
-	    Benchmarker b = new Benchmarker(td, 1);
-	    
-	    double score = b.benchmark(i1);
-	    System.out.println(score);*/
-	    
-		/*SelectQuery selectQuery = new SelectQuery()
-	      .addColumns(employees_empNoCol, employees_empBirthCol, employees_empfNameCol, employees_emplNameCol, employees_empGenderCol, employees_empHireCol)
-	      .validate();
-		
-		TestDescription td = new TestDescription(null);
-		td.addQuery(1, selectQuery);
-		td.addQuery(1, selectQuery);
-		td.addQuery(1, selectQuery);
 		
 		IComponent comp = new Component("MariaDB");
 		Map<String, String> parameterValues = new HashMap<>();
 		parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "45");
 		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);
-
-		IComponent comp2 = new Component("MySQL");
-		Map<String, String> parameterValues2 = new HashMap<>();
-		parameterValues2.put("OPTIMIZER_SEARCH_DEPTH", "45");
-		Map<String, List<IComponentInstance>> reqInterfaces2 = new HashMap<>(); 
-		IComponentInstance i2 = new ComponentInstance(comp2, parameterValues2, reqInterfaces2);
 		
-		IComponent comp3 = new Component("PostgreSQL");
-		Map<String, String> parameterValues3 = new HashMap<>();
-		parameterValues2.put("OPTIMIZER_SEARCH_DEPTH", "45");
-		Map<String, List<IComponentInstance>> reqInterfaces3 = new HashMap<>(); 
-		IComponentInstance i3 = new ComponentInstance(comp3, parameterValues3, reqInterfaces3);
 		
-		HSQLDBHandle handler = new HSQLDBHandle(new int[]{9902, 9903, 9904}, td, 3);
-	
-		Benchmarker benchmarker = new Benchmarker(td, 10);
+	    /*IComponent comp = new Component("HSQLDB");
+		Map<String, String> parameterValues = new HashMap<>();
+		parameterValues.put("cache_rows", "50000");
+		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);*/
 		
-		double results = benchmarker.benchmark(i3);*/
-		//System.out.println(String.format("Mean of test: %f",stats.getMean()));
+		Benchmarker b = new Benchmarker(td, 3);
+	    double	score = b.benchmark(i1);
+	    System.out.println("Score obtained: " + score);
+	    
+		
 	}
 
 }

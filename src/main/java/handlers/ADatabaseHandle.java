@@ -51,6 +51,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 		setupInitedDB();
 		createAndFillDatabase();
 		stopServer();
+		TimeUnit.SECONDS.sleep(5);
 		//initHandler();
 	}
 	
@@ -67,9 +68,12 @@ public abstract class ADatabaseHandle implements IDatabase {
 		for(String param: params.keySet()) {
 			configurationQuery += databaseParameterManager.getCommand(param, params.get(param));
 		}
-		try (Connection conn = getConnection(); 
-			PreparedStatement ps = conn.prepareStatement(configurationQuery);){
+		try (Connection conn = getConnection()){
+			PreparedStatement ps = conn.prepareStatement(configurationQuery);
 			ps.execute();
+			ps.close();
+			
+			System.out.println("Parameters were applied successfully");
 		}
 		
 	}
@@ -107,7 +111,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 						conn = getConnection();
 					}
 					if (conn != null && !conn.isClosed()) {
-						setupInitedDB();
+						//setupInitedDB();
 						//System.out.println("Server has been inited on port " + port);
 					} else {
 						throw new SQLException(String.format("Could not connect to database after %d tries",MAX_CONNECTION_RETRIES));
@@ -150,7 +154,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 	
 	protected Connection getConnection() {
 		Connection conn = null;
-		//while(conn == null) {
+		while(conn == null) {
 			try {
 				String dbUrl = getConnectionString();
 				conn = DriverManager.getConnection(dbUrl);	
@@ -158,7 +162,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 				System.out.println(String.format("Could not connect to port %d", port));
 				conn = null;
 			}
-		//}
+		}
 		return conn;
 	}
 	

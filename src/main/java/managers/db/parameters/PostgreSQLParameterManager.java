@@ -18,7 +18,7 @@ public class PostgreSQLParameterManager implements IDatabaseParameterManager {
 	
 	@Override
 	public String getCommand(String key, String value) {
-		if(params.contains(key)) { return String.format("ALTER SYSTEM SET %s = %s", key, value); }
+		if(params.contains(key)) { return String.format("ALTER SYSTEM SET %s = %s;", key, value); }
 		return null;
 	}
 }
