@@ -47,8 +47,10 @@ public abstract class ADatabaseHandle implements IDatabase {
 		this.databaseParameterManager = databaseParameterManager;
 		this.port = PortManager.getInstance().acquireAnyPort();
 		createDBInstance();
+		initiateServer();
 		setupInitedDB();
 		createAndFillDatabase();
+		stopServer();
 		//initHandler();
 	}
 	
