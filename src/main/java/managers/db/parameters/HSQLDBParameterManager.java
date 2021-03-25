@@ -11,10 +11,16 @@ public class HSQLDBParameterManager implements IDatabaseParameterManager{
 	public HSQLDBParameterManager() {
 		super();
 		params = new HashSet<>();
-		params.add("cache_rows");
+		params.add("hsqldb.cache_rows");
+		params.add("hsqldb.nio_data_file");
+		params.add("hsqldb.nio_max_size");
+		params.add("hsqldb.applog");
 		
 		shortcuts = new HashMap<>();
-		shortcuts.put("cache_rows", "FILES CACHE ROWS");
+		shortcuts.put("hsqldb.cache_rows", "FILES CACHE ROWS");
+		shortcuts.put("hsqldb.nio_data_file", "FILES NIO");
+		shortcuts.put("hsqldb.nio_max_size", "FILES NIO SIZE");
+		shortcuts.put("hsqldb.applog", "DATABASE EVENT LOG LEVEL");
 	}
 	
 	@Override
