@@ -6,6 +6,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
@@ -13,13 +14,16 @@ import org.apache.commons.io.FileUtils;
 import ai.libs.jaicore.components.api.IComponentInstance;
 import exceptions.UnavailablePortsException;
 import helpers.TestDescription;
+import managers.db.parameters.PostgreSQLParameterManager;
+
+
 
 public class PostgreSQLHandle extends ADatabaseHandle {
 	static String instancesPath = "D:\\Bibliotecas\\Documents\\_Programming_Assets\\Postgresql\\instances";
 	static String baseDataPath = "D:\\Bibliotecas\\Documents\\_Programming_Assets\\Postgresql\\data";
 	
 	public PostgreSQLHandle(IComponentInstance componentInstance) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
-		super(componentInstance);
+		super(componentInstance, new PostgreSQLParameterManager());
 	}
 	
 	@Override
@@ -37,11 +41,6 @@ public class PostgreSQLHandle extends ADatabaseHandle {
 	@Override
 	protected String getDbDirectory() {
 		return null;
-	}
-
-	@Override
-	protected void setupInitedDB() {
-		// TODO: Search for parameter configurations
 	}
 
 	@Override

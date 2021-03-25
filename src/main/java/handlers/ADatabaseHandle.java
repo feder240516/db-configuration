@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
@@ -30,32 +31,23 @@ import ai.libs.jaicore.components.api.IComponentInstance;
 import exceptions.UnavailablePortsException;
 import helpers.TestDescription;
 import managers.PortManager;
+import managers.db.parameters.IDatabaseParameterManager;
 import scala.NotImplementedError;
 
 public abstract class ADatabaseHandle implements IDatabase {
-
-	//List<String> queries = Arrays.asList("","");
-	
-	//protected int MAX_ALLOWED_PORTS;
-	//protected int allowedThreads;
-	//protected int[] portsToUse;
-	//protected HashMap<Integer, Boolean> _usedPorts; // var to check which ports are being used
-	//protected int _nextPortOffset;
-	//protected HashMap<Integer, Process> processes = new HashMap<>();
-	//protected HashMap<Integer, Connection> connections = new HashMap<>();
-	//protected TestDescription testDescription;
-	//protected Semaphore semaphore;
 	protected int MAX_CONNECTION_RETRIES = 3;
 	protected Process process;
-	//protected Connection connection;
 	protected IComponentInstance componentInstance;
 	protected String createdInstancePath;
 	protected int port;
+	protected IDatabaseParameterManager databaseParameterManager;
 	
-	public ADatabaseHandle(IComponentInstance ci) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
+	public ADatabaseHandle(IComponentInstance ci, IDatabaseParameterManager databaseParameterManager) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
 		this.componentInstance = ci;
+		this.databaseParameterManager = databaseParameterManager;
 		this.port = PortManager.getInstance().acquireAnyPort();
 		createDBInstance();
+		setupInitedDB();
 		createAndFillDatabase();
 		//initHandler();
 	}
@@ -67,7 +59,18 @@ public abstract class ADatabaseHandle implements IDatabase {
 	protected abstract String[] getStartCommand();
 	public abstract void stopServer();
 	protected abstract void createAndFillDatabase();
-	protected abstract void setupInitedDB();
+	protected void setupInitedDB() throws SQLException {
+		Map<String, String> params = componentInstance.getParameterValues();
+		String configurationQuery = "";
+		for(String param: params.keySet()) {
+			configurationQuery += databaseParameterManager.getCommand(param, params.get(param));
+		}
+		try (Connection conn = getConnection(); 
+			PreparedStatement ps = conn.prepareStatement(configurationQuery);){
+			ps.execute();
+		}
+		
+	}
 	protected abstract String getConnectionString ();
 	protected abstract String getInstancesPath();
 	protected abstract String getBasePath();

@@ -11,7 +11,6 @@ import handlers.ADatabaseHandle;
 import handlers.ApacheDerbyHandler;
 import handlers.HSQLDBHandle;
 import handlers.MariaDBHandler;
-import handlers.MySQLHandler;
 import handlers.PostgreSQLHandle;
 import helpers.Port;
 import helpers.TestDescription;
