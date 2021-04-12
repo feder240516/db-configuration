@@ -1,40 +1,24 @@
 package handlers;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.InputMismatchException;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
-
-import com.healthmarketscience.sqlbuilder.Query;
+import org.jooq.Query;
 
 import ai.libs.jaicore.components.api.IComponentInstance;
 import exceptions.UnavailablePortsException;
-import helpers.TestDescription;
-import helpers.TestResult;
 import managers.PortManager;
 import managers.db.parameters.IDatabaseParameterManager;
-import scala.NotImplementedError;
-import services.CSVService;
 
 public abstract class ADatabaseHandle implements IDatabase {
 	protected int MAX_CONNECTION_RETRIES = 3;
@@ -150,9 +134,9 @@ public abstract class ADatabaseHandle implements IDatabase {
 	    System.out.println("The instance " + createdInstancePath + " on port " + port + " was created");
 	}
 	
-	public double benchmarkQuery(Query query) throws InterruptedException, SQLException {
+	public double benchmarkQuery(String query) throws InterruptedException, SQLException {
 		try (Connection conn = getConnection()){
-			PreparedStatement ps = conn.prepareStatement(query.toString());
+			PreparedStatement ps = conn.prepareStatement(query);
 			Date before = new Date();
 			ps.execute();
 			Date after = new Date();

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -13,8 +14,7 @@ import java.util.concurrent.Future;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.xml.utils.UnImplNode;
-
-import com.healthmarketscience.sqlbuilder.Query;
+import org.jooq.Query;
 
 import EDU.oswego.cs.dl.util.concurrent.Semaphore;
 import ai.libs.jaicore.components.api.IComponentInstance;
@@ -45,6 +45,8 @@ public class Benchmarker {
 		double score = 0, singleScore = 0, repetitionScore = 0;
 		ADatabaseHandle dbHandle = null;
 		UUID handleID = null;
+		String dbSystem = componentInstance.getComponent().getName();
+		Map<Integer, List<String>> queries = test.generateQueries(dbSystem);
 		try {
 			
 			dbHandle = dbSystemFactory.createHandle(componentInstance, test);
@@ -53,12 +55,11 @@ public class Benchmarker {
 			for(int i = 0; i < test.numberOfTests; ++i) {
 				repetitionScore = 0;
 				dbHandle.initiateServer();
-				for(List<Query> lq: test.queries.values()) {
+				for(List<String> lq: queries.values()) {
 					if (lq.size() == 1) {
 						System.out.println(String.format("query: %s",lq.get(0).toString()));
 						singleScore = dbHandle.benchmarkQuery(lq.get(0));
 						repetitionScore += singleScore;
-						
 					}else {
 						// TODO: Handle multiple concurrent queries
 						throw new UnsupportedOperationException();

@@ -37,6 +37,5 @@ public class DBSystemFactory {
 		default:
 			throw new IllegalArgumentException("IComponent DB name is not supported");
 		}
-		
 	}
 }

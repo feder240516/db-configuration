@@ -35,7 +35,7 @@ public class CSVService {
 		try (CSVPrinter printer = new CSVPrinter(bw, CSVFormat.DEFAULT
 		    .withHeader(TEST_RESULTS_HEADERS))) {
 				for(TestResult testResult: testResults) {
-					printer.printRecord(testResult.getDbInstance(), testResult.getComponentInstanceID(), testResult.getTime(), testResult.getRdms());
+					printer.printRecord(testResult.getRdms(), testResult.getComponentInstanceID(), testResult.getDbInstance(), testResult.getTime());
 			}
 	    }
 	}
