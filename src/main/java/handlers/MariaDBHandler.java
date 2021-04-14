@@ -6,14 +6,16 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import ai.libs.jaicore.components.api.IComponentInstance;
 import exceptions.UnavailablePortsException;
 import managers.db.parameters.MariaDBParameterManager;
 
 public class MariaDBHandler extends ADatabaseHandle {
 
-	static String instancesPath = "D:/Bibliotecas/Documents/_Programming_Assets/MariaDB/instances";
-	static String baseDataPath = "D:/Bibliotecas/Documents/_Programming_Assets/MariaDB/data";
+	static String instancesPath = "C:/Users/WIN/Desktop/MariaDB_Handler/instances";
+	static String baseDataPath = "C:/Users/WIN/Desktop/MariaDB_Handler/data";
 	
 	public MariaDBHandler(IComponentInstance ci) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
 		super(ci, new MariaDBParameterManager());
@@ -36,11 +38,11 @@ public class MariaDBHandler extends ADatabaseHandle {
 
 	@Override
 	protected String[] getStartCommand() {
-		String extraPath = "\\bin\\mysqld";
+		String extraPath = "bin\\mysqld";
 		String MariaDBHome = System.getenv("MARIADB_HOME");
 		
-		String dataDir = /*createdInstancePath +*/ createdInstancePath;
-		String socketPath = /*createdInstancePath +*/ createdInstancePath + "\\mysql.sock";
+		String dataDir = createdInstancePath;
+		String socketPath = createdInstancePath + ".\\mysql.sock";
 		
 		String mariadbPath = String.format("\"%s%s\"", MariaDBHome, extraPath);
 		
@@ -55,13 +57,13 @@ public class MariaDBHandler extends ADatabaseHandle {
 	@Override
 	public void stopServer() {
 		System.out.println("Stopping server on port " + port);
-		String extraPath = "\\bin\\mysqladmin";
+		String extraPath = "bin\\mysqladmin";
 		String MariaDBHome = System.getenv("MARIADB_HOME");
 		
 		String mariadbPath = String.format("\"%s%s\"", MariaDBHome, extraPath);
 		
-		String[] cmdStop = {"cmd.exe", "/c", String.format("%s -u root --password=root --port=%d shutdown", mariadbPath, port)};
-		System.out.println(String.format("%s -u root --password=root --port=%d shutdown", mariadbPath, port));
+		String[] cmdStop = {"cmd.exe", "/c", String.format("%s -u root --password= --port=%d shutdown", mariadbPath, port)};
+		System.out.println(String.format("%s -u root --password= --port=%d shutdown", mariadbPath, port));
 		
 		try(Connection conn = getConnection();) {
 			if (conn != null && !conn.isClosed()) conn.close();
@@ -72,6 +74,8 @@ public class MariaDBHandler extends ADatabaseHandle {
 			String msg = String.format("The server on port %d was stopped successfully", port);
 			System.out.println(msg);
 			
+			TimeUnit.SECONDS.sleep(5);
+			
 		} catch (IOException | SQLException | InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -81,7 +85,7 @@ public class MariaDBHandler extends ADatabaseHandle {
 	protected String getConnectionString() {
 		String dbName = "employees";
 		String user = "root";
-		String password = "root";
+		String password = "";
 		
 		String dbUrl = String.format("jdbc:mariadb://localhost:%d/%s?user=%s&password=%s", port, dbName, user, password);
 		return dbUrl;
