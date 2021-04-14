@@ -142,8 +142,6 @@ public class MainJOOQ {
 		}
 		
 		int[] hsqdbCacheRows = new int[] {100,1000,10000,100000,1000000};
-		
-		int[] hsqdbAppLog = new int[] {0,1,2,3};
 		for(int size: hsqdbCacheRows ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("hsqldb.cache_rows", String.valueOf(size));
@@ -168,6 +166,20 @@ public class MainJOOQ {
 			parameterValues.put("hsqldb.result_max_memory_rows", "0");
 			parameterValues.put("hsqldb.applog", "0");
 			parameterValues.put("__instanceID", String.format("HSQLDB_%s_%d", "hsqldb.nio_max_size", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compHSQL, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}
+		
+		int[] hsqdbAppLog = new int[] {0,1,2,3};
+		for(int size: hsqdbCacheRows ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("hsqldb.cache_rows", "50000");
+			parameterValues.put("hsqldb.nio_data_file", "TRUE");
+			parameterValues.put("hsqldb.nio_max_size", "256");
+			parameterValues.put("hsqldb.result_max_memory_rows", "0");
+			parameterValues.put("hsqldb.applog", String.valueOf(size));
+			parameterValues.put("__instanceID", String.format("HSQLDB_%s_%d", "hsqldb.app_log", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compHSQL, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
