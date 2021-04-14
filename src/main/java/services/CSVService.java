@@ -13,7 +13,7 @@ import helpers.TestResult;
 
 public class CSVService {
 	
-	String[] TEST_RESULTS_HEADERS = {"RDMS", "Component Instance ID", "DBInstance GUID", "Time"};
+	String[] TEST_RESULTS_HEADERS = {"RDMS", "Component Instance ID", "DBInstance GUID", "Time", "Variable", "Value of variable"};
 	
 	private static final CSVService _instance = new CSVService();
 	public static CSVService getInstance() {
@@ -35,7 +35,12 @@ public class CSVService {
 		try (CSVPrinter printer = new CSVPrinter(bw, CSVFormat.DEFAULT
 		    .withHeader(TEST_RESULTS_HEADERS))) {
 				for(TestResult testResult: testResults) {
-					printer.printRecord(testResult.getRdms(), testResult.getComponentInstanceID(), testResult.getDbInstance(), testResult.getTime());
+					printer.printRecord(testResult.getRdms(), 
+										testResult.getComponentInstanceID(), 
+										testResult.getDbInstance(), 
+										testResult.getTime(), 
+										testResult.getVariable(), 
+										testResult.getVariableValue());
 			}
 	    }
 	}

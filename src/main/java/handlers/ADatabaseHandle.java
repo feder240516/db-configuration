@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Map;
@@ -28,12 +30,14 @@ public abstract class ADatabaseHandle implements IDatabase {
 	protected int port;
 	protected IDatabaseParameterManager databaseParameterManager;
 	protected UUID ID;
+	protected boolean shouldPrintResults;
 	
 	public ADatabaseHandle(IComponentInstance ci, IDatabaseParameterManager databaseParameterManager) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
 		this.componentInstance = ci;
 		this.databaseParameterManager = databaseParameterManager;
 		this.ID = UUID.randomUUID();
 		this.port = PortManager.getInstance().acquireAnyPort();
+		this.shouldPrintResults = false;
 		createDBInstance();
 		initiateServer();
 		setupInitedDB();
@@ -134,11 +138,33 @@ public abstract class ADatabaseHandle implements IDatabase {
 	    System.out.println("The instance " + createdInstancePath + " on port " + port + " was created");
 	}
 	
+	public void printResultSet(PreparedStatement ps) throws SQLException {
+		ResultSet resultSet = ps.getResultSet();
+		ResultSetMetaData rsmd = resultSet.getMetaData();
+		int columnsNumber = rsmd.getColumnCount();
+		for (int i = 1; i <= columnsNumber; i++) {
+	        if (i > 1) System.out.print(",  ");
+	        String columnName = rsmd.getColumnName(i);
+	        System.out.print(columnName);
+	    }
+		while(resultSet.next()) {
+			for (int i = 1; i <= columnsNumber; i++) {
+		        if (i > 1) System.out.print(",  ");
+		        String columnValue = resultSet.getString(i);
+		        System.out.print(columnValue);
+		    }
+		    System.out.println("");
+		}
+	}
+	
 	public double benchmarkQuery(String query) throws InterruptedException, SQLException {
 		try (Connection conn = getConnection()){
 			PreparedStatement ps = conn.prepareStatement(query);
 			Date before = new Date();
-			ps.execute();
+			boolean resultType = ps.execute();
+			if(resultType && shouldPrintResults) {
+				printResultSet(ps);
+			}
 			Date after = new Date();
 			double score = after.getTime() - before.getTime();
 			ps.close();

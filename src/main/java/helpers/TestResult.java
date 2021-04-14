@@ -7,6 +7,8 @@ public class TestResult {
 	private String componentInstanceID;
 	private double time;
 	private String rdms;
+	private String variable;
+	private double variableValue;
 	
 	public TestResult(String dbInstance, double time, IComponentInstance componentInstance) {
 		super();
@@ -19,6 +21,22 @@ public class TestResult {
 		}
 		this.time = time;
 		this.rdms = componentInstance.getComponent().getName();
+		this.variable = componentInstance.getParameterValue("__evalVar");
+		if (this.variable == null) { this.variable = "NOT_SPECIFIED"; } 
+		String val = componentInstance.getParameterValue("__evalVarValue");
+		tryAssignVariableValue(val);
+		System.out.println(this);
+	}
+
+	private void tryAssignVariableValue(String valStr) {
+		if (valStr == null) {
+			this.variableValue = Double.POSITIVE_INFINITY;
+		}
+		try {
+			this.variableValue = Double.parseDouble(valStr);
+		} catch (NumberFormatException e) {
+			this.variableValue = -1;
+		}
 	}
 	
 	public String getDbInstance() {
@@ -35,6 +53,14 @@ public class TestResult {
 
 	public String getComponentInstanceID() {
 		return componentInstanceID;
+	}
+
+	public String getVariable() {
+		return variable;
+	}
+
+	public double getVariableValue() {
+		return variableValue;
 	}
 	
 }

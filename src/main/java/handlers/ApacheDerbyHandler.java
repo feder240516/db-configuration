@@ -26,8 +26,6 @@ import managers.db.parameters.ApacheDerbyParameterManager;
 
 public class ApacheDerbyHandler extends ADatabaseHandle {
 	
-	public static final String DATABASE_PAGE_SIZE = "DATABASE_PAGE_SIZE";
-	
 	// HashMap<Integer, String> dbNames;
 	static String instancesPath = System.getenv("DERBY_HOME") + "/db/instances";
 	static String baseDataPath = System.getenv("DERBY_HOME") + "/db/data";
@@ -43,22 +41,6 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	
 	@Override
 	protected void createAndFillDatabase() {}
-	
-	private void setDatabasePageSize() {
-		String dbPageSizeStr = componentInstance.getParameterValue(DATABASE_PAGE_SIZE);
-		if (dbPageSizeStr == null) return;
-		try(Connection conn = getConnection();
-				CallableStatement cs = 
-				  conn.prepareCall("CALL SYSCS_UTIL.SYSCS_SET_DATABASE_PROPERTY(?, ?)");){
-			cs.setString(1, "derby.storage.pageSize"); 
-			cs.setString(2, dbPageSizeStr); 
-			cs.execute(); 
-			cs.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		 
-	}
 
 	@Override
 	protected String[] getStartCommand() {
@@ -72,11 +54,6 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	@Override
 	protected String getDbDirectory() {
 		return null;
-	}
-
-	@Override
-	protected void setupInitedDB() {
-		setDatabasePageSize();
 	}
 
 	@Override

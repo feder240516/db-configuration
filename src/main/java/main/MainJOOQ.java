@@ -54,10 +54,14 @@ public class MainJOOQ {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("derby.storage.pageCacheSize", String.valueOf(size));
 			parameterValues.put("__instanceID", String.format("DERBY_%s_%d", "pageCacheSize", size));
+			parameterValues.put("__evalVar", "derby.storage.pageCacheSize");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compDerby, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
 		}
+		
+		int[] derbyPageSizes = new int[] {};
 		
 		int[] hsqdbCacheRows = new int[] {10000,25000,50000,75000,100000};
 		for(int size: hsqdbCacheRows ) {
@@ -69,6 +73,8 @@ public class MainJOOQ {
 			parameterValues.put("hsqldb.result_max_memory_rows", "0");
 			parameterValues.put("hsqldb.applog", "0");
 			parameterValues.put("__instanceID", String.format("HSQLDB_%s_%d", "hsqldb.cache_rows", size));
+			parameterValues.put("__evalVar", "hsqldb.cache_rows");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compHSQL, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
@@ -105,7 +111,8 @@ public class MainJOOQ {
 								.join("salaries")
 								.on(field("employees.emp_no").eq(field("salaries.emp_no")))
 								.where(extract(field("salaries.to_date"),DatePart.YEAR).eq(val(9999)));
-		
+		selectSalaries.configuration().set(SQLDialect.MARIADB);
+		System.out.println(selectSalaries.getSQL(true));
 		
 		/*
 		 * SelectQuery selectAvgSalaryTitles = new SelectQuery()
@@ -160,7 +167,7 @@ public class MainJOOQ {
 		System.out.println(query3.getSQL(true));*/
 		//System.out.println(query3.configuration().set(SQLDialect.MARIADB));
 		
-		TestDescription td = new TestDescription(10);
+		TestDescription td = new TestDescription(1);
 	    td.addQuery(1, selectSalaries);
 	    
 	    int threads = 4;
