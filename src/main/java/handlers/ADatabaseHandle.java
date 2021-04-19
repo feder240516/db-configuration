@@ -90,41 +90,36 @@ public abstract class ADatabaseHandle implements IDatabase {
 			processBuilder.directory(new File(createdInstancePath));
 			System.out.println("createdInstancePath: " + createdInstancePath);
 			process = null;
-			while(process == null /*|| !process.isAlive()*/) {
-				Connection conn = null;
-				try {
-					if (process == null) {
-						this.process = processBuilder.start();
-						InputStream inStream = process.getInputStream();
-						InputStream errStream = process.getErrorStream();
-						inStream.close();
-						errStream.close();
-						
-						System.out.println("Server has been inited");
-					} else {
-						System.out.println("Retry for process");
-					}
-					// tries multiple connections to database
-					for(int i = 0; i < MAX_CONNECTION_RETRIES && conn == null; ++i) {
-						TimeUnit.SECONDS.sleep(5); // wait 5 seconds to allow server to initiate
-						//System.out.println("Trying to establish a connection... on port " + port);
-						conn = getConnection();
-					}
-					if (conn != null && !conn.isClosed()) {
-						//setupInitedDB();
-						//System.out.println("Server has been inited on port " + port);
-					} else {
-						throw new SQLException(String.format("Could not connect to database after %d tries",MAX_CONNECTION_RETRIES));
-					}
-					conn.close();
-				} catch (IOException | SQLException | InterruptedException e) {
-					System.out.println("Could not connect to port " + port + " ... Restarting process");
-					// throw e;
-					// e.printStackTrace();
-				} finally {
-					if (conn != null && !conn.isClosed()) { conn.close(); }
+			Connection conn = null;
+			try {
+				if (process == null) {
+					this.process = processBuilder.start();
+					InputStream inStream = process.getInputStream();
+					InputStream errStream = process.getErrorStream();
+					inStream.close();
+					errStream.close();
+					
+					System.out.println("Server has been inited");
+				} else {
+					System.out.println("Retry for process");
 				}
+				// tries multiple connections to database
+				conn = resillientGetConnection(MAX_CONNECTION_RETRIES);
+				if (conn != null && !conn.isClosed()) {
+					//setupInitedDB();
+					//System.out.println("Server has been inited on port " + port);
+				} else {
+					throw new SQLException(String.format("Could not connect to database after %d tries",MAX_CONNECTION_RETRIES));
+				}
+				conn.close();
+			} catch (IOException | SQLException | InterruptedException e) {
+				System.out.println("Could not connect to port " + port);
+				throw e;
+			} finally {
+				System.out.println("finally executed");
+				if (conn != null && !conn.isClosed()) { conn.close(); }
 			}
+		
 		
 		// return port; // ! ya no debería retornar port
 	}
@@ -177,6 +172,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 	protected Connection resillientGetConnection(int retries) throws InterruptedException {
 		Connection conn = null;
 		for(int i = 0; i < retries && conn == null; ++i) {
+			if (i > 0) { System.out.println("Retrying..."); }
 			TimeUnit.SECONDS.sleep(5); // wait 5 seconds to allow server to initiate
 			conn = getConnection();
 		}

@@ -72,7 +72,7 @@ public class Benchmarker {
 		} catch (Exception e) {
 			e.printStackTrace();
 			score = Double.MAX_VALUE;
-			dbHandle.stopServer();
+			if (dbHandle != null) dbHandle.stopServer();
 		} finally {
 			if (dbHandle != null) { dbHandle.cleanup(); }
 			semaphore.release();
