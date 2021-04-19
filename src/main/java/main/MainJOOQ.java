@@ -48,20 +48,70 @@ public class MainJOOQ {
 		IComponent compPosgreSQL 	= new Component("PostgreSQL");
 		IComponent compHSQL 		= new Component("HSQLDB");
 		List<IComponentInstance> componentInstances = new ArrayList<>();
+		
+		// ########### APACHE DERBY ###################
 
-		int[] derbyPageCacheSizes = new int[] {1000,2000,4000,8000,16000};
-		for(int size: derbyPageCacheSizes ) {
+		/*int[] derbypageReservedSpaces = new int[] {0,1,2,5,10,20,50,100};
+		for(int size: derbypageReservedSpaces ) {
 			Map<String, String> parameterValues = new HashMap<>();
-			parameterValues.put("derby.storage.pageCacheSize", String.valueOf(size));
-			parameterValues.put("__instanceID", String.format("DERBY_%s_%d", "pageCacheSize", size));
-			parameterValues.put("__evalVar", "derby.storage.pageCacheSize");
+			parameterValues.put("derby.storage.pageReservedSpace", String.valueOf(size));
+			parameterValues.put("derby.storage.pageSize", String.valueOf(4096));
+			parameterValues.put("derby.storage.initialPages", String.valueOf(1));
+			parameterValues.put("derby.language.statementCacheSize", String.valueOf(100));
+			parameterValues.put("__instanceID", String.format("DERBY_%s_%d", "pageReservedSpace", size));
+			parameterValues.put("__evalVar", "derby.storage.pageReservedSpace");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compDerby, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}
+
+		int[] derbyPageSizes = new int[] {4096,8192,16384,32768};
+		for(int size: derbyPageSizes ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("derby.storage.pageReservedSpace", String.valueOf(20));
+			parameterValues.put("derby.storage.pageSize", String.valueOf(size));
+			parameterValues.put("derby.storage.initialPages", String.valueOf(1));
+			parameterValues.put("derby.language.statementCacheSize", String.valueOf(100));
+			parameterValues.put("__instanceID", String.format("DERBY_%s_%d", "pageSize", size));
+			parameterValues.put("__evalVar", "derby.storage.pageSize");
 			parameterValues.put("__evalVarValue", String.valueOf(size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compDerby, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
 		}
 		
-		int[] derbyPageSizes = new int[] {};
+		int[] derbyInitialPages= new int[] {1,5,10,50,100,500,1000};
+		for(int size: derbyInitialPages ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("derby.storage.pageReservedSpace", String.valueOf(20));
+			parameterValues.put("derby.storage.pageSize", String.valueOf(4096));
+			parameterValues.put("derby.storage.initialPages", String.valueOf(size));
+			parameterValues.put("derby.language.statementCacheSize", String.valueOf(100));
+			parameterValues.put("__instanceID", String.format("DERBY_%s_%d", "initialPages", size));
+			parameterValues.put("__evalVar", "derby.storage.initialPages");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compDerby, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}
+		
+		int[] statementCacheSizes = new int[] {1,5,10,50,100,500,1000};
+		for(int size: statementCacheSizes ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("derby.storage.pageReservedSpace", String.valueOf(20));
+			parameterValues.put("derby.storage.pageSize", String.valueOf(4096));
+			parameterValues.put("derby.storage.initialPages", String.valueOf(1));
+			parameterValues.put("derby.language.statementCacheSize", String.valueOf(size));
+			parameterValues.put("__instanceID", String.format("DERBY_%s_%d", "statementCacheSize", size));
+			parameterValues.put("__evalVar", "derby.language.statementCacheSize");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compDerby, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}
+		
+		// ########### MARIADB ###################
 		
 		//int[] hsqdbCacheRows = new int[] {10000,25000,50000,75000,100000};
 		int[] mariaDBOptimizerSearchDepths = new int[] {0,1,10,20,30,40,50,60};
@@ -85,6 +135,8 @@ public class MainJOOQ {
 			
 			
 			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "optimizerSearchDepth", size));
+			parameterValues.put("__evalVar", "optimizerSearchDepth");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
@@ -111,6 +163,8 @@ public class MainJOOQ {
 			
 			
 			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "optimizerPruneLevel", size));
+			parameterValues.put("__evalVar", "optimizerPruneLevel");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
@@ -136,10 +190,14 @@ public class MainJOOQ {
 			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", String.valueOf(size));
 			
 			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "optimizerUseConditionSelectivity", size));
+			parameterValues.put("__evalVar", "optimizerUseConditionSelectivity");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
 		}
+		
+		// ########### HSQLDB ###################
 		
 		int[] hsqdbCacheRows = new int[] {100,1000,10000,100000,1000000};
 		for(int size: hsqdbCacheRows ) {
@@ -158,7 +216,7 @@ public class MainJOOQ {
 		}
 		
 		int[] hsqdbNioMaxSize = new int[] {64, 128, 256, 512, 1024};
-		for(int size: hsqdbCacheRows ) {
+		for(int size: hsqdbNioMaxSize ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("hsqldb.cache_rows", "50000");
 			parameterValues.put("hsqldb.nio_data_file", "TRUE");
@@ -166,13 +224,15 @@ public class MainJOOQ {
 			parameterValues.put("hsqldb.result_max_memory_rows", "0");
 			parameterValues.put("hsqldb.applog", "0");
 			parameterValues.put("__instanceID", String.format("HSQLDB_%s_%d", "hsqldb.nio_max_size", size));
+			parameterValues.put("__evalVar", "hsqldb.nio_max_size");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compHSQL, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
 		}
 		
 		int[] hsqdbAppLog = new int[] {0,1,2,3};
-		for(int size: hsqdbCacheRows ) {
+		for(int size: hsqdbAppLog ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("hsqldb.cache_rows", "50000");
 			parameterValues.put("hsqldb.nio_data_file", "TRUE");
@@ -180,25 +240,62 @@ public class MainJOOQ {
 			parameterValues.put("hsqldb.result_max_memory_rows", "0");
 			parameterValues.put("hsqldb.applog", String.valueOf(size));
 			parameterValues.put("__instanceID", String.format("HSQLDB_%s_%d", "hsqldb.app_log", size));
-			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>();
+			parameterValues.put("__evalVar", "hsqldb.app_log");
+			parameterValues.put("__evalVarValue", String.valueOf(size)); 
 			IComponentInstance i1 = new ComponentInstance(compHSQL, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
+		}*/
+		
+		// ############ POSTGRESQL #############
+		/*int[] postgresWorkMem = new int[] {64,256,1024,4096,16384,65536,262144};
+		for(int size: postgresWorkMem ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("work_mem", String.valueOf(size));
+			parameterValues.put("shared_buffers", "131072");
+			parameterValues.put("hash_mem_multiplier", "1");
+			parameterValues.put("__instanceID", String.format("POSTGRESQL_%s_%d", "work_mem", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>();
+			parameterValues.put("__evalVar", "work_mem");
+			parameterValues.put("__evalVarValue", String.valueOf(size)); 
+			IComponentInstance i1 = new ComponentInstance(compPosgreSQL, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}*/
+
+		int[] postgresSharedBuffers = new int[] {16,64,256,1024,4096,16384,65536,131072,262144};
+		for(int size: postgresSharedBuffers ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("work_mem", "4096");
+			parameterValues.put("shared_buffers", String.valueOf(size));
+			parameterValues.put("hash_mem_multiplier", "1");
+			parameterValues.put("__instanceID", String.format("POSTGRESQL_%s_%d", "shared_buffers", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>();
+			parameterValues.put("__evalVar", "shared_buffers");
+			parameterValues.put("__evalVarValue", String.valueOf(size)); 
+			IComponentInstance i1 = new ComponentInstance(compPosgreSQL, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
 		}
+		
+		/*double[] postgresHashMemMultipliers = new double[] {1.,2.,5.,10.,20.};
+		for(double size: postgresHashMemMultipliers ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("work_mem", "4096");
+			parameterValues.put("shared_buffers", "131072");
+			parameterValues.put("hash_mem_multiplier", String.valueOf(size));
+			parameterValues.put("__instanceID", String.format("POSTGRESQL_%s_%f", "hash_mem_multiplier", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>();
+			parameterValues.put("__evalVar", "hash_mem_multiplier");
+			parameterValues.put("__evalVarValue", String.valueOf(size)); 
+			IComponentInstance i1 = new ComponentInstance(compPosgreSQL, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}*/
 		
 		return componentInstances;
 	}
 	
 	public static void main(String[] args) throws InterruptedException, ExecutionException, IOException {
 		DSLContext dslContext = DSL.using(SQLDialect.MARIADB);
-		Query query = dslContext.select(field("BOOK.TITLE"), field("AUTHOR.FIRST_NAME"), field("AUTHOR.LAST_NAME"))
-                .from(table("BOOK"))
-                .join(table("AUTHOR"))
-                .on(field("BOOK.AUTHOR_ID").eq(field("AUTHOR.ID")))
-                .where(field("BOOK.PUBLISHED_IN").eq(1948));
-		Query query2 = dslContext.select(extract(Date.from(Instant.now()), DatePart.MONTH));
-		System.out.println(query2.getSQL(true));
-		// StatementType.STATIC_STATEMENT
-		System.out.println(query2.getBindValues());
+		
 		
 		/*
 		 * SelectQuery selectSalaries = new SelectQuery()
@@ -272,10 +369,10 @@ public class MainJOOQ {
 		System.out.println(query3.getSQL(true));*/
 		//System.out.println(query3.configuration().set(SQLDialect.MARIADB));
 		
-		TestDescription td = new TestDescription(1);
+		TestDescription td = new TestDescription(20);
 	    td.addQuery(1, selectSalaries);
 	    
-	    int threads = 4;
+	    int threads = 2;
 	    Benchmarker benchmarker = new Benchmarker(td, threads);
 	    
 	    List<IComponentInstance> componentInstances = getComponentInstanceExamples();
@@ -289,7 +386,12 @@ public class MainJOOQ {
 		List<Future<Double>> resultList = executor.invokeAll(taskList);
 		executor.shutdown();
 		for(Future<Double> result: resultList) {
-			System.out.println(result.get());
+			try {
+				System.out.println(result.get());
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			
 		}
 	    
 	    CSVService.getInstance().dumpToDisk();
