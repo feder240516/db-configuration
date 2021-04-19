@@ -51,7 +51,7 @@ public class MainJOOQ {
 		
 		// ########### APACHE DERBY ###################
 
-		/*int[] derbypageReservedSpaces = new int[] {0,1,2,5,10,20,50,100};
+		int[] derbypageReservedSpaces = new int[] {0,1,2,5,10,20,50,100};
 		for(int size: derbypageReservedSpaces ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("derby.storage.pageReservedSpace", String.valueOf(size));
@@ -111,10 +111,320 @@ public class MainJOOQ {
 			componentInstances.add(i1);
 		}
 		
-		// ########### MARIADB ###################
+		int[] mariaDBDivPrecisionIncrement = new int[] {0,4,8,12,16,20,24,28,30};
+		for(int size: mariaDBDivPrecisionIncrement ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("DIV_PRECISION_INCREMENT", String.valueOf(size));
+			parameterValues.put("EQ_RANGE_INDEX_DIVE_LIMIT", "200");
+			parameterValues.put("EXPENSIVE_SUBQUERY_LIMIT", "100");
+			parameterValues.put("GLOBAL FLUSH", "OFF");
+			parameterValues.put("JOIN_BUFFER_SIZE", "262144");
+			parameterValues.put("JOIN_CACHE_LEVEL", "2");
+			parameterValues.put("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", "OFF");
+			parameterValues.put("LOG_SLOW_RATE_LIMIT", "1");
+			parameterValues.put("LONG_QUERY_TIME", "10");
+			parameterValues.put("MAX_LENGTH_FOR_SORT_DATA", "1024");
+			parameterValues.put("MAX_SEEKS_FOR_KEY", "4294967295");
+			parameterValues.put("MIN_EXAMINED_ROW_LIMIT", "0");
+			parameterValues.put("OPTIMIZER_PRUNE_LEVEL", "1");
+			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
+			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
+			
+			
+			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "divPrecisionIncrement", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}
 		
-		//int[] hsqdbCacheRows = new int[] {10000,25000,50000,75000,100000};
-		int[] mariaDBOptimizerSearchDepths = new int[] {0,1,10,20,30,40,50,60};
+		
+		long[] mariaDBEQRangeIndexDiveLimit = new long[] {0,4,16,64,256,1024,4096,16384,65536,262144,1048576,4194304,8388608,33554432,134217728,536870912, 2147483648l, 4294967295l};
+		for(long size: mariaDBEQRangeIndexDiveLimit ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
+			parameterValues.put("EQ_RANGE_INDEX_DIVE_LIMIT", String.valueOf(size));
+			parameterValues.put("EXPENSIVE_SUBQUERY_LIMIT", "100");
+			parameterValues.put("GLOBAL FLUSH", "OFF");
+			parameterValues.put("JOIN_BUFFER_SIZE", "262144");
+			parameterValues.put("JOIN_CACHE_LEVEL", "2");
+			parameterValues.put("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", "OFF");
+			parameterValues.put("LOG_SLOW_RATE_LIMIT", "1");
+			parameterValues.put("LONG_QUERY_TIME", "10");
+			parameterValues.put("MAX_LENGTH_FOR_SORT_DATA", "1024");
+			parameterValues.put("MAX_SEEKS_FOR_KEY", "4294967295");
+			parameterValues.put("MIN_EXAMINED_ROW_LIMIT", "0");
+			parameterValues.put("OPTIMIZER_PRUNE_LEVEL", "1");
+			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
+			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
+			
+			
+			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "EQRangeIndexDiveLimit", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}
+		
+		int[] mariaDBExpensiveSubqueryLimit = new int[] {0,10,100,1000,10000,100000,1000000,10000000};
+		for(int size: mariaDBExpensiveSubqueryLimit ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
+			parameterValues.put("EQ_RANGE_INDEX_DIVE_LIMIT", "200");
+			parameterValues.put("EXPENSIVE_SUBQUERY_LIMIT", String.valueOf(size));
+			parameterValues.put("GLOBAL FLUSH", "OFF");
+			parameterValues.put("JOIN_BUFFER_SIZE", "262144");
+			parameterValues.put("JOIN_CACHE_LEVEL", "2");
+			parameterValues.put("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", "OFF");
+			parameterValues.put("LOG_SLOW_RATE_LIMIT", "1");
+			parameterValues.put("LONG_QUERY_TIME", "10");
+			parameterValues.put("MAX_LENGTH_FOR_SORT_DATA", "1024");
+			parameterValues.put("MAX_SEEKS_FOR_KEY", "4294967295");
+			parameterValues.put("MIN_EXAMINED_ROW_LIMIT", "0");
+			parameterValues.put("OPTIMIZER_PRUNE_LEVEL", "1");
+			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
+			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
+			
+			
+			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "expensiveSubqueryLimit", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}
+		
+		String[] mariaDBFlush = new String[] {"OFF","ON"};
+		for(String size: mariaDBFlush ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
+			parameterValues.put("EQ_RANGE_INDEX_DIVE_LIMIT", "200");
+			parameterValues.put("EXPENSIVE_SUBQUERY_LIMIT", "100");
+			parameterValues.put("GLOBAL FLUSH", size);
+			parameterValues.put("JOIN_BUFFER_SIZE", "262144");
+			parameterValues.put("JOIN_CACHE_LEVEL", "2");
+			parameterValues.put("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", "OFF");
+			parameterValues.put("LOG_SLOW_RATE_LIMIT", "1");
+			parameterValues.put("LONG_QUERY_TIME", "10");
+			parameterValues.put("MAX_LENGTH_FOR_SORT_DATA", "1024");
+			parameterValues.put("MAX_SEEKS_FOR_KEY", "4294967295");
+			parameterValues.put("MIN_EXAMINED_ROW_LIMIT", "0");
+			parameterValues.put("OPTIMIZER_PRUNE_LEVEL", "1");
+			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
+			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
+			
+			
+			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "flush", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}
+		
+		long[] mariaDBJoinBufferSize = new long[] {128,256,1024,4096,16384,65536,262144,1048576,4194304,8388608,33554432,134217728,536870912, 2147483648l};
+		for(long size: mariaDBJoinBufferSize ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
+			parameterValues.put("EQ_RANGE_INDEX_DIVE_LIMIT", "200");
+			parameterValues.put("EXPENSIVE_SUBQUERY_LIMIT", "100");
+			parameterValues.put("GLOBAL FLUSH", "OFF");
+			parameterValues.put("JOIN_BUFFER_SIZE", String.valueOf(size));
+			parameterValues.put("JOIN_CACHE_LEVEL", "2");
+			parameterValues.put("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", "OFF");
+			parameterValues.put("LOG_SLOW_RATE_LIMIT", "1");
+			parameterValues.put("LONG_QUERY_TIME", "10");
+			parameterValues.put("MAX_LENGTH_FOR_SORT_DATA", "1024");
+			parameterValues.put("MAX_SEEKS_FOR_KEY", "4294967295");
+			parameterValues.put("MIN_EXAMINED_ROW_LIMIT", "0");
+			parameterValues.put("OPTIMIZER_PRUNE_LEVEL", "1");
+			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
+			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
+			
+			
+			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "joinBufferSize", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}
+		
+		int[] mariaDBJoinCacheLevel = new int[] {0,1,2,3,4,5,6,7,8};
+		for(int size: mariaDBJoinCacheLevel ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
+			parameterValues.put("EQ_RANGE_INDEX_DIVE_LIMIT", "200");
+			parameterValues.put("EXPENSIVE_SUBQUERY_LIMIT", "100");
+			parameterValues.put("GLOBAL FLUSH", "OFF");
+			parameterValues.put("JOIN_BUFFER_SIZE", "262144");
+			parameterValues.put("JOIN_CACHE_LEVEL", String.valueOf(size));
+			parameterValues.put("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", "OFF");
+			parameterValues.put("LOG_SLOW_RATE_LIMIT", "1");
+			parameterValues.put("LONG_QUERY_TIME", "10");
+			parameterValues.put("MAX_LENGTH_FOR_SORT_DATA", "1024");
+			parameterValues.put("MAX_SEEKS_FOR_KEY", "4294967295");
+			parameterValues.put("MIN_EXAMINED_ROW_LIMIT", "0");
+			parameterValues.put("OPTIMIZER_PRUNE_LEVEL", "1");
+			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
+			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
+			
+			
+			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "joinCacheLevel", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}
+		
+		String[] mariaDBLogQueriesNotUsingIndexes = new String[] {"OFF","ON"};
+		for(String size: mariaDBLogQueriesNotUsingIndexes ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
+			parameterValues.put("EQ_RANGE_INDEX_DIVE_LIMIT", "200");
+			parameterValues.put("EXPENSIVE_SUBQUERY_LIMIT", "100");
+			parameterValues.put("GLOBAL FLUSH", "OFF");
+			parameterValues.put("JOIN_BUFFER_SIZE", "262144");
+			parameterValues.put("JOIN_CACHE_LEVEL", "2");
+			parameterValues.put("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", size);
+			parameterValues.put("LOG_SLOW_RATE_LIMIT", "1");
+			parameterValues.put("LONG_QUERY_TIME", "10");
+			parameterValues.put("MAX_LENGTH_FOR_SORT_DATA", "1024");
+			parameterValues.put("MAX_SEEKS_FOR_KEY", "4294967295");
+			parameterValues.put("MIN_EXAMINED_ROW_LIMIT", "0");
+			parameterValues.put("OPTIMIZER_PRUNE_LEVEL", "1");
+			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
+			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
+			
+			
+			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "logQueriesNotUsingIndexes", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}
+		
+		int[] mariaDBLogSlowRateLimit = new int[] {1,10,100,1000,10000,100000,1000000,10000000};
+		for(int size: mariaDBLogSlowRateLimit ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
+			parameterValues.put("EQ_RANGE_INDEX_DIVE_LIMIT", "200");
+			parameterValues.put("EXPENSIVE_SUBQUERY_LIMIT", "100");
+			parameterValues.put("GLOBAL FLUSH", "OFF");
+			parameterValues.put("JOIN_BUFFER_SIZE", "262144");
+			parameterValues.put("JOIN_CACHE_LEVEL", "2");
+			parameterValues.put("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", "OFF");
+			parameterValues.put("LOG_SLOW_RATE_LIMIT", String.valueOf(size));
+			parameterValues.put("LONG_QUERY_TIME", "10");
+			parameterValues.put("MAX_LENGTH_FOR_SORT_DATA", "1024");
+			parameterValues.put("MAX_SEEKS_FOR_KEY", "4294967295");
+			parameterValues.put("MIN_EXAMINED_ROW_LIMIT", "0");
+			parameterValues.put("OPTIMIZER_PRUNE_LEVEL", "1");
+			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
+			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
+			
+			
+			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "logSlowRateLimit", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}
+		
+		int[] mariaDBLongQueryTime = new int[] {0,1,5,10,15,20,50,100,1000,10000,100000,1000000,10000000};
+		for(int size: mariaDBLongQueryTime ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
+			parameterValues.put("EQ_RANGE_INDEX_DIVE_LIMIT", "200");
+			parameterValues.put("EXPENSIVE_SUBQUERY_LIMIT", "100");
+			parameterValues.put("GLOBAL FLUSH", "OFF");
+			parameterValues.put("JOIN_BUFFER_SIZE", "262144");
+			parameterValues.put("JOIN_CACHE_LEVEL", "2");
+			parameterValues.put("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", "OFF");
+			parameterValues.put("LOG_SLOW_RATE_LIMIT", "1");
+			parameterValues.put("LONG_QUERY_TIME", String.valueOf(size));
+			parameterValues.put("MAX_LENGTH_FOR_SORT_DATA", "1024");
+			parameterValues.put("MAX_SEEKS_FOR_KEY", "4294967295");
+			parameterValues.put("MIN_EXAMINED_ROW_LIMIT", "0");
+			parameterValues.put("OPTIMIZER_PRUNE_LEVEL", "1");
+			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
+			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
+			
+			
+			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "longQueryTime", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}
+		
+		int[] mariaDBMaxLengthForSortData = new int[] {4,16,64,256,1024,4096,16384,65536,262144,1048576,4194304,8388608};
+		for(int size: mariaDBMaxLengthForSortData ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
+			parameterValues.put("EQ_RANGE_INDEX_DIVE_LIMIT", "200");
+			parameterValues.put("EXPENSIVE_SUBQUERY_LIMIT", "100");
+			parameterValues.put("GLOBAL FLUSH", "OFF");
+			parameterValues.put("JOIN_BUFFER_SIZE", "262144");
+			parameterValues.put("JOIN_CACHE_LEVEL", "2");
+			parameterValues.put("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", "OFF");
+			parameterValues.put("LOG_SLOW_RATE_LIMIT", "1");
+			parameterValues.put("LONG_QUERY_TIME", "10");
+			parameterValues.put("MAX_LENGTH_FOR_SORT_DATA", String.valueOf(size));
+			parameterValues.put("MAX_SEEKS_FOR_KEY", "4294967295");
+			parameterValues.put("MIN_EXAMINED_ROW_LIMIT", "0");
+			parameterValues.put("OPTIMIZER_PRUNE_LEVEL", "1");
+			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
+			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
+			
+			
+			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "maxLengthForSortData", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}
+		
+		long[] mariaDBMaxSeeksForKey = new long[] {1, 16, 256, 4096, 65536, 1048576, 16777216, 268435456, 4294967295l};
+		for(long size: mariaDBMaxSeeksForKey ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
+			parameterValues.put("EQ_RANGE_INDEX_DIVE_LIMIT", "200");
+			parameterValues.put("EXPENSIVE_SUBQUERY_LIMIT", "100");
+			parameterValues.put("GLOBAL FLUSH", "OFF");
+			parameterValues.put("JOIN_BUFFER_SIZE", "262144");
+			parameterValues.put("JOIN_CACHE_LEVEL", "2");
+			parameterValues.put("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", "OFF");
+			parameterValues.put("LOG_SLOW_RATE_LIMIT", "1");
+			parameterValues.put("LONG_QUERY_TIME", "10");
+			parameterValues.put("MAX_LENGTH_FOR_SORT_DATA", "1024");
+			parameterValues.put("MAX_SEEKS_FOR_KEY", String.valueOf(size));
+			parameterValues.put("MIN_EXAMINED_ROW_LIMIT", "0");
+			parameterValues.put("OPTIMIZER_PRUNE_LEVEL", "1");
+			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
+			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
+			
+			
+			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "maxSeeksForKey", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}
+		
+		long[] mariaDBMinExaminedRowLimit = new long[] {0, 16, 256, 4096, 65536, 1048576, 16777216, 268435456, 4294967295l};
+		for(long size: mariaDBMinExaminedRowLimit ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
+			parameterValues.put("EQ_RANGE_INDEX_DIVE_LIMIT", "200");
+			parameterValues.put("EXPENSIVE_SUBQUERY_LIMIT", "100");
+			parameterValues.put("GLOBAL FLUSH", "OFF");
+			parameterValues.put("JOIN_BUFFER_SIZE", "262144");
+			parameterValues.put("JOIN_CACHE_LEVEL", "2");
+			parameterValues.put("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", "OFF");
+			parameterValues.put("LOG_SLOW_RATE_LIMIT", "1");
+			parameterValues.put("LONG_QUERY_TIME", "10");
+			parameterValues.put("MAX_LENGTH_FOR_SORT_DATA", "1024");
+			parameterValues.put("MAX_SEEKS_FOR_KEY", "4294967295");
+			parameterValues.put("MIN_EXAMINED_ROW_LIMIT", String.valueOf(size));
+			parameterValues.put("OPTIMIZER_PRUNE_LEVEL", "1");
+			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
+			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
+			
+			
+			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "minExaminedRowLimit", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}
+		
+		int[] mariaDBOptimizerSearchDepths = new int[] {0,1,10,20,30,40,50,60,62};
 		for(int size: mariaDBOptimizerSearchDepths ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
@@ -198,8 +508,7 @@ public class MainJOOQ {
 		}
 		
 		// ########### HSQLDB ###################
-		
-		int[] hsqdbCacheRows = new int[] {100,1000,10000,100000,1000000};
+		int[] hsqdbCacheRows = new int[] {100,500,1000,5000,10000,50000,100000,500000,1000000};
 		for(int size: hsqdbCacheRows ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("hsqldb.cache_rows", String.valueOf(size));
@@ -231,6 +540,20 @@ public class MainJOOQ {
 			componentInstances.add(i1);
 		}
 		
+		int[] hsqdbResultMaxMemoryRows = new int[] {0, 1001,5000,10000,50000,100000,500000,1000000,5000000,10000000};
+		for(int size: hsqdbResultMaxMemoryRows ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("hsqldb.cache_rows", "50000");
+			parameterValues.put("hsqldb.nio_data_file", "TRUE");
+			parameterValues.put("hsqldb.nio_max_size", "256");
+			parameterValues.put("hsqldb.result_max_memory_rows", String.valueOf(size));
+			parameterValues.put("hsqldb.applog", "0");
+			parameterValues.put("__instanceID", String.format("HSQLDB_%s_%d", "hsqldb.result_max_memory_rows", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compHSQL, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}
+		
 		int[] hsqdbAppLog = new int[] {0,1,2,3};
 		for(int size: hsqdbAppLog ) {
 			Map<String, String> parameterValues = new HashMap<>();
@@ -248,7 +571,7 @@ public class MainJOOQ {
 		}*/
 		
 		// ############ POSTGRESQL #############
-		/*int[] postgresWorkMem = new int[] {64,256,1024,4096,16384,65536,262144};
+		int[] postgresWorkMem = new int[] {64,256,1024,4096,16384,65536,262144};
 		for(int size: postgresWorkMem ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("work_mem", String.valueOf(size));
@@ -260,7 +583,7 @@ public class MainJOOQ {
 			parameterValues.put("__evalVarValue", String.valueOf(size)); 
 			IComponentInstance i1 = new ComponentInstance(compPosgreSQL, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
-		}*/
+		}
 
 		int[] postgresSharedBuffers = new int[] {16,64,256,1024,4096,16384,65536,131072,262144};
 		for(int size: postgresSharedBuffers ) {
@@ -276,7 +599,7 @@ public class MainJOOQ {
 			componentInstances.add(i1);
 		}
 		
-		/*double[] postgresHashMemMultipliers = new double[] {1.,2.,5.,10.,20.};
+		double[] postgresHashMemMultipliers = new double[] {1.,2.,5.,10.,20.};
 		for(double size: postgresHashMemMultipliers ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("work_mem", "4096");
@@ -288,7 +611,7 @@ public class MainJOOQ {
 			parameterValues.put("__evalVarValue", String.valueOf(size)); 
 			IComponentInstance i1 = new ComponentInstance(compPosgreSQL, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
-		}*/
+		}
 		
 		return componentInstances;
 	}
