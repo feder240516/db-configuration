@@ -70,10 +70,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 					ps.close();
 				}
 			}
-			//ps.execute();
 			
-			
-			System.out.println("Parameters were applied successfully");
 		}
 		
 	}
@@ -116,7 +113,6 @@ public abstract class ADatabaseHandle implements IDatabase {
 				System.out.println("Could not connect to port " + port);
 				throw e;
 			} finally {
-				System.out.println("finally executed");
 				if (conn != null && !conn.isClosed()) { conn.close(); }
 			}
 		
@@ -163,7 +159,6 @@ public abstract class ADatabaseHandle implements IDatabase {
 			Date after = new Date();
 			double score = after.getTime() - before.getTime();
 			ps.close();
-			System.out.println("A query was executed");
 			System.out.println(String.format("Score %f for port %d",score,port));
 			return score;
 		}	

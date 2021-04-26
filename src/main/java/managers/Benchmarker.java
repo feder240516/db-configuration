@@ -66,7 +66,6 @@ public class Benchmarker {
 		if (lq.size() == 0) { }
 		else if (lq.size() == 1) {
 			String query = lq.get(0);
-			System.out.println(String.format("query: %s",query));
 			singleScore = new QueryCallable(dbHandle, query).call();
 			repetitionScore += singleScore;
 		} else {
@@ -143,6 +142,7 @@ public class Benchmarker {
 			System.out.println(String.format("Number of tests programmed: %d", test.numberOfTests));
 			List<Double> testResults = runAllTests(test.numberOfTests,queries,dbHandle, executor);
 			writeTestResults(testResults, handleID, componentInstance);
+			score = testResults.stream().reduce(0., (a,b)->{return a + b;});
 		} catch (Exception e) {
 			e.printStackTrace();
 			score = Double.MAX_VALUE;

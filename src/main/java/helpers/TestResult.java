@@ -10,6 +10,7 @@ public class TestResult {
 	private String variable;
 	private double variableValue;
 	private String queryProfileID;
+	private String isDefault;
 	
 	public TestResult(String dbInstance, double time, IComponentInstance componentInstance, String queryProfileID) {
 		super();
@@ -27,6 +28,7 @@ public class TestResult {
 		String val = componentInstance.getParameterValue("__evalVarValue");
 		tryAssignVariableValue(val);
 		this.queryProfileID = queryProfileID;
+		this.isDefault = componentInstance.getParameterValue("__isDefault");
 	}
 
 	private void tryAssignVariableValue(String valStr) {
@@ -66,6 +68,10 @@ public class TestResult {
 
 	public String getQueryProfileID() {
 		return queryProfileID;
+	}
+	
+	public String isDefault() {
+		return isDefault;
 	}
 	
 }
