@@ -21,12 +21,17 @@ public class CSVService {
 	}
 	
 	public List<TestResult> testResults;
+	public List<TestResult> failedTests;
 	public CSVService() {
 		testResults = new ArrayList<>();
 	}
 	
 	public synchronized void writeTest(TestResult testResult) {
 		if (testResult != null) testResults.add(testResult);
+	}
+	
+	public synchronized void addFailedTest(TestResult testResult) {
+		if (testResult != null) failedTests.add(testResult);
 	}
 	
 	public void dumpToDisk() throws IOException {
@@ -43,5 +48,12 @@ public class CSVService {
 										testResult.getVariableValue());
 			}
 	    }
+		bw.close();
+		FileWriter fwError = new FileWriter("testFailures.log");
+		BufferedWriter bwError = new BufferedWriter(fwError);
+		for(TestResult fail: failedTests) {
+			bwError.write(String.format("Failed test for db %s, instance %s, testing variable %s with value %f.\r\n", fail.getRdms(), fail.getComponentInstanceID(), fail.getVariable(), fail.getVariableValue()));
+		}
+		bwError.close();
 	}
 }

@@ -19,18 +19,20 @@ public class TestDescription {
 	public TreeMap<Integer,List<Query>> queries;
 	public List<Query> schemaBuildQueries;
 	public int numberOfTests;
+	public String ID;
 	
-	public TestDescription() {
-		this(1);
+	public TestDescription(String ID) {
+		this(ID,1);
 	}
 	
-	public TestDescription(int numberOfTests) {
-		this(numberOfTests, null);
+	public TestDescription(String ID, int numberOfTests) {
+		this(ID, numberOfTests, null);
 	}
 	
-	public TestDescription(int numberOfTests, List<Query> schemaQueries) {
+	public TestDescription(String ID, int numberOfTests, List<Query> schemaQueries) {
 		testResults = new DescriptiveStatistics();
 		queries = new TreeMap<>();
+		this.ID = ID;
 		this.numberOfTests = numberOfTests;
 	}
 	
@@ -59,13 +61,6 @@ public class TestDescription {
 		for (Query query: queries) {
 			addQuery(newPriority, query);
 		}
-	}
-	
-	public TestDescription convertToDBSystem(String dbSystem) {
-		for(Entry<Integer, List<Query>> entry: queries.entrySet()) {
-			//entry.getValue().get(0).der
-		}
-		return null;
 	}
 	
 	public synchronized Map<Integer,List<String>> generateQueries(String dbSystem){

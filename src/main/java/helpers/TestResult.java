@@ -9,8 +9,9 @@ public class TestResult {
 	private String rdms;
 	private String variable;
 	private double variableValue;
+	private String queryProfileID;
 	
-	public TestResult(String dbInstance, double time, IComponentInstance componentInstance) {
+	public TestResult(String dbInstance, double time, IComponentInstance componentInstance, String queryProfileID) {
 		super();
 		this.dbInstance = dbInstance;
 		String instanceID = componentInstance.getParameterValue("__instanceID"); 
@@ -25,7 +26,7 @@ public class TestResult {
 		if (this.variable == null) { this.variable = "NOT_SPECIFIED"; } 
 		String val = componentInstance.getParameterValue("__evalVarValue");
 		tryAssignVariableValue(val);
-		System.out.println(this);
+		this.queryProfileID = queryProfileID;
 	}
 
 	private void tryAssignVariableValue(String valStr) {
@@ -61,6 +62,10 @@ public class TestResult {
 
 	public double getVariableValue() {
 		return variableValue;
+	}
+
+	public String getQueryProfileID() {
+		return queryProfileID;
 	}
 	
 }

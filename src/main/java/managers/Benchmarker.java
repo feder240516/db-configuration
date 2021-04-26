@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.xml.utils.UnImplNode;
@@ -18,6 +19,7 @@ import org.jooq.Query;
 
 import EDU.oswego.cs.dl.util.concurrent.Semaphore;
 import ai.libs.jaicore.components.api.IComponentInstance;
+import exceptions.TooManyFailuresException;
 import exceptions.UnavailablePortsException;
 import handlers.ADatabaseHandle;
 import helpers.TestDescription;
@@ -25,7 +27,25 @@ import helpers.TestResult;
 import junit.framework.AssertionFailedError;
 import services.CSVService;
 
+class QueryCallable implements Callable<Double> {
+
+	ADatabaseHandle dbHandle;
+	String query;
+	
+	QueryCallable(ADatabaseHandle dbHandle, String query){
+		this.dbHandle = dbHandle;
+		this.query = query;
+	}
+	
+	@Override
+	public Double call() throws Exception {
+		return dbHandle.benchmarkQuery(query);
+	}
+	
+}
+
 public class Benchmarker {
+	private static final int MAX_QUERY_RETRIES = 5;
 	DBSystemFactory dbSystemFactory;
 	TestDescription test;
 	Semaphore semaphore;
@@ -40,6 +60,67 @@ public class Benchmarker {
 		this.dbSystemFactory = dbSystemFactory;
 	}
 	
+	private double runSingleTest(List<String> lq, ADatabaseHandle dbHandle, ExecutorService executor) throws Exception {
+		double singleScore = 0, repetitionScore = 0;
+		
+		if (lq.size() == 0) { }
+		else if (lq.size() == 1) {
+			String query = lq.get(0);
+			System.out.println(String.format("query: %s",query));
+			singleScore = new QueryCallable(dbHandle, query).call();
+			repetitionScore += singleScore;
+		} else {
+			List<Callable<Double>> taskList = new ArrayList<>();
+			for (String query: lq) {
+				taskList.add(new QueryCallable(dbHandle, query));
+			}
+			List<Future<Double>> results = executor.invokeAll(taskList);
+			singleScore = 0;
+			try {
+				for(Future<Double> result: results) {
+					double value = result.get();
+					singleScore = Math.max(value, singleScore);
+				}
+			} catch (Exception e) {
+				singleScore = Double.POSITIVE_INFINITY;
+			}
+			repetitionScore = singleScore == Double.MAX_VALUE ? Double.MAX_VALUE: repetitionScore + singleScore;
+		}
+		return repetitionScore;
+	}
+	
+	private void writeTestResults(List<Double> testResults, UUID handleID, IComponentInstance componentInstance) {
+		for(double repetitionScore: testResults) {
+			CSVService.getInstance().writeTest(new TestResult(handleID.toString(),repetitionScore,componentInstance, test.ID));
+		}
+	}
+	
+	private void markFailure(UUID handleID, IComponentInstance componentInstance) {
+		CSVService.getInstance().addFailedTest(new TestResult(handleID.toString(),-1,componentInstance, test.ID));
+	}
+	
+	private List<Double> runAllTests(int numberOfTests, Map<Integer, List<String>> queries, ADatabaseHandle dbHandle, ExecutorService executor) throws Exception {
+		int failures = 0;
+		List<Double> scoresForReport = new ArrayList<Double>();
+		while(scoresForReport.size() < test.numberOfTests) {
+			boolean failed = false;
+			double repetitionScore = 0;
+			try {
+				dbHandle.initiateServer();
+				for(List<String> lq: queries.values()) {
+					repetitionScore = runSingleTest(lq, dbHandle, executor);
+				}
+				dbHandle.stopServer();
+				scoresForReport.add(repetitionScore);
+			}catch(Exception e) {
+				failed = true;
+				failures++;
+			}
+			if(failures >= MAX_QUERY_RETRIES) { throw new TooManyFailuresException("TEST_FAILED"); }
+		}
+		return scoresForReport;
+	}
+	
 	public double benchmark(IComponentInstance componentInstance) throws InterruptedException, ExecutionException, UnavailablePortsException, IOException, SQLException {
 		semaphore.acquire();
 		double score = 0, singleScore = 0, repetitionScore = 0;
@@ -47,34 +128,33 @@ public class Benchmarker {
 		UUID handleID = null;
 		String dbSystem = componentInstance.getComponent().getName();
 		Map<Integer, List<String>> queries = test.generateQueries(dbSystem);
+		ExecutorService executor = null;
 		try {
+			executor = (ExecutorService) Executors.newCachedThreadPool();
+			/*int threads = queries.values()
+								.stream()
+								.max((a,b) -> {return a.size() - b.size();})
+								.orElse(new ArrayList<>())
+								.size();
 			
+			if (threads > 1) { executor = (ExecutorService) Executors.newFixedThreadPool(threads); }*/
 			dbHandle = dbSystemFactory.createHandle(componentInstance, test);
 			handleID = dbHandle.getUUID();
 			System.out.println(String.format("Number of tests programmed: %d", test.numberOfTests));
-			for(int i = 0; i < test.numberOfTests; ++i) {
-				repetitionScore = 0;
-				dbHandle.initiateServer();
-				for(List<String> lq: queries.values()) {
-					if (lq.size() == 1) {
-						System.out.println(String.format("query: %s",lq.get(0).toString()));
-						singleScore = dbHandle.benchmarkQuery(lq.get(0));
-						repetitionScore += singleScore;
-					}else {
-						// TODO: Handle multiple concurrent queries
-						throw new UnsupportedOperationException();
-					}
-				}
-				dbHandle.stopServer();
-				score += repetitionScore;
-				CSVService.getInstance().writeTest(new TestResult(handleID.toString(),repetitionScore,componentInstance));
-			}
+			List<Double> testResults = runAllTests(test.numberOfTests,queries,dbHandle, executor);
+			writeTestResults(testResults, handleID, componentInstance);
 		} catch (Exception e) {
 			e.printStackTrace();
 			score = Double.MAX_VALUE;
+			if (handleID == null) handleID = UUID.randomUUID();
+			markFailure(handleID, componentInstance);
 			if (dbHandle != null) dbHandle.stopServer();
 		} finally {
 			if (dbHandle != null) { dbHandle.cleanup(); }
+			if (executor != null) {
+				executor.shutdown();
+				executor.awaitTermination(999999, TimeUnit.DAYS);
+			}
 			semaphore.release();
 			System.out.println(String.format("Semaphore released"));
 		}

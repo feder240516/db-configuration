@@ -50,7 +50,7 @@ public class MainJOOQ {
 		List<IComponentInstance> componentInstances = new ArrayList<>();
 		
 		// ########### APACHE DERBY ###################
-
+		/*
 		int[] derbypageReservedSpaces = new int[] {0,1,2,5,10,20,50,100};
 		for(int size: derbypageReservedSpaces ) {
 			Map<String, String> parameterValues = new HashMap<>();
@@ -61,10 +61,12 @@ public class MainJOOQ {
 			parameterValues.put("__instanceID", String.format("DERBY_%s_%d", "pageReservedSpace", size));
 			parameterValues.put("__evalVar", "derby.storage.pageReservedSpace");
 			parameterValues.put("__evalVarValue", String.valueOf(size));
+			parameterValues.put("__isDefault", String.valueOf(size == 20));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compDerby, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
 		}
+		*/
 
 		int[] derbyPageSizes = new int[] {4096,8192,16384,32768};
 		for(int size: derbyPageSizes ) {
@@ -76,11 +78,12 @@ public class MainJOOQ {
 			parameterValues.put("__instanceID", String.format("DERBY_%s_%d", "pageSize", size));
 			parameterValues.put("__evalVar", "derby.storage.pageSize");
 			parameterValues.put("__evalVarValue", String.valueOf(size));
+			parameterValues.put("__isDefault", String.valueOf(size == 4096));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compDerby, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
 		}
-		
+		/*
 		int[] derbyInitialPages= new int[] {1,5,10,50,100,500,1000};
 		for(int size: derbyInitialPages ) {
 			Map<String, String> parameterValues = new HashMap<>();
@@ -91,6 +94,7 @@ public class MainJOOQ {
 			parameterValues.put("__instanceID", String.format("DERBY_%s_%d", "initialPages", size));
 			parameterValues.put("__evalVar", "derby.storage.initialPages");
 			parameterValues.put("__evalVarValue", String.valueOf(size));
+			parameterValues.put("__isDefault", String.valueOf(size == 1));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compDerby, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
@@ -106,6 +110,7 @@ public class MainJOOQ {
 			parameterValues.put("__instanceID", String.format("DERBY_%s_%d", "statementCacheSize", size));
 			parameterValues.put("__evalVar", "derby.language.statementCacheSize");
 			parameterValues.put("__evalVarValue", String.valueOf(size));
+			parameterValues.put("__isDefault", String.valueOf(size == 100));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compDerby, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
@@ -129,7 +134,9 @@ public class MainJOOQ {
 			parameterValues.put("OPTIMIZER_PRUNE_LEVEL", "1");
 			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
 			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
-			
+			parameterValues.put("__isDefault", String.valueOf(size == 20));
+			parameterValues.put("__evalVar", "DIV_PRECISION_INCREMENT");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
 			
 			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "divPrecisionIncrement", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
@@ -156,7 +163,9 @@ public class MainJOOQ {
 			parameterValues.put("OPTIMIZER_PRUNE_LEVEL", "1");
 			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
 			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
-			
+			parameterValues.put("__isDefault", String.valueOf(size == 200));
+			parameterValues.put("__evalVar", "EQ_RANGE_INDEX_DIVE_LIMIT");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
 			
 			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "EQRangeIndexDiveLimit", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
@@ -182,8 +191,9 @@ public class MainJOOQ {
 			parameterValues.put("OPTIMIZER_PRUNE_LEVEL", "1");
 			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
 			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
-			
-			
+			parameterValues.put("__evalVar", "EXPENSIVE_SUBQUERY_LIMIT");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
+			parameterValues.put("__isDefault", String.valueOf(size == 100));
 			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "expensiveSubqueryLimit", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
@@ -208,8 +218,9 @@ public class MainJOOQ {
 			parameterValues.put("OPTIMIZER_PRUNE_LEVEL", "1");
 			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
 			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
-			
-			
+			parameterValues.put("__evalVar", "GLOBAL FLUSH");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
+			parameterValues.put("__isDefault", String.valueOf(size == "OFF"));
 			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "flush", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
@@ -235,7 +246,9 @@ public class MainJOOQ {
 			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
 			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
 			
-			
+			parameterValues.put("__evalVar", "JOIN_BUFFER_SIZE");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
+			parameterValues.put("__isDefault", String.valueOf(size == 262144));
 			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "joinBufferSize", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
@@ -261,7 +274,9 @@ public class MainJOOQ {
 			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
 			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
 			
-			
+			parameterValues.put("__evalVar", "JOIN_CACHE_LEVEL");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
+			parameterValues.put("__isDefault", String.valueOf(size == 2));
 			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "joinCacheLevel", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
@@ -287,7 +302,9 @@ public class MainJOOQ {
 			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
 			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
 			
-			
+			parameterValues.put("__evalVar", "GLOBAL LOG_QUERIES_NOT_USING_INDEXES");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
+			parameterValues.put("__isDefault", String.valueOf(size == "OFF"));
 			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "logQueriesNotUsingIndexes", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
@@ -313,7 +330,9 @@ public class MainJOOQ {
 			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
 			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
 			
-			
+			parameterValues.put("__evalVar", "LOG_SLOW_RATE_LIMIT");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
+			parameterValues.put("__isDefault", String.valueOf(size == 1));
 			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "logSlowRateLimit", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
@@ -339,7 +358,9 @@ public class MainJOOQ {
 			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
 			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
 			
-			
+			parameterValues.put("__evalVar", "LONG_QUERY_TIME");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
+			parameterValues.put("__isDefault", String.valueOf(size == 10));
 			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "longQueryTime", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
@@ -365,7 +386,9 @@ public class MainJOOQ {
 			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
 			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
 			
-			
+			parameterValues.put("__evalVar", "MAX_LENGTH_FOR_SORT_DATA");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
+			parameterValues.put("__isDefault", String.valueOf(size == 1024));
 			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "maxLengthForSortData", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
@@ -391,7 +414,9 @@ public class MainJOOQ {
 			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
 			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
 			
-			
+			parameterValues.put("__evalVar", "MAX_SEEKS_FOR_KEY");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
+			parameterValues.put("__isDefault", String.valueOf(size == 4294967295L));
 			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "maxSeeksForKey", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
@@ -417,7 +442,9 @@ public class MainJOOQ {
 			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
 			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
 			
-			
+			parameterValues.put("__evalVar", "MIN_EXAMINED_ROW_LIMIT");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
+			parameterValues.put("__isDefault", String.valueOf(size == 0));
 			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "minExaminedRowLimit", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
@@ -443,9 +470,9 @@ public class MainJOOQ {
 			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", String.valueOf(size));
 			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
 			
-			
+			parameterValues.put("__isDefault", String.valueOf(size == 62));
 			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "optimizerSearchDepth", size));
-			parameterValues.put("__evalVar", "optimizerSearchDepth");
+			parameterValues.put("__evalVar", "OPTIMIZER_SEARCH_DEPTH");
 			parameterValues.put("__evalVarValue", String.valueOf(size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
@@ -471,9 +498,9 @@ public class MainJOOQ {
 			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
 			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
 			
-			
+			parameterValues.put("__isDefault", String.valueOf(size == 1));
 			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "optimizerPruneLevel", size));
-			parameterValues.put("__evalVar", "optimizerPruneLevel");
+			parameterValues.put("__evalVar", "OPTIMIZER_PRUNE_LEVEL");
 			parameterValues.put("__evalVarValue", String.valueOf(size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
@@ -499,8 +526,9 @@ public class MainJOOQ {
 			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "62");
 			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", String.valueOf(size));
 			
+			parameterValues.put("__isDefault", String.valueOf(size == 4));
 			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "optimizerUseConditionSelectivity", size));
-			parameterValues.put("__evalVar", "optimizerUseConditionSelectivity");
+			parameterValues.put("__evalVar", "OPTIMIZER_USE_CONDITION_SELECTIVITY");
 			parameterValues.put("__evalVarValue", String.valueOf(size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
@@ -516,6 +544,7 @@ public class MainJOOQ {
 			parameterValues.put("hsqldb.nio_max_size", "256");
 			parameterValues.put("hsqldb.result_max_memory_rows", "0");
 			parameterValues.put("hsqldb.applog", "0");
+			parameterValues.put("__isDefault", String.valueOf(size == 50000));
 			parameterValues.put("__instanceID", String.format("HSQLDB_%s_%d", "hsqldb.cache_rows", size));
 			parameterValues.put("__evalVar", "hsqldb.cache_rows");
 			parameterValues.put("__evalVarValue", String.valueOf(size));
@@ -532,6 +561,7 @@ public class MainJOOQ {
 			parameterValues.put("hsqldb.nio_max_size", String.valueOf(size));
 			parameterValues.put("hsqldb.result_max_memory_rows", "0");
 			parameterValues.put("hsqldb.applog", "0");
+			parameterValues.put("__isDefault", String.valueOf(size == 256));
 			parameterValues.put("__instanceID", String.format("HSQLDB_%s_%d", "hsqldb.nio_max_size", size));
 			parameterValues.put("__evalVar", "hsqldb.nio_max_size");
 			parameterValues.put("__evalVarValue", String.valueOf(size));
@@ -548,7 +578,10 @@ public class MainJOOQ {
 			parameterValues.put("hsqldb.nio_max_size", "256");
 			parameterValues.put("hsqldb.result_max_memory_rows", String.valueOf(size));
 			parameterValues.put("hsqldb.applog", "0");
+			parameterValues.put("__isDefault", String.valueOf(size == 0));
 			parameterValues.put("__instanceID", String.format("HSQLDB_%s_%d", "hsqldb.result_max_memory_rows", size));
+			parameterValues.put("__evalVar", "hsqldb.result_max_memory_rows");
+			parameterValues.put("__evalVarValue", String.valueOf(size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compHSQL, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
@@ -562,13 +595,14 @@ public class MainJOOQ {
 			parameterValues.put("hsqldb.nio_max_size", "256");
 			parameterValues.put("hsqldb.result_max_memory_rows", "0");
 			parameterValues.put("hsqldb.applog", String.valueOf(size));
+			parameterValues.put("__isDefault", String.valueOf(size == 0));
 			parameterValues.put("__instanceID", String.format("HSQLDB_%s_%d", "hsqldb.app_log", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>();
 			parameterValues.put("__evalVar", "hsqldb.app_log");
 			parameterValues.put("__evalVarValue", String.valueOf(size)); 
 			IComponentInstance i1 = new ComponentInstance(compHSQL, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
-		}*/
+		}
 		
 		// ############ POSTGRESQL #############
 		int[] postgresWorkMem = new int[] {64,256,1024,4096,16384,65536,262144};
@@ -577,6 +611,7 @@ public class MainJOOQ {
 			parameterValues.put("work_mem", String.valueOf(size));
 			parameterValues.put("shared_buffers", "131072");
 			parameterValues.put("hash_mem_multiplier", "1");
+			parameterValues.put("__isDefault", String.valueOf(size == 4096));
 			parameterValues.put("__instanceID", String.format("POSTGRESQL_%s_%d", "work_mem", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>();
 			parameterValues.put("__evalVar", "work_mem");
@@ -591,6 +626,7 @@ public class MainJOOQ {
 			parameterValues.put("work_mem", "4096");
 			parameterValues.put("shared_buffers", String.valueOf(size));
 			parameterValues.put("hash_mem_multiplier", "1");
+			parameterValues.put("__isDefault", String.valueOf(size == 131072));
 			parameterValues.put("__instanceID", String.format("POSTGRESQL_%s_%d", "shared_buffers", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>();
 			parameterValues.put("__evalVar", "shared_buffers");
@@ -605,6 +641,7 @@ public class MainJOOQ {
 			parameterValues.put("work_mem", "4096");
 			parameterValues.put("shared_buffers", "131072");
 			parameterValues.put("hash_mem_multiplier", String.valueOf(size));
+			parameterValues.put("__isDefault", String.valueOf(size == 1));
 			parameterValues.put("__instanceID", String.format("POSTGRESQL_%s_%f", "hash_mem_multiplier", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>();
 			parameterValues.put("__evalVar", "hash_mem_multiplier");
@@ -612,7 +649,7 @@ public class MainJOOQ {
 			IComponentInstance i1 = new ComponentInstance(compPosgreSQL, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
 		}
-		
+		*/
 		return componentInstances;
 	}
 	
@@ -679,6 +716,9 @@ public class MainJOOQ {
 	    				.addCustomColumns(new CustomSql(String.format("%s%s", FunctionCall.max().addColumnParams(employees_empNoCol), "+1")), birthDate,fName, lName,gender,  new CustomSql(String.format("'%s' %s", hireDate, "FROM employees t0")))).validate();
 		 */
 		
+		Query insertEmployee = dslContext.insertInto(table("employees"), field("employees.emp_no"), field("employees.birth_date"), field("first_name"), field("last_name"), field("gender"), field("hire_date"))
+										.select(dslContext.select(max(field("employees.emp_no")).add(1), field("employees.birth_date"), field("first_name"), field("last_name"), field("gender"), field("hire_date")));
+		
 		/*Query insertEmployee = dslContext.insertInto(table("employees"), field("emp_no"), field("birth_date"), field("first_name"), field("last_name"), field("gender"), field("hire_date"))
 											.values(values);*/
 		//select();
@@ -692,7 +732,7 @@ public class MainJOOQ {
 		System.out.println(query3.getSQL(true));*/
 		//System.out.println(query3.configuration().set(SQLDialect.MARIADB));
 		
-		TestDescription td = new TestDescription(20);
+		TestDescription td = new TestDescription("Only select salaries", 2);
 	    td.addQuery(1, selectSalaries);
 	    
 	    int threads = 2;
