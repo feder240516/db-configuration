@@ -141,7 +141,7 @@ public class Benchmarker {
 			handleID = dbHandle.getUUID();
 			System.out.println(String.format("Number of tests programmed: %d", test.numberOfTests));
 			List<Double> testResults = runAllTests(test.numberOfTests,queries,dbHandle, executor);
-			writeTestResults(testResults, handleID, componentInstance);
+			//writeTestResults(testResults, handleID, componentInstance);
 			score = testResults.stream().reduce(0., (a,b)->{return a + b;});
 		} catch (Exception e) {
 			e.printStackTrace();
