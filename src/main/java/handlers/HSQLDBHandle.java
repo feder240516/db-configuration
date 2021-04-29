@@ -6,16 +6,21 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Map;
+
 import ai.libs.jaicore.components.api.IComponentInstance;
 import exceptions.UnavailablePortsException;
+import managers.db.parameters.HSQLDBParameterManager;
 
 public class HSQLDBHandle extends ADatabaseHandle {
 
-	static String instancesPath = "D:/Bibliotecas/Documents/_Programming_Assets/HSQLDB/instances";
-	static String baseDataPath = "D:/Bibliotecas/Documents/_Programming_Assets/HSQLDB/data";
+	static String instancesPath = "C:/Users/WIN/Desktop/HSQLDB_Instances/instances";
+	static String baseDataPath = "C:/Users/WIN/Desktop/HSQLDB_Instances/data";
+	
+	//Map<String, String> shortcutCommands = new HashMap<>();
 	
 	public HSQLDBHandle(IComponentInstance ci) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
-		super(ci);
+		super(ci, new HSQLDBParameterManager());
 	}
 
 	public boolean executeCommand(String cmdLine) {
@@ -35,15 +40,15 @@ public class HSQLDBHandle extends ADatabaseHandle {
 	
 	@Override
 	protected String[] getStartCommand() {
-		String extraPath = "\\lib\\hsqldb.jar";
+		String extraPath = "lib\\hsqldb.jar";
 		String HSQLDBHome = System.getenv("HSQLDB_HOME");
 		
-		String dataDir = createdInstancePath+ "";
+		String dataDir = createdInstancePath + "\\db";
 		
 		String hsqldbdbPath = String.format("\"%s%s\"", HSQLDBHome, extraPath);
 		
-		String[] cmdStart = {"cmd.exe", "/c", String.format("java -cp %s org.hsqldb.Server -database.0 file:%s -port %s", hsqldbdbPath, "./", port)};
-		System.out.println("Start command on port " + port + ": " + String.format("java -cp %s org.hsqldb.Server -database.0 file:%s -port %s", hsqldbdbPath, "./", port));
+		String[] cmdStart = {"cmd.exe", "/c", String.format("java -cp %s org.hsqldb.Server -database.0 file:%s -port %s", hsqldbdbPath, dataDir, port)};
+		System.out.println("Start command on port " + port + ": " + String.format("java -cp %s org.hsqldb.Server -database.0 file:%s -port %s", hsqldbdbPath, dataDir, port));
 		return cmdStart;
 	}
 
@@ -80,9 +85,6 @@ public class HSQLDBHandle extends ADatabaseHandle {
 
 	@Override
 	protected void createAndFillDatabase() {}
-
-	@Override
-	protected void setupInitedDB() {}
 
 	@Override
 	protected String getConnectionString() {

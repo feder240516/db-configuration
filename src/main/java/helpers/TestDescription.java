@@ -2,35 +2,41 @@ package helpers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.TreeMap;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.jooq.Query;
+import org.jooq.SQLDialect;
+import org.jooq.conf.ParamType;
 
-import com.healthmarketscience.sqlbuilder.Query;
-
-import ai.libs.jaicore.components.api.IComponentInstance;
+import utilities.SQLDialectConversor;
 
 public class TestDescription {
 	DescriptiveStatistics testResults;
 	public TreeMap<Integer,List<Query>> queries;
 	public List<Query> schemaBuildQueries;
 	public int numberOfTests;
+	public String ID;
 	
-	public TestDescription() {
-		testResults = new DescriptiveStatistics();
-		queries = new TreeMap<>();
-		this.numberOfTests = 1;
+	public TestDescription(String ID) {
+		this(ID,1);
 	}
 	
-	public TestDescription(List<Query> schemaQueries) {
+	public TestDescription(String ID, int numberOfTests) {
+		this(ID, numberOfTests, null);
+	}
+	
+	public TestDescription(String ID, int numberOfTests, List<Query> schemaQueries) {
 		testResults = new DescriptiveStatistics();
 		queries = new TreeMap<>();
-		this.numberOfTests = 1;
+		this.ID = ID;
+		this.numberOfTests = numberOfTests;
 	}
 	
 	public void addQuery(int priority, Query query) {
-		query.validate();
 		if (queries.containsKey(priority)) {
 			queries.get(priority).add(query);
 		} else {
@@ -55,6 +61,19 @@ public class TestDescription {
 		for (Query query: queries) {
 			addQuery(newPriority, query);
 		}
+	}
+	
+	public synchronized Map<Integer,List<String>> generateQueries(String dbSystem){
+		Map<Integer, List<String>> stringMap = new TreeMap<>();
+		queries.forEach((k,v) -> {
+			List<String> strings = v.stream().map(q -> {
+				SQLDialect dialect = SQLDialectConversor.fromString(dbSystem);
+				q.configuration().set(dialect);
+				return q.getSQL(ParamType.INLINED);
+			}).collect(Collectors.toList());
+			stringMap.put(k, strings);
+		});
+		return stringMap;
 	}
 	
 	public void print() {

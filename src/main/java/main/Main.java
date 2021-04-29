@@ -21,7 +21,9 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.jooq.DatePart;
 
 import com.healthmarketscience.sqlbuilder.BinaryCondition;
+import com.healthmarketscience.sqlbuilder.CustomExpression;
 import com.healthmarketscience.sqlbuilder.CustomSql;
+import com.healthmarketscience.sqlbuilder.Expression;
 import com.healthmarketscience.sqlbuilder.ExtractExpression;
 import com.healthmarketscience.sqlbuilder.FunctionCall;
 import com.healthmarketscience.sqlbuilder.InsertQuery;
@@ -48,16 +50,124 @@ import handlers.ADatabaseHandle;
 import handlers.ApacheDerbyHandler;
 import handlers.HSQLDBHandle;
 import handlers.MariaDBHandler;
-import handlers.MySQLHandler;
-import handlers.PostgreSQLHandle;
 import handlers.PostgreSQLHandle;
 import helpers.TestDescription;
 import managers.Benchmarker;
 import managers.PortManager;
+import services.CSVService;
 
 public class Main {
+	
+	public static Expression extractYear(IComponentInstance ci, DbColumn salaries_toDateCol) {
+		if (ci.getComponent().getName().equals("ApacheDerby")) {
+			return new CustomExpression(String.format("year(%s)",salaries_toDateCol.getName()));
+		} else {
+			return new ExtractExpression(DatePart.YEAR, salaries_toDateCol);
+		}
+	}
+	
+	public static List<IComponentInstance> getComponentInstanceExamples() {
+		IComponent compMaria 		= new Component("MariaDB");
+		IComponent compDerby 		= new Component("ApacheDerby");
+		IComponent compHSQL 		= new Component("PostgreSQL");
+		IComponent compPosgreSQL 	= new Component("HSQLDB");
+		List<IComponentInstance> componentInstances = new ArrayList<>();
+
+		/*int[] derbyPageCacheSizes = new int[] {1000,2000,4000,8000,16000};
+		for(int size: derbyPageCacheSizes ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("derby.storage.pageCacheSize", String.valueOf(size));
+			parameterValues.put("__instanceID", String.format("DERBY_%s_%d", "pageCacheSize", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compDerby, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}*/
+		
+		/*int[] mariaDBOptimizerSearchDepths = new int[] {0,1,10,20,30,40,50,60};
+		for(int size: mariaDBOptimizerSearchDepths ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
+			parameterValues.put("EQ_RANGE_INDEX_DIVE_LIMIT", "200");
+			parameterValues.put("EXPENSIVE_SUBQUERY_LIMIT", "100");
+			parameterValues.put("GLOBAL FLUSH", "OFF");
+			parameterValues.put("JOIN_BUFFER_SIZE", "262144");
+			parameterValues.put("JOIN_CACHE_LEVEL", "2");
+			parameterValues.put("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", "OFF");
+			parameterValues.put("LOG_SLOW_RATE_LIMIT", "1");
+			parameterValues.put("LONG_QUERY_TIME", "10");
+			parameterValues.put("MAX_LENGTH_FOR_SORT_DATA", "1024");
+			parameterValues.put("MAX_SEEKS_FOR_KEY", "4294967295");
+			parameterValues.put("MIN_EXAMINED_ROW_LIMIT", "0");
+			parameterValues.put("OPTIMIZER_PRUNE_LEVEL", "1");
+			parameterValues.put("OPTIMIZER_SEARCH_DEPTH", String.valueOf(size));
+			parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
+			
+			
+			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "optimizerSearchDepth", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}*/
+		
+		int[] hsqdbCacheRows = new int[] {10000,25000,50000,75000,100000};
+		for(int size: hsqdbCacheRows ) {
+			Map<String, String> parameterValues = new HashMap<>();
+			parameterValues.put("hsqldb.cache_rows", String.valueOf(size));
+			//parameterValues.put("hsqldb.cache_file_scale", "100");
+			parameterValues.put("hsqldb.nio_data_file", "TRUE");
+			parameterValues.put("hsqldb.nio_max_size", "256");
+			parameterValues.put("hsqldb.result_max_memory_rows", "0");
+			parameterValues.put("hsqldb.applog", "0");
+			parameterValues.put("__instanceID", String.format("HSQLDB_%s_%d", "hsqldb.cache_rows", size));
+			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+			IComponentInstance i1 = new ComponentInstance(compPosgreSQL, parameterValues, reqInterfaces);
+			componentInstances.add(i1);
+		}
+		
+		return componentInstances;
+	}
 
 	public static void main(String[] args) throws InterruptedException, ExecutionException, UnavailablePortsException, IOException, SQLException {
+		int[] ports = new int[] {9901,9902,9903,9904,9905,9906,9907,9908,9909,9910};
+		PortManager.getInstance().setupAvailablePorts(ports);
+		
+		/*IComponent comp = new Component("ApacheDerby"); // TODO: MODIFY TO ANYTHING ELSE TO USE WITH THE OTHER RDMBS
+		Map<String, String> parameterValues = new HashMap<>();
+		parameterValues.put("derby.storage.pageCacheSize", "2000");
+		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);*/
+		
+		/*IComponent comp = new Component("MariaDB");
+		Map<String, String> parameterValues = new HashMap<>();
+		parameterValues.put("DIV_PRECISION_INCREMENT", "4");
+		parameterValues.put("EQ_RANGE_INDEX_DIVE_LIMIT", "200");
+		parameterValues.put("EXPENSIVE_SUBQUERY_LIMIT", "100");
+		parameterValues.put("GLOBAL FLUSH", "OFF");
+		parameterValues.put("JOIN_BUFFER_SIZE", "262144");
+		parameterValues.put("JOIN_CACHE_LEVEL", "2");
+		parameterValues.put("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", "OFF");
+		parameterValues.put("LOG_SLOW_RATE_LIMIT", "1");
+		parameterValues.put("LONG_QUERY_TIME", "10");
+		parameterValues.put("MAX_LENGTH_FOR_SORT_DATA", "1024");
+		parameterValues.put("MAX_SEEKS_FOR_KEY", "4294967295");
+		parameterValues.put("MIN_EXAMINED_ROW_LIMIT", "0");
+		parameterValues.put("OPTIMIZER_PRUNE_LEVEL", "1");
+		parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "45");
+		parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
+		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);*/
+		
+		IComponent comp = new Component("HSQLDB");
+		Map<String, String> parameterValues = new HashMap<>();
+		parameterValues.put("hsqldb.cache_rows", "50000");
+			//parameterValues.put("hsqldb.cache_file_scale", "10000");
+			parameterValues.put("hsqldb.nio_data_file", "TRUE");
+			parameterValues.put("hsqldb.nio_max_size", "256");
+			parameterValues.put("hsqldb.result_max_memory_rows", "0");
+			parameterValues.put("hsqldb.applog", "0");
+		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);
+		
 	    DbSpec spec = new DbSpec();
 	    DbSchema schema = spec.addDefaultSchema();
 	 
@@ -100,141 +210,92 @@ public class Main {
 	    SelectQuery selectSalaries = new SelectQuery()
 	    		.addColumns(employees_empNoCol, employees_empfNameCol, employees_emplNameCol, salaries_salaryCol)
 	    		.addJoin(JoinType.INNER, employeesTable, salariesTable, BinaryCondition.equalTo(employees_empNoCol, salaries_empNoCol))
-	    		.addCondition(BinaryCondition.equalTo(new ExtractExpression(DatePart.YEAR, salaries_toDateCol), 9999))
+	    		.addCondition(BinaryCondition.equalTo(extractYear(i1, salaries_toDateCol), 9999))
 	    		.validate();
-	    System.out.println(selectSalaries.toString()); 
 	    
+	   
 	    
 	    SelectQuery selectAvgSalaryTitles = new SelectQuery()
 	    		.addCustomColumns(titles_titleCol, FunctionCall.avg().addColumnParams(salaries_salaryCol))
 	    		.addJoin(JoinType.INNER, salariesTable, titlesTable, BinaryCondition.equalTo(salaries_empNoCol, titles_empNoCol))
-	    		.addCondition(BinaryCondition.equalTo(new ExtractExpression(DatePart.YEAR, salaries_toDateCol), 9999))
+	    		.addCondition(BinaryCondition.equalTo(extractYear(i1, salaries_toDateCol), 9999))
 	    		.addGroupings(titles_titleCol).validate();
-	    		
-	    System.out.println("Select AVG query new: " + selectAvgSalaryTitles);
 	    
 	    SelectQuery selectAvgSalaryTitlesGender = new SelectQuery()
 	    		.addCustomColumns(titles_titleCol, employees_empGenderCol, FunctionCall.avg().addColumnParams(salaries_salaryCol))
 	    		.addJoin(JoinType.INNER, salariesTable, titlesTable, BinaryCondition.equalTo(salaries_empNoCol, titles_empNoCol))
 	    		.addJoin(JoinType.INNER, salariesTable, employeesTable, BinaryCondition.equalTo(salaries_empNoCol, employees_empNoCol))
-	    		.addCondition(BinaryCondition.equalTo(new ExtractExpression(DatePart.YEAR, salaries_toDateCol), 9999))
+	    		.addCondition(BinaryCondition.equalTo(extractYear(i1, salaries_toDateCol), 9999))
 	    		.addGroupings(employees_empGenderCol, titles_titleCol).validate();
 	    
-	    System.out.println("Select AVG Gender Title query new: " + selectAvgSalaryTitlesGender);
+	    System.out.println(selectSalaries.toString());
+	    System.out.println(selectAvgSalaryTitles.toString());
+	    System.out.println(selectAvgSalaryTitlesGender.toString());
 	    
 	    /*UpdateQuery updateSalaries = new UpdateQuery(salariesTable)
 	    		.addSetClause(salaries_salaryCol, new CustomSql(String.format("%s + (%s*20/100)", salaries_salaryCol, salaries_salaryCol)))
 	    		.addCondition(BinaryCondition.equalTo(titles_titleCol, "Staff"))
 	    		.addCommonTableExpression("hello").validate();
-	    
 	    System.out.println("UpdateQuery: " + updateSalaries);*/
-	    		
-	    		
-	    		
 	    
-	    /*SelectQuery selectSalaries2 = new SelectQuery().addCustomColumns(FunctionCall.max().addColumnParams(employees_empNoCol));
-	    System.out.println(selectSalaries2.toString());
-	    InsertQuery insertEmployee = new InsertQuery(employeesTable)
-	    		.addColumn(employees_empNoCol, 0)
-	    		.addColumn(employees_empBirthCol, "2000-12-18")
-	    		.addColumn(employees_empfNameCol, "Federico")
-	    		.addColumn(employees_emplNameCol, "Reina")
-	    		.addColumn(employees_empGenderCol, 'M')
-	    		.addColumn(employees_empHireCol, new Date(System.currentTimeMillis()))
-	    		.validate();*/
-	    
+	    /*System.out.println(selectSalaries.toString());
+	    System.out.println(selectAvgSalaryTitles.toString());
+	    System.out.println(selectAvgSalaryTitlesGender.toString());*/
+	    		
 	    String birthDate = "2000-12-18";
 	    String fName = "Federico";
 	    String lName = "Reina";
 	    char gender = 'M';
 	    Date hireDate = new Date(System.currentTimeMillis());
 	    
-	    InsertSelectQuery insertEmployee2 = new InsertSelectQuery(employeesTable)
+	    InsertSelectQuery insertEmployee = new InsertSelectQuery(employeesTable)
 	    		.addColumns(employees_empNoCol, employees_empBirthCol, employees_empfNameCol, employees_emplNameCol, employees_empGenderCol, employees_empHireCol)
 	    		.setSelectQuery(new SelectQuery()
 	    				.addCustomColumns(new CustomSql(String.format("%s%s", FunctionCall.max().addColumnParams(employees_empNoCol), "+1")), birthDate,fName, lName,gender,  new CustomSql(String.format("'%s' %s", hireDate, "FROM employees t0")))).validate();
 	    
-	    System.out.println("insertEmployee2: " + insertEmployee2.toString());
+	    System.out.println(insertEmployee.toString());
 	    
-	    /*InsertQuery insertSalary = new InsertQuery(salariesTable)
-	    		.addColumn(salaries_empNoCol, 500001)
-	    		.addColumn(salaries_salaryCol, 75000)
-	    		.addColumn(salaries_fromDateCol, new Date(System.currentTimeMillis()))
-	    		.addColumn(salaries_toDateCol, "9999-01-01")
-	    		.validate();
-	    
-	    InsertQuery insertTitle = new InsertQuery(titlesTable)
-	    		.addColumn(titles_empNoCol, 500001)
-	    		.addColumn(titles_titleCol, "Senior Engineer")
-	    		.addColumn(titles_fromDateCol, "2006-07-01")
-	    		.addColumn(titles_toDateCol, new Date(System.currentTimeMillis()))
-	    		.validate();
-	    
-	    InsertQuery insertDeptEmp = new InsertQuery(deptEmpTable)
-	    		.addColumn(deptEmp_empNoCol, 500001)
-	    		.addColumn(deptEmp_deptNoCol, "d005")
-	    		.addColumn(deptEmp_fromDateCol, new Date(System.currentTimeMillis()))
-	    		.addColumn(deptEmp_toDateCol, "9999-01-01")
-	    		.validate();
-	    
-	    System.out.println(insertEmployee.toString());   
-	    System.out.println(insertSalary.toString());   
-	    System.out.println(insertTitle.toString());   
-	    System.out.println(insertDeptEmp.toString());*/
-	    
-	    TestDescription td = new TestDescription(null);
+	    TestDescription td = new TestDescription(10);
 	    td.addQuery(1, selectSalaries);
-	    
-	    IComponent comp = new Component("HSQLDB");
-		Map<String, String> parameterValues = new HashMap<>();
-		//parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "45");
-		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
-		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);
 		
-		/*int[] ports = new int[3];
-		ports[0] = 9901;
-		ports[1] = 9902;
-		ports[2] = 9903;
-		PortManager.getInstance().setupAvailablePorts(ports);
-		
-	    Benchmarker b = new Benchmarker(td, 1);
-	    
-	    double score = b.benchmark(i1);
-	    System.out.println(score);*/
-	    
-		/*SelectQuery selectQuery = new SelectQuery()
-	      .addColumns(employees_empNoCol, employees_empBirthCol, employees_empfNameCol, employees_emplNameCol, employees_empGenderCol, employees_empHireCol)
-	      .validate();
-		
-		TestDescription td = new TestDescription(null);
-		td.addQuery(1, selectQuery);
-		td.addQuery(1, selectQuery);
-		td.addQuery(1, selectQuery);
-		
-		IComponent comp = new Component("MariaDB");
+		/*IComponent comp = new Component("MariaDB");
 		Map<String, String> parameterValues = new HashMap<>();
 		parameterValues.put("OPTIMIZER_SEARCH_DEPTH", "45");
 		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
-		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);
-
-		IComponent comp2 = new Component("MySQL");
-		Map<String, String> parameterValues2 = new HashMap<>();
-		parameterValues2.put("OPTIMIZER_SEARCH_DEPTH", "45");
-		Map<String, List<IComponentInstance>> reqInterfaces2 = new HashMap<>(); 
-		IComponentInstance i2 = new ComponentInstance(comp2, parameterValues2, reqInterfaces2);
+		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);*/
 		
-		IComponent comp3 = new Component("PostgreSQL");
-		Map<String, String> parameterValues3 = new HashMap<>();
-		parameterValues2.put("OPTIMIZER_SEARCH_DEPTH", "45");
-		Map<String, List<IComponentInstance>> reqInterfaces3 = new HashMap<>(); 
-		IComponentInstance i3 = new ComponentInstance(comp3, parameterValues3, reqInterfaces3);
+	    /*IComponent comp = new Component("HSQLDB");
+		Map<String, String> parameterValues = new HashMap<>();
+		parameterValues.put("hsqldb.cache_rows", "50000");
+		parameterValues.put("hsqldb.nio_data_file", "TRUE");
+		parameterValues.put("hsqldb.nio_max_size", "256");
+		parameterValues.put("hsqldb.applog", "0");
+		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
+		IComponentInstance i1 = new ComponentInstance(comp, parameterValues, reqInterfaces);*/
 		
-		HSQLDBHandle handler = new HSQLDBHandle(new int[]{9902, 9903, 9904}, td, 3);
-	
-		Benchmarker benchmarker = new Benchmarker(td, 10);
-		
-		double results = benchmarker.benchmark(i3);*/
-		//System.out.println(String.format("Mean of test: %f",stats.getMean()));
+	    /* ----------- SINGLETHREAD TEST ------------------ */
+		/*Benchmarker b = new Benchmarker(td, 3);
+	    double	score = b.benchmark(i1);
+	    System.out.println("Score obtained: " + score);*/
+	    
+	    /* ----------- MULTITHREAD TEST ------------- */
+	    Benchmarker benchmarker = new Benchmarker(td, 5);
+	    int threads = 8;
+	    List<IComponentInstance> componentInstances = getComponentInstanceExamples();
+		ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(threads);
+		List<Callable<Double>> taskList = new ArrayList<>();
+		for(IComponentInstance instance: componentInstances) {
+			taskList.add(() -> {
+				return benchmarker.benchmark(instance);
+			});
+		}
+		List<Future<Double>> resultList = executor.invokeAll(taskList);
+		executor.shutdown();
+		for(Future<Double> result: resultList) {
+			System.out.println(result.get());
+		}
+	    
+	    CSVService.getInstance().dumpToDisk();
 	}
 
 }

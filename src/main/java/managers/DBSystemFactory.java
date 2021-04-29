@@ -11,17 +11,15 @@ import handlers.ADatabaseHandle;
 import handlers.ApacheDerbyHandler;
 import handlers.HSQLDBHandle;
 import handlers.MariaDBHandler;
-import handlers.MySQLHandler;
 import handlers.PostgreSQLHandle;
 import helpers.Port;
 import helpers.TestDescription;
 
 public class DBSystemFactory {
 	
-	private static DBSystemFactory _instance;
+	private static final DBSystemFactory _instance = new DBSystemFactory();
 	
 	public static DBSystemFactory getInstance() {
-		if(_instance == null) { _instance = new DBSystemFactory(); }
 		return _instance;
 	}
 	
@@ -39,6 +37,5 @@ public class DBSystemFactory {
 		default:
 			throw new IllegalArgumentException("IComponent DB name is not supported");
 		}
-		
 	}
 }

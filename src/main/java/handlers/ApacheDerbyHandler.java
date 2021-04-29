@@ -22,13 +22,11 @@ import org.apache.commons.io.FileUtils;
 import ai.libs.jaicore.components.api.IComponentInstance;
 import exceptions.UnavailablePortsException;
 import helpers.TestDescription;
+import managers.db.parameters.ApacheDerbyParameterManager;
 
 public class ApacheDerbyHandler extends ADatabaseHandle {
 	
-	public static final String DATABASE_PAGE_SIZE = "DATABASE_PAGE_SIZE";
-	
 	// HashMap<Integer, String> dbNames;
-	HashMap<Integer, String> directories = new HashMap<>();
 	static String instancesPath = System.getenv("DERBY_HOME") + "/db/instances";
 	static String baseDataPath = System.getenv("DERBY_HOME") + "/db/data";
 	
@@ -38,27 +36,11 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	}*/
 	
 	public ApacheDerbyHandler(IComponentInstance ci) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
-		super(ci);
+		super(ci, new ApacheDerbyParameterManager());
 	}
 	
 	@Override
 	protected void createAndFillDatabase() {}
-	
-	private void setDatabasePageSize() {
-		String dbPageSizeStr = componentInstance.getParameterValue(DATABASE_PAGE_SIZE);
-		if (dbPageSizeStr == null) return;
-		try(Connection conn = getConnection();
-				CallableStatement cs = 
-				  conn.prepareCall("CALL SYSCS_UTIL.SYSCS_SET_DATABASE_PROPERTY(?, ?)");){
-			cs.setString(1, "derby.storage.pageSize"); 
-			cs.setString(2, dbPageSizeStr); 
-			cs.execute(); 
-			cs.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		 
-	}
 
 	@Override
 	protected String[] getStartCommand() {
@@ -71,13 +53,7 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 
 	@Override
 	protected String getDbDirectory() {
-		//String derbyHome = System.getenv("DERBY_HOME");
-		return directories.get(port);
-	}
-
-	@Override
-	protected void setupInitedDB() {
-		setDatabasePageSize();
+		return null;
 	}
 
 	@Override
@@ -111,7 +87,6 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	
 	@Override
 	protected String getConnectionString () {
-		String directory = directories.get(port);
 		String dbUrl = String.format("jdbc:derby://localhost:%d/%s", port, "employees");
 		return dbUrl;
 	}

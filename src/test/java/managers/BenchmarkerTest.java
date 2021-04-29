@@ -89,7 +89,7 @@ class DataProvider implements ArgumentsProvider {
 	}
 	
 	public TestDescription createTD(Query query) {
-		TestDescription td = new TestDescription(null);
+		TestDescription td = new TestDescription();
 	    td.addQuery(1, query);
 	    return td;
 	}
