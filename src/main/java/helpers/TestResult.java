@@ -1,5 +1,8 @@
 package helpers;
 
+import java.util.Map;
+import java.util.Set;
+
 import ai.libs.jaicore.components.api.IComponentInstance;
 
 public class TestResult {
@@ -11,6 +14,8 @@ public class TestResult {
 	private double variableValue;
 	private String queryProfileID;
 	private String isDefault;
+	private Map<String, String> parameters;
+	private IComponentInstance componentInstance;
 	
 	public TestResult(String dbInstance, double time, IComponentInstance componentInstance, String queryProfileID) {
 		super();
@@ -29,15 +34,16 @@ public class TestResult {
 		tryAssignVariableValue(val);
 		this.queryProfileID = queryProfileID;
 		this.isDefault = componentInstance.getParameterValue("__isDefault");
+		this.parameters = componentInstance.getParameterValues();
 	}
 
 	private void tryAssignVariableValue(String valStr) {
 		if (valStr == null) {
-			this.variableValue = Double.POSITIVE_INFINITY;
+			valStr = String.valueOf(Double.POSITIVE_INFINITY);
 		}
 		try {
 			this.variableValue = Double.parseDouble(valStr);
-		} catch (NumberFormatException e) {
+		} catch (NumberFormatException | NullPointerException e) {
 			this.variableValue = -1;
 		}
 	}
@@ -72,6 +78,14 @@ public class TestResult {
 	
 	public String isDefault() {
 		return isDefault;
+	}
+	
+	public Set<String> getParameterKeys() {
+		return this.parameters.keySet();
+	}
+	
+	public String getParameterValues(String key) {
+		return this.parameters.get(key);
 	}
 	
 }
