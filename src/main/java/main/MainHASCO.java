@@ -51,6 +51,9 @@ public class MainHASCO {
 	}
 
 	public static void main(String[] args) throws IOException, AlgorithmTimeoutedException, InterruptedException, AlgorithmExecutionCanceledException, AlgorithmException {
+		int THREADS = 2;
+		int NUM_TESTS = 3;
+		int TIME_IN_MINUTES = 30;
 		int[] ports = new int[] {9901,9902,9903,9904,9905,9906,9907,9908,9909};
 		PortManager.getInstance().setupAvailablePorts(ports);
 		
@@ -59,10 +62,10 @@ public class MainHASCO {
 		
 		Query selectSalaries = generateQuerySelectSalaries();
 		
-		TestDescription td1 = new TestDescription("Only select salaries", 2);
+		TestDescription td1 = new TestDescription("Only select salaries", NUM_TESTS);
 	    td1.addQuery(1, selectSalaries);
 		
-		Benchmarker b = new Benchmarker(td1, 2);
+		Benchmarker b = new Benchmarker(td1, THREADS);
 		RefinementConfiguredSoftwareConfigurationProblem<Double> problem = new RefinementConfiguredSoftwareConfigurationProblem<Double>(newFile, "IDatabase", (ci) -> {
 			try {
 				return b.benchmark(ci);
@@ -73,8 +76,8 @@ public class MainHASCO {
 		} )  ;
 		HASCOViaFD<Double> hasco = HASCOBuilder.get()
 					.withProblem(problem)
-					.withBlindSearch()
-					.withTimeout(new Timeout(1, TimeUnit.MINUTES))
+					.withBestFirst().withRandomCompletions().withNumSamples(3)
+					.withTimeout(new Timeout(TIME_IN_MINUTES, TimeUnit.MINUTES))
 					.withCPUs(2)
 					.getAlgorithm();
 		
@@ -90,16 +93,17 @@ public class MainHASCO {
 				
 			}
 		});
-		//AlgorithmVisualizationWindow window = new AlgorithmVisualizationWindow(hasco);
-		//window.withMainPlugin(new GraphViewPlugin());
-		//window.withPlugin(new SolutionPerformanceTimelinePlugin(new HASCOSolutionCandidateRepresenter()));
-		//window.withPlugin(new NodeInfoGUIPlugin(new JaicoreNodeInfoGenerator<>(new TFDNodeInfoGenerator())), new HASCOModelStatisticsPlugin());
+		AlgorithmVisualizationWindow window = new AlgorithmVisualizationWindow(hasco);
+		window.withMainPlugin(new GraphViewPlugin());
+		window.withPlugin(new SolutionPerformanceTimelinePlugin(new HASCOSolutionCandidateRepresenter()));
+		window.withPlugin(new NodeInfoGUIPlugin(new JaicoreNodeInfoGenerator<>(new TFDNodeInfoGenerator())), new HASCOModelStatisticsPlugin());
 		try {
 			hasco.call();
 		} catch (Exception e) {
 			System.out.println("Finished");
-			System.out.println(String.format("Best candidate for 30 minutes execution: %s", hasco.getBestSeenSolution().toString()));
-			CSVService.getInstance().dumpWithVars("_HASCO1");
+			System.out.println(String.format("Best candidate for 30 minutes execution: %s", new ComponentSerialization().serialize(hasco.getBestSeenSolution().getComponentInstance())));
+			System.out.println(String.format("Time: %f", hasco.getBestScoreKnownToExist()));
+			//CSVService.getInstance().dumpWithVars("_HASCO1");
 		}
 		
 		//System.out.println(String.format("Puntaje: %f", hasco.nextSolutionCandidate().getScore()));
