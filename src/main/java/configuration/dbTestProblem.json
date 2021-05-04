@@ -1,0 +1,112 @@
+{
+	"components" : [ {
+    "name" : "MariaDB",
+    "requiredInterface" : [ ],
+    "providedInterface" : [ "IDatabase" ],
+    "parameters" : [ {
+      "name" : "DIV_PRECISION_INCREMENT",
+      "type" : "int",
+      "default" : "20",
+      "min": "0",
+      "max": "30",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "EQ_RANGE_INDEX_DIVE_LIMIT",
+      "type" : "int",
+      "default" : "200",
+      "min": "0",
+      "max": "8388608",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "EXPENSIVE_SUBQUERY_LIMIT",
+      "type" : "int",
+      "default" : "100",
+      "min": "0",
+      "max": "100000",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "GLOBAL FLUSH",
+      "type" : "cat",
+      "default" : "OFF",
+      "values" : [ "OFF", "ON" ]
+    },{
+      "name" : "JOIN_BUFFER_SIZE",
+      "type" : "int",
+      "default" : "262144",
+      "min": "128",
+      "max": "4194304",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "JOIN_CACHE_LEVEL",
+      "type" : "int",
+      "default" : "2",
+      "min": "0",
+      "max": "8",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "GLOBAL LOG_QUERIES_NOT_USING_INDEXES",
+      "type" : "cat",
+      "default" : "OFF",
+      "values" : [ "OFF", "ON" ]
+    },{
+      "name" : "LOG_SLOW_RATE_LIMIT",
+      "type" : "int",
+      "default" : "1",
+      "min": "1",
+      "max": "1000000",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "LONG_QUERY_TIME",
+      "type" : "int",
+      "default" : "10",
+      "min": "1",
+      "max": "100000",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "MAX_LENGTH_FOR_SORT_DATA",
+      "type" : "int",
+      "default" : "1024",
+      "min": "4",
+      "max": "16384",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "MIN_EXAMINED_ROW_LIMIT",
+      "type" : "int",
+      "default" : "0",
+      "min": "0",
+      "max": "1048576",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "OPTIMIZER_PRUNE_LEVEL",
+      "type" : "cat",
+      "default" : "1",
+      "values" : [ "0", "1" ]
+    },{
+      "name" : "OPTIMIZER_SEARCH_DEPTH",
+      "type" : "int",
+      "default" : "62",
+      "min": "0",
+      "max": "62",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "OPTIMIZER_USE_CONDITION_SELECTIVITY",
+      "type" : "int",
+      "default" : "4",
+      "min": "1",
+      "max": "5",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    }],
+    "dependencies" : [ ]
+  } ]
+}

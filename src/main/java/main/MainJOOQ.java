@@ -34,6 +34,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.jooq.*;
 import org.jooq.impl.*;
@@ -50,8 +51,8 @@ public class MainJOOQ {
 		List<IComponentInstance> componentInstances = new ArrayList<>();
 		
 		// ########### APACHE DERBY ###################
-		/*
-		int[] derbypageReservedSpaces = new int[] {0,1,2,5,10,20,50,100};
+		
+		int[] derbypageReservedSpaces = new int[] {0,2,5,20,50,100};
 		for(int size: derbypageReservedSpaces ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("derby.storage.pageReservedSpace", String.valueOf(size));
@@ -66,7 +67,7 @@ public class MainJOOQ {
 			IComponentInstance i1 = new ComponentInstance(compDerby, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
 		}
-		*/
+		
 
 		int[] derbyPageSizes = new int[] {4096,8192,16384,32768};
 		for(int size: derbyPageSizes ) {
@@ -83,8 +84,8 @@ public class MainJOOQ {
 			IComponentInstance i1 = new ComponentInstance(compDerby, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
 		}
-		/*
-		int[] derbyInitialPages= new int[] {1,5,10,50,100,500,1000};
+		
+		int[] derbyInitialPages= new int[] {1,10,100,1000};
 		for(int size: derbyInitialPages ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("derby.storage.pageReservedSpace", String.valueOf(20));
@@ -100,7 +101,7 @@ public class MainJOOQ {
 			componentInstances.add(i1);
 		}
 		
-		int[] statementCacheSizes = new int[] {1,5,10,50,100,500,1000};
+		int[] statementCacheSizes = new int[] {1,10,100,1000};
 		for(int size: statementCacheSizes ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("derby.storage.pageReservedSpace", String.valueOf(20));
@@ -116,7 +117,7 @@ public class MainJOOQ {
 			componentInstances.add(i1);
 		}
 		
-		int[] mariaDBDivPrecisionIncrement = new int[] {0,4,8,12,16,20,24,28,30};
+		int[] mariaDBDivPrecisionIncrement = new int[] {0,5,10,15,20,25,30};
 		for(int size: mariaDBDivPrecisionIncrement ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("DIV_PRECISION_INCREMENT", String.valueOf(size));
@@ -144,8 +145,8 @@ public class MainJOOQ {
 			componentInstances.add(i1);
 		}
 		
-		
-		long[] mariaDBEQRangeIndexDiveLimit = new long[] {0,4,16,64,256,1024,4096,16384,65536,262144,1048576,4194304,8388608,33554432,134217728,536870912, 2147483648l, 4294967295l};
+		/*
+		long[] mariaDBEQRangeIndexDiveLimit = new long[] {0,16,200,256,4096,65536,1048576,8388608};
 		for(long size: mariaDBEQRangeIndexDiveLimit ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
@@ -171,9 +172,10 @@ public class MainJOOQ {
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
-		}
+		}*/
 		
-		int[] mariaDBExpensiveSubqueryLimit = new int[] {0,10,100,1000,10000,100000,1000000,10000000};
+		/*
+		int[] mariaDBExpensiveSubqueryLimit = new int[] {0,10,100,1000,10000,100000};
 		for(int size: mariaDBExpensiveSubqueryLimit ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
@@ -198,8 +200,8 @@ public class MainJOOQ {
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
-		}
-		
+		}*/
+		/*
 		String[] mariaDBFlush = new String[] {"OFF","ON"};
 		for(String size: mariaDBFlush ) {
 			Map<String, String> parameterValues = new HashMap<>();
@@ -221,13 +223,13 @@ public class MainJOOQ {
 			parameterValues.put("__evalVar", "GLOBAL FLUSH");
 			parameterValues.put("__evalVarValue", String.valueOf(size));
 			parameterValues.put("__isDefault", String.valueOf(size == "OFF"));
-			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "flush", size));
+			parameterValues.put("__instanceID", String.format("MARIADB_%s_%s", "flush", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
-		}
-		
-		long[] mariaDBJoinBufferSize = new long[] {128,256,1024,4096,16384,65536,262144,1048576,4194304,8388608,33554432,134217728,536870912, 2147483648l};
+		}*/
+		/*
+		long[] mariaDBJoinBufferSize = new long[] {128,1024,16384,262144,1048576,4194304};
 		for(long size: mariaDBJoinBufferSize ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
@@ -253,9 +255,9 @@ public class MainJOOQ {
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
-		}
+		}*/
 		
-		int[] mariaDBJoinCacheLevel = new int[] {0,1,2,3,4,5,6,7,8};
+		int[] mariaDBJoinCacheLevel = new int[] {0,2,4,6,8};
 		for(int size: mariaDBJoinCacheLevel ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
@@ -282,7 +284,7 @@ public class MainJOOQ {
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
 		}
-		
+		/*
 		String[] mariaDBLogQueriesNotUsingIndexes = new String[] {"OFF","ON"};
 		for(String size: mariaDBLogQueriesNotUsingIndexes ) {
 			Map<String, String> parameterValues = new HashMap<>();
@@ -305,13 +307,13 @@ public class MainJOOQ {
 			parameterValues.put("__evalVar", "GLOBAL LOG_QUERIES_NOT_USING_INDEXES");
 			parameterValues.put("__evalVarValue", String.valueOf(size));
 			parameterValues.put("__isDefault", String.valueOf(size == "OFF"));
-			parameterValues.put("__instanceID", String.format("MARIADB_%s_%d", "logQueriesNotUsingIndexes", size));
+			parameterValues.put("__instanceID", String.format("MARIADB_%s_%s", "logQueriesNotUsingIndexes", size));
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
 		}
-		
-		int[] mariaDBLogSlowRateLimit = new int[] {1,10,100,1000,10000,100000,1000000,10000000};
+		*/
+		int[] mariaDBLogSlowRateLimit = new int[] {1,10,100,1000,10000,100000,1000000};
 		for(int size: mariaDBLogSlowRateLimit ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
@@ -339,7 +341,7 @@ public class MainJOOQ {
 			componentInstances.add(i1);
 		}
 		
-		int[] mariaDBLongQueryTime = new int[] {0,1,5,10,15,20,50,100,1000,10000,100000,1000000,10000000};
+		int[] mariaDBLongQueryTime = new int[] {0,1,10,1000,100000};
 		for(int size: mariaDBLongQueryTime ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
@@ -367,7 +369,7 @@ public class MainJOOQ {
 			componentInstances.add(i1);
 		}
 		
-		int[] mariaDBMaxLengthForSortData = new int[] {4,16,64,256,1024,4096,16384,65536,262144,1048576,4194304,8388608};
+		int[] mariaDBMaxLengthForSortData = new int[] {4,16,1024,16384};
 		for(int size: mariaDBMaxLengthForSortData ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
@@ -395,6 +397,7 @@ public class MainJOOQ {
 			componentInstances.add(i1);
 		}
 		
+		/*
 		long[] mariaDBMaxSeeksForKey = new long[] {1, 16, 256, 4096, 65536, 1048576, 16777216, 268435456, 4294967295l};
 		for(long size: mariaDBMaxSeeksForKey ) {
 			Map<String, String> parameterValues = new HashMap<>();
@@ -422,8 +425,9 @@ public class MainJOOQ {
 			IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
 		}
+		*/
 		
-		long[] mariaDBMinExaminedRowLimit = new long[] {0, 16, 256, 4096, 65536, 1048576, 16777216, 268435456, 4294967295l};
+		long[] mariaDBMinExaminedRowLimit = new long[] {0, 16, 256, 4096, 65536, 1048576};
 		for(long size: mariaDBMinExaminedRowLimit ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
@@ -451,7 +455,7 @@ public class MainJOOQ {
 			componentInstances.add(i1);
 		}
 		
-		int[] mariaDBOptimizerSearchDepths = new int[] {0,1,10,20,30,40,50,60,62};
+		int[] mariaDBOptimizerSearchDepths = new int[] {0,1,10,30,50,62};
 		for(int size: mariaDBOptimizerSearchDepths ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("DIV_PRECISION_INCREMENT", "4");
@@ -536,7 +540,7 @@ public class MainJOOQ {
 		}
 		
 		// ########### HSQLDB ###################
-		int[] hsqdbCacheRows = new int[] {100,500,1000,5000,10000,50000,100000,500000,1000000};
+		int[] hsqdbCacheRows = new int[] {500,5000,50000,500000};
 		for(int size: hsqdbCacheRows ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("hsqldb.cache_rows", String.valueOf(size));
@@ -570,7 +574,7 @@ public class MainJOOQ {
 			componentInstances.add(i1);
 		}
 		
-		int[] hsqdbResultMaxMemoryRows = new int[] {0, 1001,5000,10000,50000,100000,500000,1000000,5000000,10000000};
+		int[] hsqdbResultMaxMemoryRows = new int[] {0,5000,50000,500000,5000000};
 		for(int size: hsqdbResultMaxMemoryRows ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("hsqldb.cache_rows", "50000");
@@ -605,7 +609,7 @@ public class MainJOOQ {
 		}
 		
 		// ############ POSTGRESQL #############
-		int[] postgresWorkMem = new int[] {64,256,1024,4096,16384,65536,262144};
+		int[] postgresWorkMem = new int[] {64,256,1024,4096,16384,65536};
 		for(int size: postgresWorkMem ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("work_mem", String.valueOf(size));
@@ -620,7 +624,7 @@ public class MainJOOQ {
 			componentInstances.add(i1);
 		}
 
-		int[] postgresSharedBuffers = new int[] {16,64,256,1024,4096,16384,65536,131072,262144};
+		int[] postgresSharedBuffers = new int[] {16,64,1024,16384,131072,262144};
 		for(int size: postgresSharedBuffers ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("work_mem", "4096");
@@ -649,7 +653,7 @@ public class MainJOOQ {
 			IComponentInstance i1 = new ComponentInstance(compPosgreSQL, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
 		}
-		*/
+		
 		return componentInstances;
 	}
 	
@@ -673,7 +677,7 @@ public class MainJOOQ {
 								.join("salaries")
 								.on(field("employees.emp_no").eq(field("salaries.emp_no")))
 								.where(extract(field("salaries.to_date"),DatePart.YEAR).eq(val(9999)));
-		selectSalaries.configuration().set(SQLDialect.MARIADB);
+		selectSalaries.configuration().set(SQLDialect.DERBY);
 		System.out.println(selectSalaries.getSQL(true));
 		
 		/*
@@ -716,9 +720,13 @@ public class MainJOOQ {
 	    				.addCustomColumns(new CustomSql(String.format("%s%s", FunctionCall.max().addColumnParams(employees_empNoCol), "+1")), birthDate,fName, lName,gender,  new CustomSql(String.format("'%s' %s", hireDate, "FROM employees t0")))).validate();
 		 */
 		
-		Query insertEmployee = dslContext.insertInto(table("employees"), field("employees.emp_no"), field("employees.birth_date"), field("first_name"), field("last_name"), field("gender"), field("hire_date"))
-										.select(dslContext.select(max(field("employees.emp_no")).add(1), field("employees.birth_date"), field("first_name"), field("last_name"), field("gender"), field("hire_date")));
+		// TODO: fix insert query
+		Query insertEmployee = dslContext.insertInto(table("employees"), field("employees.emp_no"), field("employees.birth_date"), field("employees.first_name"), field("employees.last_name"), field("employees.gender"), field("employees.hire_date"))
+										.select(dslContext.select(field("employees.emp_no").add(1), field("employees.birth_date"), field("employees.first_name"), field("employees.last_name"), field("employees.gender"), field("employees.hire_date")).from("employees")
+												.leftJoin(dslContext.select(max(field("employees.emp_no")).as("maximia")).from("employees").asTable())
+												.on(field("employees.emp_no").eq(field("maximia"))));
 		
+		System.out.println(insertEmployee.getSQL(true));
 		/*Query insertEmployee = dslContext.insertInto(table("employees"), field("emp_no"), field("birth_date"), field("first_name"), field("last_name"), field("gender"), field("hire_date"))
 											.values(values);*/
 		//select();
@@ -732,31 +740,58 @@ public class MainJOOQ {
 		System.out.println(query3.getSQL(true));*/
 		//System.out.println(query3.configuration().set(SQLDialect.MARIADB));
 		
-		TestDescription td = new TestDescription("Only select salaries", 2);
-	    td.addQuery(1, selectSalaries);
+		TestDescription td1 = new TestDescription("Only select salaries", 10);
+	    td1.addQuery(1, selectSalaries);
+	    
+	    TestDescription td2 = new TestDescription("3 sequential different selects", 10);
+	    td2.addIndividualQuery(selectSalaries);
+	    td2.addIndividualQuery(selectAvgSalaryTitles);
+	    td2.addIndividualQuery(selectAvgSalaryTitlesGender);
+	    //td2.addIndividualQuery(insertEmployee);
+	    
+	    
+	    TestDescription td3 = new TestDescription("3 same concurrent select", 10);
+	    List<Query> concurrentstd3 = new ArrayList<Query>();
+	    concurrentstd3.add(selectSalaries);
+	    concurrentstd3.add(selectSalaries);
+	    concurrentstd3.add(selectSalaries);
+	    td3.addConcurrentQueries(concurrentstd3);
 	    
 	    int threads = 2;
-	    Benchmarker benchmarker = new Benchmarker(td, threads);
+	    //Benchmarker b1 = new Benchmarker(td1, threads);
+	    Benchmarker b2 = new Benchmarker(td2, threads);
+	    Benchmarker b3 = new Benchmarker(td3, 1);
+	    List<Benchmarker> benchmarkers = new ArrayList<>();
+	    //benchmarkers.add(b1);
+	    benchmarkers.add(b2);
+	    benchmarkers.add(b3);
 	    
-	    List<IComponentInstance> componentInstances = getComponentInstanceExamples();
-		ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(threads);
-		List<Callable<Double>> taskList = new ArrayList<>();
-		for(IComponentInstance instance: componentInstances) {
-			taskList.add(() -> {
-				return benchmarker.benchmark(instance);
-			});
-		}
-		List<Future<Double>> resultList = executor.invokeAll(taskList);
-		executor.shutdown();
-		for(Future<Double> result: resultList) {
-			try {
-				System.out.println(result.get());
-			}catch(Exception e) {
-				e.printStackTrace();
+	    int zzz = 1;
+	    for(Benchmarker b: benchmarkers) {
+	    	System.out.println(String.format("RUNNING BENCHMARK %d", zzz++));
+		    List<IComponentInstance> componentInstances = getComponentInstanceExamples();
+			ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(threads);
+			List<Callable<Double>> taskList = new ArrayList<>();
+			for(IComponentInstance instance: componentInstances) {
+				taskList.add(() -> {
+					System.out.println(String.format("\r\n\r\nDESCRIPTION: %s: %s [%s]", instance.getComponent().getName(), instance.getParameterValue("__evalVar"), instance.getParameterValue("__evalVarValue")));
+					return b.benchmark(instance);
+				});
 			}
-			
-		}
+			List<Future<Double>> resultList = executor.invokeAll(taskList);
+			executor.shutdown();
+			executor.awaitTermination(999, TimeUnit.DAYS);
+			for(Future<Double> result: resultList) {
+				try {
+					System.out.println(result.get());
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
+				
+			}
+			CSVService.getInstance().dumpToDisk(String.format(".bak%d",zzz));
+	    }
 	    
-	    CSVService.getInstance().dumpToDisk();
+	    CSVService.getInstance().dumpToDisk("_final");
 	}
 }
