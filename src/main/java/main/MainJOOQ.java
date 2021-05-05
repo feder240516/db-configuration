@@ -15,6 +15,14 @@ import ai.libs.jaicore.components.api.IComponent;
 import ai.libs.jaicore.components.api.IComponentInstance;
 import ai.libs.jaicore.components.model.Component;
 import ai.libs.jaicore.components.model.ComponentInstance;
+import ai.libs.jaicore.components.model.NumericParameterDomain;
+import ai.libs.jaicore.components.model.Parameter;
+import ai.libs.jaicore.ml.core.evaluation.evaluator.IMultiFidelityObjectEvaluator;
+import ai.libs.jaicore.ml.hpo.multifidelity.MultiFidelitySoftwareConfigurationProblem;
+import ai.libs.jaicore.ml.hpo.multifidelity.hyperband.Hyperband;
+import ai.libs.jaicore.ml.hpo.multifidelity.hyperband.IHyperbandConfig;
+import ai.libs.jaicore.ml.hpo.multifidelity.hyperband.Hyperband.HyperbandSolutionCandidate;
+import exceptions.UnavailablePortsException;
 import helpers.TestDescription;
 import managers.Benchmarker;
 import managers.PortManager;
@@ -22,19 +30,28 @@ import services.CSVService;
 
 import static org.jooq.impl.DSL.*;
 
+import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.aeonbits.owner.ConfigFactory;
+import org.api4.java.algorithm.exceptions.AlgorithmException;
+import org.api4.java.algorithm.exceptions.AlgorithmExecutionCanceledException;
+import org.api4.java.algorithm.exceptions.AlgorithmTimeoutedException;
+import org.api4.java.common.attributedobjects.ObjectEvaluationFailedException;
 import org.jooq.*;
 import org.jooq.impl.*;
 
@@ -68,7 +85,7 @@ public class MainJOOQ {
 		}
 		*/
 
-		int[] derbyPageSizes = new int[] {4096,8192,16384,32768};
+		/*int[] derbyPageSizes = new int[] {4096,8192,16384,32768};
 		for(int size: derbyPageSizes ) {
 			Map<String, String> parameterValues = new HashMap<>();
 			parameterValues.put("derby.storage.pageReservedSpace", String.valueOf(20));
@@ -82,7 +99,7 @@ public class MainJOOQ {
 			Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 			IComponentInstance i1 = new ComponentInstance(compDerby, parameterValues, reqInterfaces);
 			componentInstances.add(i1);
-		}
+		}*/
 		/*
 		int[] derbyInitialPages= new int[] {1,5,10,50,100,500,1000};
 		for(int size: derbyInitialPages ) {
@@ -653,17 +670,8 @@ public class MainJOOQ {
 		return componentInstances;
 	}
 	
-	public static void main(String[] args) throws InterruptedException, ExecutionException, IOException {
+	public static void main(String[] args) throws InterruptedException, ExecutionException, IOException, AlgorithmTimeoutedException, AlgorithmExecutionCanceledException, AlgorithmException {
 		DSLContext dslContext = DSL.using(SQLDialect.MARIADB);
-		
-		
-		/*
-		 * SelectQuery selectSalaries = new SelectQuery()
-	    		.addColumns(employees_empNoCol, employees_empfNameCol, employees_emplNameCol, salaries_salaryCol)
-	    		.addJoin(JoinType.INNER, employeesTable, salariesTable, BinaryCondition.equalTo(employees_empNoCol, salaries_empNoCol))
-	    		.addCondition(BinaryCondition.equalTo(extractYear(i1, salaries_toDateCol), 9999))
-	    		.validate();
-		 */
 		
 		Query selectSalaries = dslContext.select(field("employees.emp_no"), 
 										field("employees.first_name"), 
@@ -676,13 +684,6 @@ public class MainJOOQ {
 		selectSalaries.configuration().set(SQLDialect.MARIADB);
 		System.out.println(selectSalaries.getSQL(true));
 		
-		/*
-		 * SelectQuery selectAvgSalaryTitles = new SelectQuery()
-	    		.addCustomColumns(titles_titleCol, FunctionCall.avg().addColumnParams(salaries_salaryCol))
-	    		.addJoin(JoinType.INNER, salariesTable, titlesTable, BinaryCondition.equalTo(salaries_empNoCol, titles_empNoCol))
-	    		.addCondition(BinaryCondition.equalTo(new ExtractExpression(DatePart.YEAR, salaries_toDateCol), 9999))
-	    		.addGroupings(titles_titleCol).validate();
-	    */
 		Query selectAvgSalaryTitles = dslContext.select(field("titles.title"), 
 											avg(field("salaries.salary").cast(Double.class)))
 										.from("salaries")
@@ -690,16 +691,6 @@ public class MainJOOQ {
 										.on(field("salaries.emp_no").eq(field("titles.emp_no")))
 										.where(extract(field("salaries.to_date"),DatePart.YEAR).eq(val(9999)))
 										.groupBy(field("titles.title"));
-		/*
-	    
-	    SelectQuery selectAvgSalaryTitlesGender = new SelectQuery()
-	    		.addCustomColumns(titles_titleCol, employees_empGenderCol, FunctionCall.avg().addColumnParams(salaries_salaryCol))
-	    		.addJoin(JoinType.INNER, salariesTable, titlesTable, BinaryCondition.equalTo(salaries_empNoCol, titles_empNoCol))
-	    		.addJoin(JoinType.INNER, salariesTable, employeesTable, BinaryCondition.equalTo(salaries_empNoCol, employees_empNoCol))
-	    		.addCondition(BinaryCondition.equalTo(new ExtractExpression(DatePart.YEAR, salaries_toDateCol), 9999))
-	    		.addGroupings(employees_empGenderCol, titles_titleCol).validate();
-	    
-		 */
 		
 		Query selectAvgSalaryTitlesGender = dslContext.select(
 				field("titles.title"),field("employees.gender"),avg(field("salaries.salary").cast(Double.class))
@@ -708,31 +699,16 @@ public class MainJOOQ {
 				.join("employees").on(field("salaries.emp_no").eq(field("employees.emp_no")))
 				.where(extract(field("salaries.to_date"),DatePart.YEAR).eq(val(9999)))
 				.groupBy(field("employees.gender"), field("titles.title"));
-		
-		/*
-		 * InsertSelectQuery insertEmployee = new InsertSelectQuery(employeesTable)
-	    		.addColumns(employees_empNoCol, employees_empBirthCol, employees_empfNameCol, employees_emplNameCol, employees_empGenderCol, employees_empHireCol)
-	    		.setSelectQuery(new SelectQuery()
-	    				.addCustomColumns(new CustomSql(String.format("%s%s", FunctionCall.max().addColumnParams(employees_empNoCol), "+1")), birthDate,fName, lName,gender,  new CustomSql(String.format("'%s' %s", hireDate, "FROM employees t0")))).validate();
-		 */
-		
+
 		Query insertEmployee = dslContext.insertInto(table("employees"), field("employees.emp_no"), field("employees.birth_date"), field("first_name"), field("last_name"), field("gender"), field("hire_date"))
 										.select(dslContext.select(max(field("employees.emp_no")).add(1), field("employees.birth_date"), field("first_name"), field("last_name"), field("gender"), field("hire_date")));
 		
-		/*Query insertEmployee = dslContext.insertInto(table("employees"), field("emp_no"), field("birth_date"), field("first_name"), field("last_name"), field("gender"), field("hire_date"))
-											.values(values);*/
-		//select();
 		System.out.println(selectSalaries.getSQL(true));
-		//Query selectSalariesDerby = selectSalaries.;
 		System.out.println(selectAvgSalaryTitles.getSQL(true));
 		System.out.println(selectAvgSalaryTitlesGender.getSQL(true));
 		
 		
-		/*query3.configuration().set(SQLDialect.MARIADB);
-		System.out.println(query3.getSQL(true));*/
-		//System.out.println(query3.configuration().set(SQLDialect.MARIADB));
-		
-		TestDescription td = new TestDescription("Only select salaries", 2);
+		/*TestDescription td = new TestDescription("Only select salaries", 2);
 	    td.addQuery(1, selectSalaries);
 	    
 	    int threads = 2;
@@ -757,6 +733,6 @@ public class MainJOOQ {
 			
 		}
 	    
-	    CSVService.getInstance().dumpToDisk();
+	    CSVService.getInstance().dumpToDisk();*/
 	}
 }

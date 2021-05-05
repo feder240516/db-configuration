@@ -36,6 +36,7 @@ public class TestResult {
 			this.variableValue = Double.POSITIVE_INFINITY;
 		}
 		try {
+			System.out.println(valStr);
 			this.variableValue = Double.parseDouble(valStr);
 		} catch (NumberFormatException e) {
 			this.variableValue = -1;
