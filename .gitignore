@@ -4,6 +4,8 @@
 ### VS Code ###
 .vscode/
 
+/tpami-env/
+
 ### Eclipse ###
 
 .metadata
