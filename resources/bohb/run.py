@@ -19,7 +19,7 @@ parser.add_argument('--max_budget', type=float, help='Maximum budget used during
 parser.add_argument('--eta', type=float, help='In each iteration, a complete run of sequential halving is executed. In it, after evaluating each configuraiton on the same subset size, only a fraction of 1/eta of them advances to the next round. Must be greater or equal to 2', default=2)
 parser.add_argument('--id', type=int, help='ID of this run', default=0)
 parser.add_argument('--n_workers', type=int, help='Number of workers to run in parallel', default=2)
-args = parser.parse_args()
+args, unknown = parser.parse_known_args()
 
 # Step 1: Start a nameserver
 # Every run needs a nameserver. It could be a 'static' server with a
