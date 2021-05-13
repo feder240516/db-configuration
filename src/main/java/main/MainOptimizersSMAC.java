@@ -85,8 +85,9 @@ public class MainOptimizersSMAC {
 		compMaria.addParameter(new Parameter("OPTIMIZER_SEARCH_DEPTH", new NumericParameterDomain(true, 0, 62), 62));
 		compMaria.addParameter(
 				new Parameter("OPTIMIZER_USE_CONDITION_SELECTIVITY", new NumericParameterDomain(true, 1, 5), 4));
-		components.add(compMaria);
 		String requiredInterface = "IDatabase";
+		compMaria.addProvidedInterface(requiredInterface);
+		components.add(compMaria);
 
 		IConverter<ComponentInstance, IComponentInstance> converter = new IConverter<ComponentInstance, IComponentInstance>() {
 			@Override

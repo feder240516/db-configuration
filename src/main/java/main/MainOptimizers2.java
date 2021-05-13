@@ -70,6 +70,7 @@ public class MainOptimizers2 {
 		// Components
 		Collection<Component> components = new ArrayList<Component>();
 		Component compMaria = new Component("MariaDB");
+		compMaria.addProvidedInterface("IDatabase");
 		compMaria.addParameter(new Parameter("DIV_PRECISION_INCREMENT", new NumericParameterDomain(true, 0, 30), 4));
 		compMaria.addParameter(new Parameter("JOIN_CACHE_LEVEL", new NumericParameterDomain(true, 0, 8), 2));
 		compMaria.addParameter(new Parameter("LOG_SLOW_RATE_LIMIT", new NumericParameterDomain(true, 1, 10000000), 1));
@@ -82,8 +83,10 @@ public class MainOptimizers2 {
 		compMaria.addParameter(new Parameter("OPTIMIZER_SEARCH_DEPTH", new NumericParameterDomain(true, 0, 62), 62));
 		compMaria.addParameter(
 				new Parameter("OPTIMIZER_USE_CONDITION_SELECTIVITY", new NumericParameterDomain(true, 1, 5), 4));
-		components.add(compMaria);
 		String requiredInterface = "IDatabase";
+		compMaria.addProvidedInterface(requiredInterface);
+		components.add(compMaria);
+		
 
 		IConverter<ComponentInstance, IComponentInstance> converter = new IConverter<ComponentInstance, IComponentInstance>() {
 			@Override
