@@ -6,6 +6,10 @@ import static org.jooq.impl.DSL.select;
 import static org.jooq.impl.DSL.val;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,6 +26,8 @@ import org.api4.java.algorithm.exceptions.AlgorithmTimeoutedException;
 import org.api4.java.common.attributedobjects.ObjectEvaluationFailedException;
 import org.jooq.DatePart;
 import org.jooq.Query;
+
+import com.google.gson.Gson;
 
 import ai.libs.jaicore.components.api.IComponentInstance;
 import ai.libs.jaicore.components.model.Component;
@@ -48,6 +54,10 @@ import managers.Benchmarker;
 import managers.PortManager;
 
 public class MainOptimizersSMAC {
+	
+	private static final HttpClient httpClient = HttpClient.newBuilder()
+            .version(HttpClient.Version.HTTP_2)
+            .build();
 
 	public static Query generateQuerySelectSalaries() {
 		return select(field("employees.emp_no"), field("employees.first_name"), field("employees.last_name"),
@@ -56,21 +66,15 @@ public class MainOptimizersSMAC {
 						.where(extract(field("salaries.to_date"), DatePart.YEAR).eq(val(9999)));
 	}
 	
-	public static void main(String[] args) throws IOException {
-		int THREADS = 2;
+	public static Benchmarker buildBenchmarker(int threads) {
 		int NUM_TESTS = 3;
-		int TIME_IN_MINUTES = 30;
-		int[] ports = new int[] { 9901, 9902, 9903, 9904, 9905, 9906, 9907, 9908, 9909 };
-		PortManager.getInstance().setupAvailablePorts(ports);
-
 		Query selectSalaries = generateQuerySelectSalaries();
-
 		TestDescription td1 = new TestDescription("Only select salaries", NUM_TESTS);
 		td1.addQuery(1, selectSalaries);
-
-		Benchmarker benchmarker = new Benchmarker(td1, THREADS);
-
-		// Components
+		return new Benchmarker(td1, threads);
+	}
+	
+	public static Collection<Component> buildComponents() {
 		Collection<Component> components = new ArrayList<Component>();
 		Component compMaria = new Component("MariaDB");
 		compMaria.addParameter(new Parameter("DIV_PRECISION_INCREMENT", new NumericParameterDomain(true, 0, 30), 4));
@@ -88,23 +92,49 @@ public class MainOptimizersSMAC {
 		String requiredInterface = "IDatabase";
 		compMaria.addProvidedInterface(requiredInterface);
 		components.add(compMaria);
-
-		IConverter<ComponentInstance, IComponentInstance> converter = new IConverter<ComponentInstance, IComponentInstance>() {
+		return components;
+	}
+	
+	public static IConverter<ComponentInstance, IComponentInstance> buildConverter() {
+		return new IConverter<ComponentInstance, IComponentInstance>() {
 			@Override
 			public IComponentInstance convert(ComponentInstance ci) throws ConversionFailedException {
 				return ci;
 			}
-			
 		};
-		
-		IHyperoptObjectEvaluator<IComponentInstance> evaluator = new IHyperoptObjectEvaluator<IComponentInstance>() {
+	}
+	
+	public static double evaluateComponentInstance(IComponentInstance ci) {
+		try {
+			Gson gson = new Gson();
+			HttpRequest request = HttpRequest.newBuilder()
+	                .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(ci)))
+	                .uri(URI.create("http://localhost:9000/handleRequest"))
+	                .setHeader("User-Agent", "Java 11 HttpClient Bot")
+	                .build();
+	
+	        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+	
+	        // print status code
+	        System.out.println(response.statusCode());
+	
+	        // print response body
+	        System.out.println(response.body());
+        	return 42.;
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return 84.;
+	}
+	
+	public static IHyperoptObjectEvaluator<IComponentInstance> buildEvaluator(Benchmarker benchmarker) {
+		return new IHyperoptObjectEvaluator<IComponentInstance>() {
 			@Override
 			public Double evaluate(IComponentInstance ci, int budget)
 					throws ObjectEvaluationFailedException, InterruptedException {
 				try {
-					return benchmarker.benchmark(ci);
-				} catch (InterruptedException | ExecutionException | UnavailablePortsException | IOException
-						| SQLException e) {
+					return evaluateComponentInstance(ci);
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 
@@ -113,27 +143,45 @@ public class MainOptimizersSMAC {
 
 			@Override
 			public int getMaxBudget() {
-				return 1;
+				return 9999999;
 			}
 		};
+	}
+	
+	public static IOptimizer<IPlanningOptimizationTask<IComponentInstance>, IComponentInstance> buildOptimizer(int threads, String requiredInterface, Timeout globalTimeout, Timeout evalTimeout) {
+		Benchmarker benchmarker = buildBenchmarker(threads);
+		// Components
+		Collection<Component> components = buildComponents();
+		IConverter<ComponentInstance, IComponentInstance> converter = buildConverter();
+		IHyperoptObjectEvaluator<IComponentInstance> evaluator = buildEvaluator(benchmarker);
 		
-		final Timeout GLOBAL_TIMEOUT = new Timeout(5, TimeUnit.MINUTES);
-		final Timeout EVAL_TIMEOUT = new Timeout(1, TimeUnit.MINUTES);
 
 		Map<Component, Map<Parameter, ParameterRefinementConfiguration>> parameterRefinementConfiguration = new HashMap<>();
 		IGeneticOptimizerConfig gaConfig = ConfigFactory.create(IGeneticOptimizerConfig.class);
 
 		IPlanningOptimizationTask<IComponentInstance> task = new PlanningOptimizationTask<IComponentInstance>(converter,
-				evaluator, components, requiredInterface, GLOBAL_TIMEOUT, EVAL_TIMEOUT,
+				evaluator, components, requiredInterface, globalTimeout, evalTimeout,
 				parameterRefinementConfiguration);
 		
 		IPCSOptimizerConfig pcsConfig = ConfigFactory.create(IPCSOptimizerConfig.class);
-		pcsConfig.setProperty(IPCSOptimizerConfig.K_CPUS, THREADS + "");
+		pcsConfig.setProperty(IPCSOptimizerConfig.K_CPUS, threads + "");
 		
-		IOptimizer<IPlanningOptimizationTask<IComponentInstance>, IComponentInstance> opt = new SMACOptimizer<IComponentInstance>("Experiment", pcsConfig, task);
+		return new SMACOptimizer<IComponentInstance>("Experiment", pcsConfig, task);
+	}
+	
+	public static void main(String[] args) throws IOException {
+		int THREADS = 2;
+		int[] ports = new int[] { 9901, 9902, 9903, 9904, 9905, 9906, 9907, 9908, 9909 };
+		String REQUIRED_INTERFACE = "IDatabase";
+
+		final Timeout GLOBAL_TIMEOUT = new Timeout(5, TimeUnit.MINUTES);
+		final Timeout EVAL_TIMEOUT = new Timeout(1, TimeUnit.MINUTES);
+		
+		PortManager.getInstance().setupAvailablePorts(ports);
+		IOptimizer<IPlanningOptimizationTask<IComponentInstance>, IComponentInstance> opt = buildOptimizer(THREADS, REQUIRED_INTERFACE, GLOBAL_TIMEOUT, EVAL_TIMEOUT);
 		try {
 			IOptimizationOutput<IComponentInstance> result = opt.call();
-			
+			System.out.println(String.format("Final score: %f", result.getScore()));
 			/*for (Map.Entry<String, String> entry : result.getSolutionDescription().getParameterValues().entrySet()) {
 			    String key = entry.getKey();
 			    String value = entry.getValue();
@@ -142,7 +190,6 @@ public class MainOptimizersSMAC {
 			
 		} catch (AlgorithmTimeoutedException | InterruptedException | AlgorithmExecutionCanceledException
 				| AlgorithmException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
