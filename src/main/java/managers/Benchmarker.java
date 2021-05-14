@@ -156,7 +156,7 @@ public class Benchmarker {
 				executor.awaitTermination(999999, TimeUnit.DAYS);
 			}
 			semaphore.release();
-			System.out.println(String.format("Semaphore released"));
+			//System.out.println(String.format("Semaphore released"));
 		}
 		if (handleID != null) {
 			// CSVService.getInstance().writeTest(new TestResult(handleID.toString(),score,componentInstance.getComponent().getName()));

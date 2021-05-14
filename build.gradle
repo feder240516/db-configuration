@@ -128,6 +128,17 @@ task fatJar(type: Jar) {
 
 distZip.shouldRunAfter(build)
 
+task evalcli(type: Jar) {   
+	manifest {
+        attributes 'Main-Class': 'main.MainHASCO'
+    }
+    zip64 = true
+    baseName = 'MainHASCO-cli'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+    with jar
+}
+
 repositories {
 	mavenLocal()
     mavenCentral()

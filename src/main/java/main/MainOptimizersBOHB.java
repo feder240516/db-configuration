@@ -131,7 +131,7 @@ public class MainOptimizersBOHB {
 		IPCSOptimizerConfig pcsConfig = ConfigFactory.create(IPCSOptimizerConfig.class);
 		pcsConfig.setProperty(IPCSOptimizerConfig.K_CPUS, THREADS + "");
 		
-		IOptimizer<IPlanningOptimizationTask<IComponentInstance>, IComponentInstance> opt = new BOHBOptimizer<IComponentInstance>("EXPERIMENT", pcsConfig, task);
+		IOptimizer<IPlanningOptimizationTask<IComponentInstance>, IComponentInstance> opt = new BOHBOptimizer<IComponentInstance>("1", pcsConfig, task);
 		try {
 			IOptimizationOutput<IComponentInstance> result = opt.call();
 			

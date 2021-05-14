@@ -81,11 +81,11 @@ public abstract class ADatabaseHandle implements IDatabase {
 	
 	// ! ya no hace falta que retorne el puerto
 	public void initiateServer() throws IOException, SQLException, InterruptedException, UnavailablePortsException {
-			System.out.println("Starting server on port " + port);
+			//System.out.println("Starting server on port " + port);
 			String[] comandoArray = getStartCommand();
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
 			processBuilder.directory(new File(createdInstancePath));
-			System.out.println("createdInstancePath: " + createdInstancePath);
+			//System.out.println("createdInstancePath: " + createdInstancePath);
 			process = null;
 			Connection conn = null;
 			try {
@@ -96,7 +96,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 					inStream.close();
 					errStream.close();
 					
-					System.out.println("Server has been inited");
+					//System.out.println("Server has been inited");
 				} else {
 					System.out.println("Retry for process");
 				}
@@ -121,7 +121,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 	}
 	
 	public void createDBInstance() throws IOException {
-		System.out.println(getBasePath());
+		//System.out.println(getBasePath());
 		File dataDir = new File(getBasePath());
 		createdInstancePath = getInstancesPath() + "/" + ID;
 		File destDir = new File(createdInstancePath);
@@ -144,7 +144,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 		        String columnValue = resultSet.getString(i);
 		        System.out.print(columnValue);
 		    }
-		    System.out.println("");
+		    //System.out.println("");
 		}
 	}
 	
@@ -167,7 +167,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 	protected Connection resillientGetConnection(int retries) throws InterruptedException {
 		Connection conn = null;
 		for(int i = 0; i < retries && conn == null; ++i) {
-			if (i > 0) { System.out.println("Retrying..."); }
+			//if (i > 0) { System.out.println("Retrying..."); }
 			TimeUnit.SECONDS.sleep(5); // wait 5 seconds to allow server to initiate
 			conn = getConnection();
 		}

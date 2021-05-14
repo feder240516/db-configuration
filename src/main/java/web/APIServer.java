@@ -56,11 +56,13 @@ public class APIServer {
 		int[] ports = new int[] {9901,9902,9903,9904,9905,9906,9907,9908,9909,9910};
 		PortManager.getInstance().setupAvailablePorts(ports);
 		int port = 9000;
-		HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+		HttpServer server = HttpServer.create(new InetSocketAddress(port), 99);
 		System.out.println("server started at " + port);
 		server.createContext("/handleRequest", new CreateExecution());
+		server.createContext("/", new CreateExecution());
 		server.setExecutor(null);
 		server.start();
+		
 	}
 
 }

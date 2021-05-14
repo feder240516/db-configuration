@@ -70,7 +70,6 @@ public class CreateExecution implements HttpHandler {
 		parameterValues.put("OPTIMIZER_USE_CONDITION_SELECTIVITY", "4");
 		Map<String, List<IComponentInstance>> reqInterfaces = new HashMap<>(); 
 		IComponentInstance i1 = new ComponentInstance(compMaria, parameterValues, reqInterfaces);
-		System.out.println(String.format("i1 is = %s", i1.toString()));
 		return i1;
 	}
 	
@@ -87,8 +86,10 @@ public class CreateExecution implements HttpHandler {
 	@Override
 	public void handle(HttpExchange he) throws IOException {
 		//  // parse request
+		System.out.println("conectado");
 		String response = "";
 		int responseCode = 200;
+		he.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
 		try(InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
 			BufferedReader br = new BufferedReader(isr);
 			){
@@ -105,7 +106,7 @@ public class CreateExecution implements HttpHandler {
 		        final Gson gson = new Gson();
 		        //final JsonElement properties = gson.fromJson(body, JsonElement.class);
 		        //System.out.println(String.format("Props: %s", properties.toString()));
-		        final IComponentInstance i1 = generateComponentInstance();
+		        //final IComponentInstance i1 = generateComponentInstance();
 		        //System.out.println(String.format("instance: %s", gson.fromJson(i1.toString(),JsonElement.class)));
 		        //String i1Json = gson.toJson(i1);
 		        //System.out.println(String.format("instance: %s", gson.toJson(i1Json)));
