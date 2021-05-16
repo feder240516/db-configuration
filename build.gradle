@@ -28,8 +28,8 @@ targetCompatibility = 1.8
 def grpcVersion = '1.23.0'
 
 dependencies {
-    implementation 'ai.libs:mlplan-full:0.2.4'
-    implementation 'ai.libs:hasco-core:0.2.4'
+    compile('ai.libs:mlplan-full:0.2.4')
+    compile('ai.libs:hasco-core:0.2.4')
     
     // include ailibs for compilation
     /*compile ('ai.libs:mlplan-meka:0.2.3') {
@@ -55,18 +55,18 @@ dependencies {
     compile ('ai.libs.thirdparty:interruptible-meka:0.1.2')*/
     compile ('commons-lang:commons-lang:2.6')
     
-    implementation 'org.mariadb.jdbc:mariadb-java-client:2.1.2'
+    compile('org.mariadb.jdbc:mariadb-java-client:2.1.2')
     
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
-	implementation group: 'mysql', name: 'mysql-connector-java', version: '5.1.13'
+	compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.13'
     
     // https://mvnrepository.com/artifact/org.apache.derby/derbyclient
-    implementation 'org.apache.derby:derbyclient:10.15.2.0'
+    compile('org.apache.derby:derbyclient:10.15.2.0')
 	compile group: 'org.apache.derby', name: 'derbyclient', version: '10.15.2.0'
 	//runtime group: 'org.apache.derby', name: 'derbyclient', version: '10.15.2.0'
 	// https://mvnrepository.com/artifact/org.apache.derby/derby
 	testCompile group: 'org.apache.derby', name: 'derby', version: '10.15.2.0'
-	implementation 'org.hsqldb:hsqldb:2.5.0'
+	compile('org.hsqldb:hsqldb:2.5.0')
     
     // https://mvnrepository.com/artifact/com.healthmarketscience.sqlbuilder/sqlbuilder
 	compile group: 'com.healthmarketscience.sqlbuilder', name: 'sqlbuilder', version: '3.0.1'
@@ -80,15 +80,15 @@ dependencies {
     testCompile("org.junit.jupiter:junit-jupiter-params:5.7.0")
 	
 	// https://mvnrepository.com/artifact/org.mockito/mockito-core
-	testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.8.0'
+	testCompile group: 'org.mockito', name: 'mockito-core', version: '3.8.0'
 	
 	// https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter
-	testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.8.0'
+	testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.8.0'
 	
 	// https://mvnrepository.com/artifact/org.postgresql/postgresql
-	implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.18'
+	compile group: 'org.postgresql', name: 'postgresql', version: '42.2.18'
 	
-	implementation 'org.jooq:jooq:3.14.7'
+	compile ('org.jooq:jooq:3.14.7')
     
     compile group: 'com.h2database', name: 'h2', version: '1.4.199'
     
@@ -107,9 +107,9 @@ dependencies {
     
     // #### FOR THE WEB API FOR TESTS ####
     // https://mvnrepository.com/artifact/com.sun.net.httpserver/http
-	implementation group: 'com.sun.net.httpserver', name: 'http', version: '20070405'
+	compile group: 'com.sun.net.httpserver', name: 'http', version: '20070405'
 	// https://mvnrepository.com/artifact/com.google.code.gson/gson
-	implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
+	compile group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
 	
     
 }
@@ -123,8 +123,8 @@ task fatJar(type: Jar) {
     }
     baseName = project.name + '-all'
     from { 
-    	configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    	configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) } 
+    	configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    	configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } 
     }
     zip64 = true
     
