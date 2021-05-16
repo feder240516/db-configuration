@@ -14,6 +14,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,13 +30,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.*;
 import org.mockito.stubbing.Answer;
-
-import com.healthmarketscience.sqlbuilder.Query;
-import com.healthmarketscience.sqlbuilder.SelectQuery;
-import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
-import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSchema;
-import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSpec;
-import com.healthmarketscience.sqlbuilder.dbspec.basic.DbTable;
 
 import ai.libs.jaicore.components.api.IComponentInstance;
 import exceptions.UnavailablePortsException;
@@ -68,9 +64,10 @@ class ADatabaseHandleTest {
 	}
 	
 	TestDescription generateTestDescription(int numQueries) {
-		TestDescription td = new TestDescription();
+		TestDescription td = new TestDescription("Test for test");
+		DSLContext dslContext = DSL.using(SQLDialect.MARIADB);
 		for(int i = 0; i < numQueries; ++i) {
-			td.addIndividualQuery(new SelectQuery());
+			td.addIndividualQuery(dslContext.selectZero());
 		}
 		return td;
 	}
@@ -95,7 +92,7 @@ class ADatabaseHandleTest {
 		Mockito.doAnswer((inv)->{
 			TimeUnit.MILLISECONDS.sleep(Math.round(Math.random() * 100));
 			return 42.0;
-		}).when(mockDBHandle).benchmarkQuery(ArgumentMatchers.<Query>any());
+		}).when(mockDBHandle).benchmarkQuery("");
 	}
 	
 	void mockCreateHandleFailure(AtomicInteger startedHandles, int maxThreads, int errorPosition) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
@@ -112,7 +109,7 @@ class ADatabaseHandleTest {
 			int newVal = startedHandles.get();
 			assertTrue(errorPosition > newVal);
 			return 42.0;
-		}).when(mockDBHandle).benchmarkQuery(ArgumentMatchers.<Query>any());
+		}).when(mockDBHandle).benchmarkQuery("");
 	}
 
 	@ParameterizedTest
