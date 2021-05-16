@@ -17,14 +17,13 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.xml.utils.UnImplNode;
 import org.jooq.Query;
 
-import EDU.oswego.cs.dl.util.concurrent.Semaphore;
+import java.util.concurrent.Semaphore;
 import ai.libs.jaicore.components.api.IComponentInstance;
 import exceptions.TooManyFailuresException;
 import exceptions.UnavailablePortsException;
 import handlers.ADatabaseHandle;
 import helpers.TestDescription;
 import helpers.TestResult;
-import junit.framework.AssertionFailedError;
 import services.CSVService;
 
 class QueryCallable implements Callable<Double> {
