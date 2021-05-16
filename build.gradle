@@ -122,8 +122,9 @@ task fatJar(type: Jar) {
         	'Main-Class': 'com.main.MainHASCO'
     }
     baseName = project.name + '-all'
+    archiveClassifier = "all"
     from { 
-    	configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    	configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     	configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } 
     }
     zip64 = true
