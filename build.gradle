@@ -28,11 +28,11 @@ targetCompatibility = 1.8
 def grpcVersion = '1.23.0'
 
 dependencies {
-    compile('ai.libs:mlplan-full:0.2.4')
-    compile('ai.libs:hasco-core:0.2.4')
+    //compile('ai.libs:mlplan-full:0.2.4')
+    //compile('ai.libs:hasco-core:0.2.4')
     
     // include ailibs for compilation
-    /*compile ('ai.libs:mlplan-meka:0.2.3') {
+    compile ('ai.libs:mlplan-full:0.2.4') {
  		exclude group: 'org.nd4j'
  		exclude group: 'org.bytedeco.javacpp-presets'
  		exclude group: 'org.deeplearning4j'
@@ -49,7 +49,7 @@ dependencies {
  		exclude group: 'org.graphstream'
  		exclude group: 'com.github.graphstream'
  		exclude group: 'ai.libs.thirdparty'
-    }*/
+    }
     
     /*compile ('ai.libs.thirdparty:interruptible-weka:0.1.5')
     compile ('ai.libs.thirdparty:interruptible-meka:0.1.2')*/
@@ -131,7 +131,7 @@ task fatJar(type: Jar) {
     with jar
 }
 
-distZip.shouldRunAfter(build)
+//distZip.shouldRunAfter(build)
 
 task evalcli(type: Jar) {   
 	manifest {

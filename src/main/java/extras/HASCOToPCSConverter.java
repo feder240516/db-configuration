@@ -18,7 +18,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -299,7 +298,7 @@ public class HASCOToPCSConverter {
 			}
 		}
 		if (!isDefaultValueContainedInValues) {
-			Log.error("Default value must be contained in categorical values for component:" + componentName);
+			logger.error("Default value must be contained in categorical values for component:" + componentName);
 			defaultValue = values[0];
 		}
 
