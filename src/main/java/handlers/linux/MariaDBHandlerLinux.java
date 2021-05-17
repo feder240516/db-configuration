@@ -60,11 +60,18 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 
 	@Override
 	protected String[] getStartCommand() {
-		String MariaDBHome = PropertiesManager.getInstance().getProperty("mariadb.location");
+		/*String MariaDBHome = PropertiesManager.getInstance().getProperty("mariadb.location");
+		
 		String[] cmdStart = {"bash", "-c", String.format(
 				"'sudo %s/mysqld --datadir=%s --port=%d --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0'", MariaDBHome, createdInstancePath, port, createdInstancePath)};
 		System.out.println("Start command on port " + port + ": " + String.format("sudo %s/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0", MariaDBHome, createdInstancePath, port, createdInstancePath));
-		return cmdStart;
+		return cmdStart;*/
+		String postgresqlHome = PropertiesManager.getInstance().getProperty("postgres.location");
+		String postgresqlLog = PropertiesManager.getInstance().getProperty("postgres.log.location");
+		System.out.println(String.format("Running in port %d", port));
+		if (postgresqlHome == null || postgresqlHome.equals("")) throw new RuntimeException("Connector location not specified");
+		String[] comandoArray = {"bash", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s -o \"-F -p %d\" start", ID.toString(), port)};
+		return comandoArray;
 	}
 
 	@Override
