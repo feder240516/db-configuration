@@ -123,6 +123,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 			process = null;
 			Connection conn = null;
 			try {
+				System.out.println(String.format(" ------> command: %s", String.join(" ", processBuilder.command())));
 				if (process == null) {
 					this.process = processBuilder.start();
 					InputStream inStream = process.getInputStream();
