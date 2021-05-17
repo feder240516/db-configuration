@@ -130,6 +130,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 					InputStream errStream = process.getErrorStream();
 					inStream.close();
 					errStream.close();
+					System.out.println(" -----> executed command");
 					//System.out.println("Server has been inited");
 				} else {
 					System.out.println("Retry for process");
@@ -150,6 +151,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 			} finally {
 				if (conn != null && !conn.isClosed()) { conn.close(); }
 			}
+			System.out.println(" -----> fins");
 		
 		
 		// return port; // ! should not return port anymore
