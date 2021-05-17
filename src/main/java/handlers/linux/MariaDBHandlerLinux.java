@@ -52,6 +52,7 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 		System.out.println(String.valueOf(copyProcess.getInputStream().readAllBytes()));
 		try {
 			copyProcess.waitFor();
+			System.out.println("Finished copying");
 		} catch (InterruptedException e) {
 			throw new IOException("Couldn't create new PostgreSQL instance");
 		}
