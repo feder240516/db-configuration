@@ -28,8 +28,8 @@ public class PropertiesManager {
 	public PropertiesManager() {
 		try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(PROPS_FILENAME);
 			InputStream inputStreamDefault = getClass().getClassLoader().getResourceAsStream(PROPS_DEFAULT_FILENAME);
-			InputStream inputStreamLinuxDefault = getClass().getClassLoader().getResourceAsStream(PROPS_DEFAULT_FILENAME);
-			InputStream inputStreamWindowsDefault = getClass().getClassLoader().getResourceAsStream(PROPS_DEFAULT_FILENAME);){
+			InputStream inputStreamLinuxDefault = getClass().getClassLoader().getResourceAsStream(PROPS_LINUX_DEFAULT_FILENAME);
+			InputStream inputStreamWindowsDefault = getClass().getClassLoader().getResourceAsStream(PROPS_WINDOWS_DEFAULT_FILENAME);){
 			properties = new Properties();
 			if (inputStream != null) {
 				properties.load(inputStream);
