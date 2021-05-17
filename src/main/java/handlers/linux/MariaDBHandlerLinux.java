@@ -16,27 +16,9 @@ import managers.PropertiesManager;
 import managers.db.parameters.MariaDBParameterManager;
 
 public class MariaDBHandlerLinux extends MariaDBHandler {
-
-	static String instancesPath = "D:/Bibliotecas/Documents/_Programming_Assets/MariaDB/instances";
-	static String baseDataPath = "D:/Bibliotecas/Documents/_Programming_Assets/MariaDB/data";
 	
 	public MariaDBHandlerLinux(IComponentInstance ci) throws UnavailablePortsException, IOException, SQLException, InterruptedException, ClassNotFoundException {
 		super(ci);
-	}
-	
-	public boolean executeCommand(String cmdLine) {
-		ProcessBuilder pb = new ProcessBuilder();
-		pb.command("cmd.exe", "/c", cmdLine);
-		
-		boolean success;
-		try {
-			pb.start();
-			success = true;
-		}catch (Exception e){
-			e.printStackTrace();
-			success = false;
-		}
-		return success;
 	}
 	
 	@Override
@@ -49,7 +31,7 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 		System.out.println(String.format("Testing instance %s", ID.toString()));
 		ProcessBuilder processBuilder = new ProcessBuilder(copyCommandArr);
 		Process copyProcess = processBuilder.start();
-		copyProcess.getInputStream().close();
+		System.out.println(String.valueOf(copyProcess.getInputStream().readAllBytes()));
 		try {
 			copyProcess.waitFor();
 			System.out.println("Finished copying");
@@ -68,9 +50,6 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 		//System.out.println("Start command on port " + port + ": " + String.format("sudo %s/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0", MariaDBHome, createdInstancePath, port, createdInstancePath));
 		return cmdStart;
 	}
-
-	@Override
-	protected void createAndFillDatabase() {}
 
 	@Override
 	public void stopServer() {
@@ -107,11 +86,6 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 		System.out.println(" ### CONN STRING MARIA ###");
 		System.out.println(dbUrl);
 		return dbUrl;
-	}
-
-	@Override
-	protected String getDbDirectory() {
-		return null;
 	}
 
 	@Override
