@@ -2,6 +2,7 @@ package handlers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -49,7 +50,8 @@ public class PostgreSQLHandleTest {
 	
 	@Test
 	void test() throws ClassNotFoundException, UnavailablePortsException, IOException, SQLException, InterruptedException {
-		ProcessBuilder pb = new ProcessBuilder("echo", "sus", ">", "a.txt");
+		ProcessBuilder pb = new ProcessBuilder("echo", "sus", ">", "./a.txt");
+		pb.directory(new File("home/ailibs"));
 		Process p = pb.start();
 		p.waitFor();
 		/*IComponent postgres = new Component("PostgreSQL");
