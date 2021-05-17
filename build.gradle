@@ -144,6 +144,14 @@ task evalcli(type: Jar) {
     with jar
 }
 
+tasks.withType(Test) { 
+  testLogging {
+    exceptionFormat "full"
+    events "started", "skipped", "passed", "failed"
+    showStandardStreams true
+  }
+}
+
 repositories {
 	mavenLocal()
     mavenCentral()
@@ -151,6 +159,10 @@ repositories {
     maven { url "https://jitpack.io" } 
     maven { url "https://clojars.org/repo/" }
     maven { url "https://plugins.gradle.org/m2/" }
+}
+
+test {
+    useJUnitPlatform()
 }
 
 sonarqube {
