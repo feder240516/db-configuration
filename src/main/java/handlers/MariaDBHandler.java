@@ -17,7 +17,7 @@ public class MariaDBHandler extends ADatabaseHandle {
 	static String instancesPath = "C:/Users/WIN/Desktop/MariaDB_Handler/instances";
 	static String baseDataPath = "C:/Users/WIN/Desktop/MariaDB_Handler/data";
 	
-	public MariaDBHandler(IComponentInstance ci) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
+	public MariaDBHandler(IComponentInstance ci) throws UnavailablePortsException, IOException, SQLException, InterruptedException, ClassNotFoundException {
 		super(ci, new MariaDBParameterManager());
 	}
 	

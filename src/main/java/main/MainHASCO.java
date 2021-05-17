@@ -128,7 +128,6 @@ public class MainHASCO {
 					System.out.println(String.format("Best candidate for 120 minutes execution: %s", new ComponentSerialization().serialize(hasco.getBestSeenSolution().getComponentInstance())));
 					System.out.println(String.format("Time: %f", hasco.getBestScoreKnownToExist()));
 					CSVService.getInstance().dumpWithVars2("COMPLETE");
-					CURRENTLY_EXECUTED++;
 				} else {
 					System.out.println("Didn't work HASCO. Retrying");
 				}

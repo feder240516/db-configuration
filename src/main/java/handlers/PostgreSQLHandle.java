@@ -22,7 +22,7 @@ public class PostgreSQLHandle extends ADatabaseHandle {
 	static String instancesPath = "D:\\Bibliotecas\\Documents\\_Programming_Assets\\Postgresql\\instances";
 	static String baseDataPath = "D:\\Bibliotecas\\Documents\\_Programming_Assets\\Postgresql\\data";
 	
-	public PostgreSQLHandle(IComponentInstance componentInstance) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
+	public PostgreSQLHandle(IComponentInstance componentInstance) throws UnavailablePortsException, IOException, SQLException, InterruptedException, ClassNotFoundException {
 		super(componentInstance, new PostgreSQLParameterManager());
 	}
 	

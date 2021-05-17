@@ -23,7 +23,7 @@ public class DBSystemFactory {
 		return _instance;
 	}
 	
-	public ADatabaseHandle createHandle(IComponentInstance componentInstance, TestDescription test) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
+	public ADatabaseHandle createHandle(IComponentInstance componentInstance) throws UnavailablePortsException, IOException, SQLException, InterruptedException, ClassNotFoundException {
 		String componentName = componentInstance.getComponent().getName();
 		switch(componentName) {
 		case "MariaDB":

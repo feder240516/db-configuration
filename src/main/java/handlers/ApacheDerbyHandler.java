@@ -35,7 +35,7 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 		initHandler();
 	}*/
 	
-	public ApacheDerbyHandler(IComponentInstance ci) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
+	public ApacheDerbyHandler(IComponentInstance ci) throws UnavailablePortsException, IOException, SQLException, InterruptedException, ClassNotFoundException {
 		super(ci, new ApacheDerbyParameterManager());
 	}
 	

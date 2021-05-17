@@ -31,8 +31,20 @@ public abstract class ADatabaseHandle implements IDatabase {
 	protected IDatabaseParameterManager databaseParameterManager;
 	protected UUID ID;
 	protected boolean shouldPrintResults;
+	protected static boolean driversInitialized = false; 
 	
-	public ADatabaseHandle(IComponentInstance ci, IDatabaseParameterManager databaseParameterManager) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
+	public static void initializeDrivers() throws ClassNotFoundException {
+		if (!driversInitialized) {
+			Class.forName ("org.mariadb.jdbc.Driver");
+			Class.forName ("org.postgresql.Driver");
+			Class.forName ("org.hsqldb.jdbcDriver");
+			Class.forName ("org.apache.derby.client.ClientAutoloadedDriver");
+			driversInitialized = true;
+		}
+	}
+	
+	public ADatabaseHandle(IComponentInstance ci, IDatabaseParameterManager databaseParameterManager) throws UnavailablePortsException, IOException, SQLException, InterruptedException, ClassNotFoundException {
+		initializeDrivers();
 		this.componentInstance = ci;
 		this.databaseParameterManager = databaseParameterManager;
 		this.ID = UUID.randomUUID();
@@ -180,6 +192,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 			String dbUrl = getConnectionString();
 			conn = DriverManager.getConnection(dbUrl);	
 		} catch (SQLException e1) {
+			e1.printStackTrace();
 			System.out.println(String.format("Could not connect to port %d", port));
 			conn = null;
 		}

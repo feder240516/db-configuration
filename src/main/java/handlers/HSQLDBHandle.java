@@ -19,7 +19,7 @@ public class HSQLDBHandle extends ADatabaseHandle {
 	
 	//Map<String, String> shortcutCommands = new HashMap<>();
 	
-	public HSQLDBHandle(IComponentInstance ci) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
+	public HSQLDBHandle(IComponentInstance ci) throws UnavailablePortsException, IOException, SQLException, InterruptedException, ClassNotFoundException {
 		super(ci, new HSQLDBParameterManager());
 	}
 
