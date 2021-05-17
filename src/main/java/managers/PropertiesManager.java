@@ -31,16 +31,22 @@ public class PropertiesManager {
 			InputStream inputStreamLinuxDefault = getClass().getClassLoader().getResourceAsStream(PROPS_LINUX_DEFAULT_FILENAME);
 			InputStream inputStreamWindowsDefault = getClass().getClassLoader().getResourceAsStream(PROPS_WINDOWS_DEFAULT_FILENAME);){
 			properties = new Properties();
+			Properties tempProperties = new Properties();
 			if (inputStream != null) {
-				properties.load(inputStream);
-			} else if (SystemUtils.IS_OS_LINUX && inputStreamLinuxDefault != null) {
-				properties.load(inputStreamDefault);
-			} else if (SystemUtils.IS_OS_WINDOWS && inputStreamWindowsDefault != null) {
-				properties.load(inputStreamDefault);
-			} else if (inputStreamDefault != null) {
-				properties.load(inputStreamDefault);
-			} else {
-				throw new FileNotFoundException("No properties file found in the classpath");
+				tempProperties.load(inputStream);
+				properties.putAll(tempProperties);
+			} 
+			if (SystemUtils.IS_OS_LINUX && inputStreamLinuxDefault != null) {
+				tempProperties.load(inputStreamLinuxDefault);
+				properties.putAll(tempProperties);
+			} 
+			if (SystemUtils.IS_OS_WINDOWS && inputStreamWindowsDefault != null) {
+				tempProperties.load(inputStreamWindowsDefault);
+				properties.putAll(tempProperties);
+			} 
+			if (inputStreamDefault != null) {
+				tempProperties.load(inputStreamDefault);
+				properties.putAll(tempProperties);
 			}
 		} catch (IOException e) {
 			System.err.println("Couldn't load config.properties.");
