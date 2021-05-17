@@ -49,7 +49,7 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 		System.out.println(String.format("Testing instance %s", ID.toString()));
 		ProcessBuilder processBuilder = new ProcessBuilder(copyCommandArr);
 		Process copyProcess = processBuilder.start();
-		System.out.println(String.valueOf(copyProcess.getInputStream().readAllBytes()));
+		copyProcess.getInputStream().close();
 		try {
 			copyProcess.waitFor();
 			System.out.println("Finished copying");
