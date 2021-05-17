@@ -100,24 +100,6 @@ public abstract class ADatabaseHandle implements IDatabase {
 	protected abstract String getBasePath();
 	protected abstract String getDbDirectory(); // unused
 	
-	protected void printCommandStreams(InputStream in) {
-		ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
-		List<Callable<Double>> taskList = new ArrayList<>();
-		taskList.add(() -> {
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-			String line = "";
-			while((line = br.readLine()) != null) {
-				System.out.println(line);
-			}
-			return 42.;
-		});
-		try {
-			List<Future<Double>> resultList = executor.invokeAll(taskList);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	// ! ya no hace falta que retorne el puerto
 	public void initiateServer() throws IOException, SQLException, InterruptedException, UnavailablePortsException {
 			//System.out.println("Starting server on port " + port);
@@ -133,9 +115,9 @@ public abstract class ADatabaseHandle implements IDatabase {
 				if (process == null) {
 					this.process = processBuilder.start();
 					InputStream inStream = process.getInputStream();
-					
-					printCommandStreams(inStream);//inStream.close();
-					
+					InputStream errStream = process.getErrorStream();
+					inStream.close();
+					errStream.close();
 					//System.out.println("Server has been inited");
 				} else {
 					System.out.println("Retry for process");
