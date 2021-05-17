@@ -22,6 +22,7 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 				"cp -rf /var/lib/postgresql/13/data /var/lib/postgresql/13/%1$s"*/, ID.toString());
 		ProcessBuilder processBuilder = new ProcessBuilder(copyCommand);
 		Process copyProcess = processBuilder.start();
+		System.out.println(copyProcess.getInputStream().readAllBytes());
 		try {
 			copyProcess.waitFor();
 		} catch (InterruptedException e) {
