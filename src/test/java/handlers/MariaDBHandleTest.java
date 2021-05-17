@@ -54,7 +54,7 @@ public class MariaDBHandleTest {
 		IComponentInstance mariainst = new ComponentInstance(maria, new HashMap<>(), new HashMap<>());
 		ADatabaseHandle mariaHandle = DBSystemFactory.getInstance().createHandle(mariainst);
 		System.out.println("Finally connected");
-		//mariaHandle.stopServer();
-		mariaHandle.cleanup(); 
+		mariaHandle.initiateServer();;
+		//mariaHandle.cleanup(); 
 	}
 }
