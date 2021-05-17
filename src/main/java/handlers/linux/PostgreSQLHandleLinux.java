@@ -19,7 +19,7 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 		String[] copyCommandArr = new String[] {"bash", "-c", 
 				String.format("/usr/bin/pg_createcluster 13 %1$s"
 						+ "&& rm -rf /var/lib/postgresql/13/%1$s"
-						+ "&& cp -rf /var/lib/postgresql/13/data /var/lib/postgresql/13/%1$s", ID.toString())}; 
+						+ "&& sudo -u postgres cp -rf /var/lib/postgresql/13/data /var/lib/postgresql/13/%1$s", ID.toString())}; 
 				//"&&", "rm", "-rf", String.format("/var/lib/postgresql/13/%1$s", ID.toString()),
 				//"&&", "cp", "-rf", "/var/lib/postgresql/13/data", String.format("/var/lib/postgresql/13/%1$s", ID.toString())};
 		//String copyCommand = String.format(
