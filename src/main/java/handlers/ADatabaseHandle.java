@@ -50,6 +50,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 		this.ID = UUID.randomUUID();
 		this.port = PortManager.getInstance().acquireAnyPort();
 		this.shouldPrintResults = false;
+		createdInstancePath = getInstancesPath() + "/" + ID;
 		createDBInstance();
 		initiateServer();
 		setupInitedDB();
@@ -136,7 +137,6 @@ public abstract class ADatabaseHandle implements IDatabase {
 	public void createDBInstance() throws IOException {
 		//System.out.println(getBasePath());
 		File dataDir = new File(getBasePath());
-		createdInstancePath = getInstancesPath() + "/" + ID;
 		File destDir = new File(createdInstancePath);
 	    FileUtils.copyDirectory(dataDir, destDir);
 	    System.out.println("The instance " + createdInstancePath + " on port " + port + " was created");
