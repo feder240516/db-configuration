@@ -17,7 +17,7 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 	
 	@Override
 	public void createDBInstance() throws IOException {
-		String[] copyCommandArr = new String[] {"bash", "-c", 
+		String[] copyCommandArr = new String[] {"sudo", "sh", "-c", 
 				String.format("sudo -u postgres /usr/bin/pg_createcluster 13 %1$s"
 						+ "&& sudo -u postgres rm -rf /var/lib/postgresql/13/%1$s"
 						+ "&& sudo -u postgres cp -rf /var/lib/postgresql/13/data /var/lib/postgresql/13/%1$s"
@@ -54,7 +54,7 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 		System.out.println("Stopping server");
 		try {
 			String postgresqlHome = PropertiesManager.getInstance().getProperty("postgres.location");
-			String[] comandoArray = {"bash", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s stop", ID.toString(), port)};
+			String[] comandoArray = {"sudo", "sh", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s stop", ID.toString(), port)};
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
 			processBuilder.start().waitFor();
 			

@@ -50,7 +50,7 @@ public class PostgreSQLHandleTest {
 	
 	@Test
 	void test() throws ClassNotFoundException, UnavailablePortsException, IOException, SQLException, InterruptedException {
-		ProcessBuilder pb = new ProcessBuilder("bash","echo", "sus", ">", "./a.txt");
+		ProcessBuilder pb = new ProcessBuilder("sudo", "sh", "-c", "echo sus > ./a.txt");
 		pb.directory(new File("home/ailibs"));
 		Process p = pb.start();
 		p.waitFor();
