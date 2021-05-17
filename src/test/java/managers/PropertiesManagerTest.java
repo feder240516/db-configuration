@@ -3,6 +3,8 @@ package managers;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -30,10 +32,10 @@ class PropertiesManagerTest {
 
 	@Test
 	void test() {
-		String derbyLocation = PropertiesManager.getInstance().getProperty("derby.location");
-		if(derbyLocation == null) fail();
-		System.out.println(String.format("Derby location: %s", derbyLocation));
-		
+		Set<Entry<Object, Object>> properties = PropertiesManager.getInstance().getAllProperties();
+		for(Entry<Object,Object> prop: properties) {
+			System.out.println(String.format("%s: %s", prop.getKey(), prop.getValue()));
+		}
 	}
 
 }

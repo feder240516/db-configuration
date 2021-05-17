@@ -3,7 +3,9 @@ package managers;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.lang3.SystemUtils;
 
@@ -47,5 +49,9 @@ public class PropertiesManager {
 	
 	public String getProperty(String key) {
 		return properties.getProperty(key);
+	}
+	
+	public Set<Entry<Object, Object>> getAllProperties() {
+		return properties.entrySet();
 	}
 }
