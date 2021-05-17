@@ -54,7 +54,7 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 		System.out.println("Stopping server");
 		try {
 			String postgresqlHome = PropertiesManager.getInstance().getProperty("postgres.location");
-			String[] comandoArray = {postgresqlHome + "/bin/pg_ctl", "-D", createdInstancePath, "-l", createdInstancePath + "/log.txt", "stop"};
+			String[] comandoArray = {"bash", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s stop", ID.toString(), port)};
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
 			processBuilder.start().waitFor();
 			
