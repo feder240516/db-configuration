@@ -62,6 +62,12 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 	}
 	
 	@Override
+	protected String getConnectionString () {
+		String dbUrl = String.format("jdbc:postgresql://localhost:%d/%s?user=%s", port, "employees", "postgres");
+		return dbUrl;
+	}
+	
+	@Override
 	protected String getInstancesPath() {
 		return PropertiesManager.getInstance().getProperty("postgres.instances.location");
 	}
