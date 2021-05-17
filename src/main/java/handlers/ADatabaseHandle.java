@@ -134,7 +134,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 					this.process = processBuilder.start();
 					InputStream inStream = process.getInputStream();
 					
-					printCommandStreams(inStream)//inStream.close();
+					printCommandStreams(inStream);//inStream.close();
 					
 					//System.out.println("Server has been inited");
 				} else {
