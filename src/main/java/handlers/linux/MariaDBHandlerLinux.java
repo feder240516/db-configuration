@@ -24,21 +24,6 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 		super(ci);
 	}
 	
-	public boolean executeCommand(String cmdLine) {
-		ProcessBuilder pb = new ProcessBuilder();
-		pb.command("cmd.exe", "/c", cmdLine);
-		
-		boolean success;
-		try {
-			pb.start();
-			success = true;
-		}catch (Exception e){
-			e.printStackTrace();
-			success = false;
-		}
-		return success;
-	}
-	
 	@Override
 	public void createDBInstance() throws IOException {
 		String baseDir = getBasePath();
@@ -61,8 +46,8 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 	@Override
 	protected String[] getStartCommand() {
 		String MariaDBHome = PropertiesManager.getInstance().getProperty("mariadb.location");
-		String[] cmdStart = {"bash", "-c", String.format(
-				"'sudo %s/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0'", MariaDBHome, createdInstancePath, port, createdInstancePath)};
+		String[] cmdStart = {String.format(
+				"bash -c 'sudo %s/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0'", MariaDBHome, createdInstancePath, port, createdInstancePath)};
 		System.out.println("Start command on port " + port + ": " + String.format("sudo %s/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0", MariaDBHome, createdInstancePath, port, createdInstancePath));
 		return cmdStart;
 	}
