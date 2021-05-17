@@ -96,6 +96,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 			//System.out.println("Starting server on port " + port);
 			String[] comandoArray = getStartCommand();
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
+			System.out.println(String.format("created instance: %s", createdInstancePath));
 			processBuilder.directory(new File(createdInstancePath));
 			//System.out.println("createdInstancePath: " + createdInstancePath);
 			process = null;
