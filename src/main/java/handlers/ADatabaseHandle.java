@@ -127,9 +127,17 @@ public abstract class ADatabaseHandle implements IDatabase {
 				if (process == null) {
 					this.process = processBuilder.start();
 					InputStream inStream = process.getInputStream();
-					InputStream errStream = process.getErrorStream();
-					inStream.close();
-					errStream.close();
+					Thread thread = new Thread(() -> {
+						try (BufferedReader br = new BufferedReader(new InputStreamReader(inStream));) {
+							String input;
+							while((input = br.readLine()) != null) {
+								System.out.println(String.format(">>>> %s", input));
+							}
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					});
+					thread.run();
 					System.out.println(" -----> executed command");
 					//System.out.println("Server has been inited");
 				} else {
