@@ -60,10 +60,15 @@ public abstract class ADatabaseHandle implements IDatabase {
 		this.shouldPrintResults = false;
 		createdInstancePath = getInstancesPath() + "/" + ID;
 		createDBInstance();
+		System.out.println(" ---> created");
 		initiateServer();
+		System.out.println(" ---> preinitiated");
 		setupInitedDB();
+		System.out.println(" ---> setupped");
 		createAndFillDatabase();
+		System.out.println(" ---> filled");
 		stopServer();
+		System.out.println(" ---> Stopped");
 		TimeUnit.SECONDS.sleep(5);
 		System.out.println("initiated");
 		}catch(UnavailablePortsException | IOException | SQLException | InterruptedException | ClassNotFoundException e) {
