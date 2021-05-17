@@ -62,7 +62,7 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 	protected String[] getStartCommand() {
 		String MariaDBHome = PropertiesManager.getInstance().getProperty("mariadb.location");
 		String[] cmdStart = {"bash", "-c", String.format(
-				"\"sudo %s/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0\"", MariaDBHome, createdInstancePath, port, createdInstancePath)};
+				"'sudo %s/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0'", MariaDBHome, createdInstancePath, port, createdInstancePath)};
 		System.out.println("Start command on port " + port + ": " + String.format("sudo %s/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0", MariaDBHome, createdInstancePath, port, createdInstancePath));
 		return cmdStart;
 	}
