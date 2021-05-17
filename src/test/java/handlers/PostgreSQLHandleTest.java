@@ -52,6 +52,7 @@ public class PostgreSQLHandleTest {
 		IComponent postgres = new Component("PostgreSQL");
 		IComponentInstance postgresinst = new ComponentInstance(postgres, new HashMap<>(), new HashMap<>());
 		ADatabaseHandle postgresHandle = DBSystemFactory.getInstance().createHandle(postgresinst);
+		postgresHandle.stopServer();
 		postgresHandle.cleanup(); 
 	}
 }
