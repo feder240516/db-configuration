@@ -72,13 +72,13 @@ class ADatabaseHandleTest {
 		return td;
 	}
 	
-	void mockCreateHandleSuccess(AtomicInteger startedHandles, int maxThreads) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
+	void mockCreateHandleSuccess(AtomicInteger startedHandles, int maxThreads) throws UnavailablePortsException, IOException, SQLException, InterruptedException, ClassNotFoundException {
 		Mockito.doAnswer((inv) -> {
 			int newVal = startedHandles.incrementAndGet();
 			System.out.println(String.format("%d semaphore seats used", newVal));
 			assertTrue(newVal <= maxThreads);
 			return mockDBHandle;
-		}).when(mockDBSystemFactory).createHandle(ArgumentMatchers.<IComponentInstance>any(), ArgumentMatchers.<TestDescription>any());
+		}).when(mockDBSystemFactory).createHandle(ArgumentMatchers.<IComponentInstance>any());
 	}
 	
 	void mockCleanupSuccess(AtomicInteger startedHandles, int maxThreads) {
@@ -95,12 +95,12 @@ class ADatabaseHandleTest {
 		}).when(mockDBHandle).benchmarkQuery("");
 	}
 	
-	void mockCreateHandleFailure(AtomicInteger startedHandles, int maxThreads, int errorPosition) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
+	void mockCreateHandleFailure(AtomicInteger startedHandles, int maxThreads, int errorPosition) throws UnavailablePortsException, IOException, SQLException, InterruptedException, ClassNotFoundException {
 		Mockito.doAnswer((inv) -> {
 			int newVal = startedHandles.incrementAndGet();
 			assertTrue(errorPosition > newVal);
 			return mockDBHandle;
-		}).when(mockDBSystemFactory).createHandle(ArgumentMatchers.<IComponentInstance>any(), ArgumentMatchers.<TestDescription>any());
+		}).when(mockDBSystemFactory).createHandle(ArgumentMatchers.<IComponentInstance>any());
 	}
 	
 	void mockBenchmarkQueryFailure(AtomicInteger startedHandles, int maxThreads, int errorPosition) throws InterruptedException, SQLException {
@@ -114,7 +114,7 @@ class ADatabaseHandleTest {
 
 	@ParameterizedTest
 	@ValueSource(ints = {15,30,50,100})
-	void testInitiateServer(int maxThreads) throws UnavailablePortsException, IOException, SQLException, InterruptedException, ExecutionException {
+	void testInitiateServer(int maxThreads) throws UnavailablePortsException, IOException, SQLException, InterruptedException, ExecutionException, ClassNotFoundException {
 		//if (maxThreads == 15)throw new UnavailablePortsException("erro");
 		System.out.println("---------TEST START-----------");
 		AtomicInteger startedHandles = new AtomicInteger(0);
@@ -143,7 +143,7 @@ class ADatabaseHandleTest {
 	
 	@ParameterizedTest
 	@ValueSource(ints = {15,30,50,100})
-	void testBenchmarkFailure (int maxThreads) throws UnavailablePortsException, IOException, SQLException, InterruptedException, ExecutionException {
+	void testBenchmarkFailure (int maxThreads) throws UnavailablePortsException, IOException, SQLException, InterruptedException, ExecutionException, ClassNotFoundException {
 		//if (maxThreads == 15)throw new UnavailablePortsException("erro");
 		System.out.println("---------TEST START-----------");
 		AtomicInteger startedHandles = new AtomicInteger(0);

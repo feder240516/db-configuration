@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import ai.libs.jaicore.components.api.IComponentInstance;
 import exceptions.UnavailablePortsException;
 import handlers.ADatabaseHandle;
@@ -12,6 +14,7 @@ import handlers.ApacheDerbyHandler;
 import handlers.HSQLDBHandle;
 import handlers.MariaDBHandler;
 import handlers.PostgreSQLHandle;
+import handlers.linux.PostgreSQLHandleLinux;
 import helpers.Port;
 import helpers.TestDescription;
 
@@ -33,7 +36,7 @@ public class DBSystemFactory {
 		case "HSQLDB":
 			return new HSQLDBHandle(componentInstance);
 		case "PostgreSQL":
-			return new PostgreSQLHandle(componentInstance);
+			return SystemUtils.IS_OS_LINUX ?  new PostgreSQLHandleLinux(componentInstance) : new PostgreSQLHandle(componentInstance);
 		default:
 			throw new IllegalArgumentException("IComponent DB name is not supported");
 		}
