@@ -40,7 +40,7 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 		String postgresqlLog = PropertiesManager.getInstance().getProperty("postgres.log.location");
 		System.out.println(String.format("Running in port %d", port));
 		if (postgresqlHome == null || postgresqlHome.equals("")) throw new RuntimeException("Connector location not specified");
-		String[] comandoArray = {"sudo", "bash", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s -o \"-F -p %d\" start", ID.toString(), port)};
+		String[] comandoArray = {"sudo", "sh", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s -o \"-F -p %d\" start", ID.toString(), port)};
 		//String[] comandoArray = {postgresqlHome + "/bin/pg_ctl", "-D", createdInstancePath, "-l", postgresqlLog + "/postgresql-13-" + ID.toString() + ".log", "-o", String.format("\"-F -p %d\"", port), "start"};
 		for (String comando: comandoArray) {
 			System.out.print(comando + " ");
