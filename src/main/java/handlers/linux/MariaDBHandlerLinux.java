@@ -70,7 +70,7 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 		String postgresqlLog = PropertiesManager.getInstance().getProperty("postgres.log.location");
 		System.out.println(String.format("Running in port %d", port));
 		if (postgresqlHome == null || postgresqlHome.equals("")) throw new RuntimeException("Connector location not specified");
-		String[] comandoArray = {"bash", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s -o \"-F -p %d\" start", ID.toString(), port)};
+		String[] comandoArray = {"sudo", "bash", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s -o \"-F -p %d\" start", ID.toString(), port)};
 		return comandoArray;
 	}
 
