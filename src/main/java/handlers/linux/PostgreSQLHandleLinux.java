@@ -21,6 +21,7 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 				"/usr/bin/pg_createcluster 13 %1$s"/* + 
 				"rm -rf /var/lib/postgresql/13/%1$s && " + 
 				"cp -rf /var/lib/postgresql/13/data /var/lib/postgresql/13/%1$s"*/, ID.toString());
+		System.out.println(String.format("Testing instance %s", ID.toString()));
 		ProcessBuilder processBuilder = new ProcessBuilder(copyCommandArr);
 		Process copyProcess = processBuilder.start();
 		System.out.println(copyProcess.getInputStream().readAllBytes());
