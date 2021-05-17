@@ -101,7 +101,7 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 		String user = PropertiesManager.getInstance().getProperty("mariadb.user");
 		String password = PropertiesManager.getInstance().getProperty("mariadb.password");
 		
-		String dbUrl = String.format("jdbc:mariadb://localhost:%d/%s?user=%s&password=%s", port, dbName, user, password);
+		String dbUrl = String.format("jdbc:mariadb://localhost:%d/%s", port, dbName);
 		System.out.println(" ### CONN STRING MARIA ###");
 		System.out.println(dbUrl);
 		return dbUrl;
