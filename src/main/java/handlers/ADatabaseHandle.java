@@ -66,7 +66,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 		stopServer();
 		TimeUnit.SECONDS.sleep(5);
 		}catch(UnavailablePortsException | IOException | SQLException | InterruptedException | ClassNotFoundException e) {
-			e.printStackTrace();
+			e.printStackTrace(); 
 			throw e;
 		}
 		//initHandler();

@@ -50,10 +50,11 @@ public class MariaDBHandleTest {
 	@Test
 	void test() throws ClassNotFoundException, UnavailablePortsException, IOException, SQLException, InterruptedException {
 		IComponent maria = new Component("MariaDB");
+		System.out.println("vah");
 		IComponentInstance mariainst = new ComponentInstance(maria, new HashMap<>(), new HashMap<>());
 		ADatabaseHandle mariaHandle = DBSystemFactory.getInstance().createHandle(mariainst);
 		System.out.println("Finally connected");
-		mariaHandle.stopServer();
+		//mariaHandle.stopServer();
 		mariaHandle.cleanup(); 
 	}
 }
