@@ -1,17 +1,25 @@
 package handlers;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
@@ -92,11 +100,30 @@ public abstract class ADatabaseHandle implements IDatabase {
 	protected abstract String getBasePath();
 	protected abstract String getDbDirectory(); // unused
 	
+	protected void printCommandStreams(InputStream in) {
+		ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
+		List<Callable<Double>> taskList = new ArrayList<>();
+		taskList.add(() -> {
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			String line = "";
+			while((line = br.readLine()) != null) {
+				System.out.println(line);
+			}
+			return 42.;
+		});
+		try {
+			List<Future<Double>> resultList = executor.invokeAll(taskList);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	// ! ya no hace falta que retorne el puerto
 	public void initiateServer() throws IOException, SQLException, InterruptedException, UnavailablePortsException {
 			//System.out.println("Starting server on port " + port);
 			String[] comandoArray = getStartCommand();
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
+			processBuilder.redirectErrorStream();
 			System.out.println(String.format("created instance: %s", createdInstancePath));
 			processBuilder.directory(new File(createdInstancePath));
 			//System.out.println("createdInstancePath: " + createdInstancePath);
@@ -106,9 +133,8 @@ public abstract class ADatabaseHandle implements IDatabase {
 				if (process == null) {
 					this.process = processBuilder.start();
 					InputStream inStream = process.getInputStream();
-					InputStream errStream = process.getErrorStream();
-					inStream.close();
-					errStream.close();
+					
+					printCommandStreams(inStream)//inStream.close();
 					
 					//System.out.println("Server has been inited");
 				} else {
