@@ -12,6 +12,7 @@ import ai.libs.jaicore.components.api.IComponentInstance;
 import exceptions.UnavailablePortsException;
 import handlers.ADatabaseHandle;
 import handlers.MariaDBHandler;
+import managers.PropertiesManager;
 import managers.db.parameters.MariaDBParameterManager;
 
 public class MariaDBHandlerLinux extends MariaDBHandler {
@@ -37,19 +38,31 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 		}
 		return success;
 	}
+	
+	@Override
+	public void createDBInstance() throws IOException {
+		String baseDir = getBasePath();
+		String instancesDir = getInstancesPath();
+		String[] copyCommandArr = new String[] {"bash", "-c", 
+				String.format("sudo cp -rf %1$s %2$s/%3$s"
+						+ "&& sudo chmod -R 777 %2$s/%3$s", baseDir, instancesDir, ID.toString())};
+		System.out.println(String.format("Testing instance %s", ID.toString()));
+		ProcessBuilder processBuilder = new ProcessBuilder(copyCommandArr);
+		Process copyProcess = processBuilder.start();
+		System.out.println(String.valueOf(copyProcess.getInputStream().readAllBytes()));
+		try {
+			copyProcess.waitFor();
+		} catch (InterruptedException e) {
+			throw new IOException("Couldn't create new PostgreSQL instance");
+		}
+	}
 
 	@Override
 	protected String[] getStartCommand() {
-		String extraPath = "\\bin\\mysqld";
-		String MariaDBHome = System.getenv("MARIADB_HOME");
-		
-		String dataDir = createdInstancePath;
-		String socketPath = createdInstancePath + "\\mysql.sock";
-		
-		String mariadbPath = String.format("\"%s%s\"", MariaDBHome, extraPath);
-		
-		String[] cmdStart = {"cmd.exe", "/c", String.format("%s --datadir=%s --port=%s --socket=%s --query-cache-type=0 --query-cache-size=0", mariadbPath, dataDir, port, socketPath)};
-		System.out.println("Start command on port " + port + ": " + String.format("%s --datadir=%s --port=%s --socket=%s --query-cache-type=0 --query-cache-size=0", mariadbPath, dataDir, port, socketPath));
+		String MariaDBHome = PropertiesManager.getInstance().getProperty("mariadb.location");
+		String[] cmdStart = {"bash", "-c", String.format(
+				"sudo %s/bin/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0", MariaDBHome, createdInstancePath, port, createdInstancePath)};
+		System.out.println("Start command on port " + port + ": " + String.format("sudo %s/bin/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0", MariaDBHome, createdInstancePath, port, createdInstancePath));
 		return cmdStart;
 	}
 
@@ -59,13 +72,11 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 	@Override
 	public void stopServer() {
 		System.out.println("Stopping server on port " + port);
-		String extraPath = "\\bin\\mysqladmin";
-		String MariaDBHome = System.getenv("MARIADB_HOME");
+		String MariaDBHome = PropertiesManager.getInstance().getProperty("mariadb.location");
 		
-		String mariadbPath = String.format("\"%s%s\"", MariaDBHome, extraPath);
-		
-		String[] cmdStop = {"cmd.exe", "/c", String.format("%s -u root --password=root --port=%d shutdown", mariadbPath, port)};
-		System.out.println(String.format("%s -u root --password=root --port=%d shutdown", mariadbPath, port));
+		String[] cmdStart = {"bash", "-c", String.format("sudo %s/bin/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0", MariaDBHome, createdInstancePath, port, createdInstancePath)};
+		String[] cmdStop = {"bash", "-c", String.format("sudo %s/bin/mysqld -u root --password=root --port=%d shutdown", MariaDBHome, port)};
+		System.out.println(String.format("%s -u root --password=root --port=%d shutdown", MariaDBHome, port));
 		
 		try(Connection conn = getConnection();) {
 			if (conn != null && !conn.isClosed()) conn.close();
@@ -100,12 +111,12 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 
 	@Override
 	protected String getInstancesPath() {
-		return instancesPath;
+		return PropertiesManager.getInstance().getProperty("mariadb.instances.location");
 	}
 
 	@Override
 	protected String getBasePath() {
-		return baseDataPath;
+		return PropertiesManager.getInstance().getProperty("mariadb.data.location");
 	}
 
 }
