@@ -50,7 +50,7 @@ public class MainDrivers {
 				e.printStackTrace();
 			}
 		}
-		/*for(IComponentInstance ci: componentInstanceExamples) {
+		for(IComponentInstance ci: componentInstanceExamples) {
 			try {
 				_instance.createHandle(ci);
 			} catch (ClassNotFoundException | UnavailablePortsException | IOException | SQLException
@@ -58,6 +58,6 @@ public class MainDrivers {
 				e.printStackTrace();
 				System.out.println(String.format("Couldn't instantiate db %s", ci.getComponent().getName()));
 			}
-		}*/
+		}
 	}
 }
