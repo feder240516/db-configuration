@@ -18,8 +18,8 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 	@Override
 	public void createDBInstance() throws IOException {
 		String[] copyCommandArr = new String[] {"bash", "-c", 
-				String.format("/usr/bin/pg_createcluster 13 %1$s"
-						+ "&& rm -rf /var/lib/postgresql/13/%1$s"
+				String.format("sudo -u postgres /usr/bin/pg_createcluster 13 %1$s"
+						+ "&& sudo -u postgres rm -rf /var/lib/postgresql/13/%1$s"
 						+ "&& sudo -u postgres cp -rf /var/lib/postgresql/13/data /var/lib/postgresql/13/%1$s", ID.toString())};
 		System.out.println(String.format("Testing instance %s", ID.toString()));
 		ProcessBuilder processBuilder = new ProcessBuilder(copyCommandArr);
