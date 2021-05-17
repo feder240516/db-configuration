@@ -118,6 +118,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 			processBuilder.redirectErrorStream();
 			System.out.println(String.format("created instance: %s", createdInstancePath));
 			processBuilder.directory(new File(createdInstancePath));
+			
 			//System.out.println("createdInstancePath: " + createdInstancePath);
 			process = null;
 			Connection conn = null;
@@ -132,6 +133,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 				} else {
 					System.out.println("Retry for process");
 				}
+				System.out.println(" -----> Before resilient");
 				// tries multiple connections to database
 				conn = resillientGetConnection(MAX_CONNECTION_RETRIES);
 				if (conn != null && !conn.isClosed()) {
