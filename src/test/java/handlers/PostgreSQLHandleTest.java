@@ -49,9 +49,13 @@ public class PostgreSQLHandleTest {
 	
 	@Test
 	void test() throws ClassNotFoundException, UnavailablePortsException, IOException, SQLException, InterruptedException {
+		ProcessBuilder pb = new ProcessBuilder("echo", "sus", ">", "a.txt");
+		pb.start();
 		IComponent postgres = new Component("PostgreSQL");
 		IComponentInstance postgresinst = new ComponentInstance(postgres, new HashMap<>(), new HashMap<>());
 		ADatabaseHandle postgresHandle = DBSystemFactory.getInstance().createHandle(postgresinst);
+		postgresHandle.initiateServer();
+		System.out.println(String.format("score: %f", postgresHandle.benchmarkQuery("select count(*) from employees")));
 		postgresHandle.stopServer();
 		postgresHandle.cleanup(); 
 	}
