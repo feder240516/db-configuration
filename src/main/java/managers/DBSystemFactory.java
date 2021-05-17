@@ -14,6 +14,7 @@ import handlers.ApacheDerbyHandler;
 import handlers.HSQLDBHandle;
 import handlers.MariaDBHandler;
 import handlers.PostgreSQLHandle;
+import handlers.linux.MariaDBHandlerLinux;
 import handlers.linux.PostgreSQLHandleLinux;
 import helpers.Port;
 import helpers.TestDescription;
@@ -30,7 +31,7 @@ public class DBSystemFactory {
 		String componentName = componentInstance.getComponent().getName();
 		switch(componentName) {
 		case "MariaDB":
-			return new MariaDBHandler(componentInstance);
+			return SystemUtils.IS_OS_LINUX ? new MariaDBHandlerLinux(componentInstance) : new MariaDBHandler(componentInstance);
 		case "ApacheDerby":
 			return new ApacheDerbyHandler(componentInstance);
 		case "HSQLDB":
