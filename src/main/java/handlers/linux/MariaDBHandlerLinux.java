@@ -98,8 +98,8 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 	@Override
 	protected String getConnectionString() {
 		String dbName = "employees";
-		String user = "root";
-		String password = "root";
+		String user = PropertiesManager.getInstance().getProperty("mariadb.user");
+		String password = PropertiesManager.getInstance().getProperty("mariadb.password");
 		
 		String dbUrl = String.format("jdbc:mariadb://localhost:%d/%s?user=%s&password=%s", port, dbName, user, password);
 		return dbUrl;
