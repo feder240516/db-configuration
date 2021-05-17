@@ -52,7 +52,6 @@ public class ApacheDerbyHandleTest {
 		IComponent postgres = new Component("ApacheDerby");
 		IComponentInstance postgresinst = new ComponentInstance(postgres, new HashMap<>(), new HashMap<>());
 		ADatabaseHandle postgresHandle = DBSystemFactory.getInstance().createHandle(postgresinst);
-		postgresHandle.stopServer();
 		postgresHandle.cleanup(); 
 	}
 }
