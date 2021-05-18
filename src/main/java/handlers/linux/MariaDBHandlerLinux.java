@@ -41,6 +41,18 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 	}
 
 	@Override
+	protected String[] getStartCommand() {
+		String MariaDBHome = PropertiesManager.getInstance().getProperty("mariadb.location");
+		String[] cmdStart = {"bash", "-c", String.format(
+				"sudo %s/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0", 
+				MariaDBHome, createdInstancePath, port, createdInstancePath)};
+		//String[] cmdStart = {"bash", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s -o \"-F -p %d\" start", ID.toString(), port)};
+		System.out.println("Start command on port " + port + ": " + String.join(" ",cmdStart));
+		//System.out.println("Start command on port " + port + ": " + String.format("sudo %s/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0", MariaDBHome, createdInstancePath, port, createdInstancePath));
+		return cmdStart;
+	}
+
+	@Override
 	public void stopServer() {
 		System.out.println("Stopping server on port " + port);
 		String MariaDBHome = PropertiesManager.getInstance().getProperty("mariadb.location");
