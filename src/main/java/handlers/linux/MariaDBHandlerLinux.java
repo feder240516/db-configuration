@@ -1,5 +1,6 @@
 package handlers.linux;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -64,6 +65,8 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 		try(Connection conn = getConnection();) {
 			if (conn != null && !conn.isClosed()) conn.close();
 			ProcessBuilder processBuilder = new ProcessBuilder();
+			processBuilder.redirectOutput(new File("/home/ailibs/outputDelete.txt"));
+			processBuilder.redirectError(new File("/home/ailibs/errorDelete.txt"));
 			processBuilder.command(cmdStop);
 			processBuilder.start().waitFor();
 			
