@@ -109,21 +109,13 @@ public abstract class ADatabaseHandle implements IDatabase {
 	// ! ya no hace falta que retorne el puerto
 	public void initiateServer() throws IOException, SQLException, InterruptedException, UnavailablePortsException {
 			//System.out.println("Starting server on port " + port);
-			ProcessBuilder processBuilder = null; 
-			String comandoStr = getStartCommandJoint();
-			if (comandoStr == null) {
-				String[] comandoArray = getStartCommand();
-				processBuilder = new ProcessBuilder(comandoArray);
-			} else {
-				processBuilder = new ProcessBuilder(comandoStr);
-			}
-			
-			
-			processBuilder.redirectErrorStream();
+			String[] comandoArray = getStartCommand();	
+			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
+			//processBuilder.redirectErrorStream();
 			System.out.println(String.format("created instance: %s", createdInstancePath));
 			processBuilder.directory(new File(createdInstancePath));
-			processBuilder.redirectOutput(new File("home/ailibs/output.txt"));
-			processBuilder.redirectError(new File("home/ailibs/error.txt"));
+			processBuilder.redirectOutput(new File("/home/ailibs/output.txt"));
+			processBuilder.redirectError(new File("/home/ailibs/error.txt"));
 			//System.out.println("createdInstancePath: " + createdInstancePath);
 			process = null;
 			Connection conn = null;
