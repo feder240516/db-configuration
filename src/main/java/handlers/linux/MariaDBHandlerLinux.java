@@ -57,9 +57,9 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 		System.out.println("Stopping server on port " + port);
 		String MariaDBHome = PropertiesManager.getInstance().getProperty("mariadb.location");
 		
-		String[] cmdStart = {"bash", "-c", String.format("sudo %s/bin/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0", MariaDBHome, createdInstancePath, port, createdInstancePath)};
-		String[] cmdStop = {"bash", "-c", String.format("sudo %s/bin/mysqld -u root --password=root --port=%d shutdown", MariaDBHome, port)};
-		System.out.println(String.format("%s -u root --password=root --port=%d shutdown", MariaDBHome, port));
+		//String[] cmdStart = {"bash", "-c", String.format("sudo %s/bin/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0", MariaDBHome, createdInstancePath, port, createdInstancePath)};
+		String[] cmdStop = {"sudo", "mysqladmin", "-P", String.valueOf(port), "--protocol", "tcp", "shutdown"};
+		//System.out.println(String.format("%s -u root --password=root --port=%d shutdown", MariaDBHome, port));
 		
 		try(Connection conn = getConnection();) {
 			if (conn != null && !conn.isClosed()) conn.close();
