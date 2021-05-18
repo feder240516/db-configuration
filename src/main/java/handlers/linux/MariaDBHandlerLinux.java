@@ -60,14 +60,15 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 		
 		//String[] cmdStart = {"bash", "-c", String.format("sudo %s/bin/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0", MariaDBHome, createdInstancePath, port, createdInstancePath)};
 		String[] cmdStop = {"sudo", "mysqladmin", "-P", String.valueOf(port), "--protocol", "tcp", "shutdown"};
+		System.out.println("deleting command: " + String.join(" ", cmdStop));
 		//System.out.println(String.format("%s -u root --password=root --port=%d shutdown", MariaDBHome, port));
 		
 		try(Connection conn = getConnection();) {
 			if (conn != null && !conn.isClosed()) conn.close();
 			ProcessBuilder processBuilder = new ProcessBuilder();
+			processBuilder.command(cmdStop);
 			processBuilder.redirectOutput(new File("/home/ailibs/outputDelete.txt"));
 			processBuilder.redirectError(new File("/home/ailibs/errorDelete.txt"));
-			processBuilder.command(cmdStop);
 			processBuilder.start().waitFor();
 			
 			String msg = String.format("The server on port %d was stopped successfully", port);
