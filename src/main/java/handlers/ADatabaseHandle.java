@@ -122,6 +122,8 @@ public abstract class ADatabaseHandle implements IDatabase {
 			processBuilder.redirectErrorStream();
 			System.out.println(String.format("created instance: %s", createdInstancePath));
 			processBuilder.directory(new File(createdInstancePath));
+			processBuilder.redirectOutput(new File("home/ailibs/output.txt"));
+			processBuilder.redirectError(new File("home/ailibs/error.txt"));
 			//System.out.println("createdInstancePath: " + createdInstancePath);
 			process = null;
 			Connection conn = null;
