@@ -59,7 +59,7 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 		String MariaDBHome = PropertiesManager.getInstance().getProperty("mariadb.location");
 		
 		//String[] cmdStart = {"bash", "-c", String.format("sudo %s/bin/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0", MariaDBHome, createdInstancePath, port, createdInstancePath)};
-		String[] cmdStop = {"sudo", "mysqladmin", "-P", String.valueOf(port), "--protocol", "tcp", "shutdown"};
+		String[] cmdStop = {"sudo", "mysqladmin", "--port="+port, "--protocol", "tcp", "shutdown"};
 		System.out.println("deleting command: " + String.join(" ", cmdStop));
 		//System.out.println(String.format("%s -u root --password=root --port=%d shutdown", MariaDBHome, port));
 		
