@@ -39,7 +39,7 @@ public class ApacheDerbyHandlerLinux extends ApacheDerbyHandler {
 		
 		System.out.println(String.format("Running in port %d", port));
 		if (derbyHome == null || derbyHome.equals("")) throw new RuntimeException("Connector location not specified");
-		String[] comandoArray = {"bash", "-c", String.format("sudo java -jar %s/lib/derbyrun.jar server start -p %d", derbyHome, port)};
+		String[] comandoArray = {"sudo", "java", "-jar", derbyHome + "/lib/derbyrun.jar", "server", "start", "-p", String.valueOf(port)};
 		//String[] comandoArray = {postgresqlHome + "/bin/pg_ctl", "-D", createdInstancePath, "-l", postgresqlLog + "/postgresql-13-" + ID.toString() + ".log", "-o", String.format("\"-F -p %d\"", port), "start"};
 		for (String comando: comandoArray) {
 			System.out.print(comando + " ");

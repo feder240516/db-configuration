@@ -59,7 +59,7 @@ public class HSQLDBHandleTest {
 		postgresHandle.initiateServer();
 		postgresHandle.printResultsAfterExecution(true);
 		DSLContext dsl = DSL.using(SQLDialect.HSQLDB);
-		String queryString = dsl.selectCount().from("employees").getSQL(ParamType.INLINED);
+		String queryString = dsl.selectCount().from("salaries").getSQL(ParamType.INLINED);
 		double executionTime = postgresHandle.benchmarkQuery(queryString);
 		System.out.println(String.format("query was executed in %f miliseconds", executionTime));
 		postgresHandle.stopServer();

@@ -23,6 +23,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.jooq.Query;
 
 import ai.libs.jaicore.components.api.IComponentInstance;
@@ -118,8 +119,10 @@ public abstract class ADatabaseHandle implements IDatabase {
 			//processBuilder.redirectErrorStream();
 			System.out.println(String.format("created instance: %s", createdInstancePath));
 			processBuilder.directory(new File(createdInstancePath));
-			processBuilder.redirectOutput(new File("/home/ailibs/output.txt"));
-			processBuilder.redirectError(new File("/home/ailibs/error.txt"));
+			if (SystemUtils.IS_OS_LINUX) {
+				processBuilder.redirectOutput(new File("/home/ailibs/output.txt"));
+				processBuilder.redirectError(new File("/home/ailibs/error.txt"));
+			}
 			//System.out.println("createdInstancePath: " + createdInstancePath);
 			process = null;
 			Connection conn = null;
@@ -128,8 +131,10 @@ public abstract class ADatabaseHandle implements IDatabase {
 					this.process = processBuilder.start();
 					InputStream inStream = process.getInputStream();
 					InputStream errStream = process.getErrorStream();
-					inStream.close();
-					errStream.close();
+					if (!SystemUtils.IS_OS_LINUX) {
+						inStream.close();
+						errStream.close();
+					}
 					//System.out.println("Server has been inited");
 				} else {
 					System.out.println("Retry for process");
