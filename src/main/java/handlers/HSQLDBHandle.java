@@ -14,8 +14,8 @@ import managers.db.parameters.HSQLDBParameterManager;
 
 public class HSQLDBHandle extends ADatabaseHandle {
 
-	static String instancesPath = "C:/Users/WIN/Desktop/HSQLDB_Instances/instances";
-	static String baseDataPath = "C:/Users/WIN/Desktop/HSQLDB_Instances/data";
+	static String instancesPath = "D:/Bibliotecas/Documents/_Programming_Assets/HSQLDB/instances";
+	static String baseDataPath = "D:/Bibliotecas/Documents/_Programming_Assets/HSQLDB/data";
 	
 	//Map<String, String> shortcutCommands = new HashMap<>();
 	
@@ -40,15 +40,15 @@ public class HSQLDBHandle extends ADatabaseHandle {
 	
 	@Override
 	protected String[] getStartCommand() {
-		String extraPath = "lib\\hsqldb.jar";
+		String extraPath = "\\lib\\hsqldb.jar";
 		String HSQLDBHome = System.getenv("HSQLDB_HOME");
 		
-		String dataDir = createdInstancePath + "\\db";
+		String dataDir = createdInstancePath + "";
 		
 		String hsqldbdbPath = String.format("\"%s%s\"", HSQLDBHome, extraPath);
 		
-		String[] cmdStart = {"cmd.exe", "/c", String.format("java -cp %s org.hsqldb.Server -database.0 file:%s -port %s", hsqldbdbPath, dataDir, port)};
-		System.out.println("Start command on port " + port + ": " + String.format("java -cp %s org.hsqldb.Server -database.0 file:%s -port %s", hsqldbdbPath, dataDir, port));
+		String[] cmdStart = {"cmd.exe", "/c", String.format("java -cp %s org.hsqldb.Server -database.0 file:%s -port %s", hsqldbdbPath, "./", port)};
+		System.out.println("Start command on port " + port + ": " + String.format("java -cp %s org.hsqldb.Server -database.0 file:%s -port %s", hsqldbdbPath, "./", port));
 		return cmdStart;
 	}
 
