@@ -32,7 +32,7 @@ public class HSQLDBHandleLinux extends HSQLDBHandle {
 		String user = "sa";
 		String password = "";
 		
-		String dbUrl = String.format("jdbc:hsqldb:hsql://localhost:%s/?user=%s&password=%s", port, user, password);
+		String dbUrl = String.format("jdbc:hsqldb:hsql://127.0.0.1:%s/?user=%s&password=%s", port, user, password);
 		System.out.println(" #### CONNECTION STRING ####");
 		System.out.println(dbUrl);
 		return dbUrl;
