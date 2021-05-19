@@ -73,6 +73,10 @@ public abstract class ADatabaseHandle implements IDatabase {
 		//initHandler();
 	}
 	
+	public void printResultsAfterExecution(boolean print) {
+		this.shouldPrintResults = print;
+	}
+	
 	public UUID getUUID() {
 		return ID;
 	}
@@ -220,12 +224,19 @@ public abstract class ADatabaseHandle implements IDatabase {
 	 * Delete instance from disk and free port
 	 */
 	public void cleanup() {
-		try {
-			PortManager.getInstance().releasePort(port);
-			FileUtils.deleteDirectory(new File(createdInstancePath));
-		} catch(Exception | Error e) {
-			e.printStackTrace();
+		PortManager.getInstance().releasePort(port);
+		for(int i = 0; i < 3; ++i) {
+			try {	
+				FileUtils.deleteDirectory(new File(createdInstancePath));
+				i = 3;
+			} catch(Exception | Error e) {
+				if(i == 2) { e.printStackTrace(); } 
+				else try {
+					TimeUnit.SECONDS.sleep(3);
+				} catch (InterruptedException e1) {}
+			}
 		}
+		
 		//throw new NotImplementedError();
 	}
 }
