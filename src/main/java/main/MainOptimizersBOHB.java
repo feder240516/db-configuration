@@ -103,9 +103,8 @@ public class MainOptimizersBOHB {
 			public Double evaluate(IComponentInstance ci, int budget)
 					throws ObjectEvaluationFailedException, InterruptedException {
 				try {
-					return benchmarker.benchmark(ci);
-				} catch (InterruptedException | ExecutionException | UnavailablePortsException | IOException
-						| SQLException e) {
+					return 42.;//return benchmarker.benchmark(ci);
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 
@@ -114,7 +113,7 @@ public class MainOptimizersBOHB {
 
 			@Override
 			public int getMaxBudget() {
-				return 1;
+				return 9999999;
 			}
 		};
 		
