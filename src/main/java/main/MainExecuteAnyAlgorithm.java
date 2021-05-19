@@ -7,15 +7,12 @@ import static org.jooq.impl.DSL.val;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.aeonbits.owner.ConfigFactory;
@@ -34,8 +31,6 @@ import ai.libs.jaicore.components.model.Component;
 import ai.libs.jaicore.components.model.ComponentInstance;
 import ai.libs.jaicore.components.model.NumericParameterDomain;
 import ai.libs.jaicore.components.model.Parameter;
-import ai.libs.jaicore.ml.classification.multilabel.learner.IMekaClassifier;
-import ai.libs.python.PythonUtil;
 import benchmark.core.api.ConversionFailedException;
 import benchmark.core.api.IConverter;
 import benchmark.core.api.IHyperoptObjectEvaluator;
@@ -43,22 +38,15 @@ import benchmark.core.api.IOptimizer;
 import benchmark.core.api.output.IOptimizationOutput;
 import benchmark.core.impl.optimizer.cfg.ggp.IGeneticOptimizerConfig;
 import benchmark.core.impl.optimizer.pcs.IPCSOptimizerConfig;
-import extras.SMACOptimizer;
-import exceptions.UnavailablePortsException;
-import extras.GGP;
 import extras.IPlanningOptimizationTask;
 import extras.ParameterRefinementConfiguration;
 import extras.PlanningOptimizationTask;
+import extras.SMACOptimizer;
 import helpers.TestDescription;
 import managers.Benchmarker;
 import managers.PortManager;
 
-public class MainOptimizersSMAC {
-	
-	private static final HttpClient httpClient = HttpClient.newBuilder()
-            .version(HttpClient.Version.HTTP_2)
-            .build();
-
+public class MainExecuteAnyAlgorithm {
 	public static Query generateQuerySelectSalaries() {
 		return select(field("employees.emp_no"), field("employees.first_name"), field("employees.last_name"),
 				field("salaries.salary")).from("employees").join("salaries")
@@ -156,6 +144,11 @@ public class MainOptimizersSMAC {
 	}
 	
 	public static void main(String[] args) throws IOException {
+		if(args.length != 3) {
+			System.out.println(String.format("Calling args: %s", String.join(" ", args)));
+			System.err.println("Must be called with 4 args: algorithm: (HASCO|BOHB|SMAC), queryProfile: 1-5(sel1,sel2,sel3,ins,upd), numOfExecutions (def=10), numOfLastExecution(def=0)");
+			return;
+		}
 		int THREADS = 2;
 		int[] ports = new int[] { 9901, 9902, 9903, 9904, 9905, 9906, 9907, 9908, 9909 };
 		String REQUIRED_INTERFACE = "IDatabase";
@@ -179,5 +172,4 @@ public class MainOptimizersSMAC {
 			e.printStackTrace();
 		}
 	}
-
 }

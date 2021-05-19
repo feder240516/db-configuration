@@ -256,7 +256,7 @@ public class HASCOToPCSConverter {
 			}
 			max = String.valueOf(maxVal);
 			min = String.valueOf(minVal);
-			Double defVal = (Double) param.getDefaultValue();
+			Double defVal = (Double) (double) (int) param.getDefaultValue();
 			defaultValue = String.valueOf(defVal);
 			if (defVal < minVal || defVal > maxVal) {
 				logger.error("default value:" + defVal + " for " + param.getName() + " is not within range!! replacing it with minValue");

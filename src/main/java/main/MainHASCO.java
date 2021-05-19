@@ -53,7 +53,7 @@ public class MainHASCO {
 
 	public static void main(String[] args) throws IOException, AlgorithmTimeoutedException, InterruptedException, AlgorithmExecutionCanceledException, AlgorithmException {
 		
-		int CURRENTLY_EXECUTED = 1;
+		int CURRENTLY_EXECUTED = 0;
 		
 		while (CURRENTLY_EXECUTED < 10) {
 			int THREADS = 2;
