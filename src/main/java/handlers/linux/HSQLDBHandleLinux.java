@@ -45,7 +45,7 @@ public class HSQLDBHandleLinux extends HSQLDBHandle {
 
 	@Override
 	protected String getBasePath() {
-		return PropertiesManager.getInstance().getProperty("hsqldb.instances.location");
+		return PropertiesManager.getInstance().getProperty("hsqldb.data.location");
 	}
 
 }
