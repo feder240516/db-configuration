@@ -12,14 +12,6 @@
       "refineSplits" : 8,
       "minInterval" : 1
     },{
-      "name" : "EQ_RANGE_INDEX_DIVE_LIMIT",
-      "type" : "int",
-      "default" : "200",
-      "min": "0",
-      "max": "8388608",
-      "refineSplits" : 8,
-      "minInterval" : 1
-    },{
       "name" : "EXPENSIVE_SUBQUERY_LIMIT",
       "type" : "int",
       "default" : "100",
