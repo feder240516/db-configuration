@@ -52,6 +52,7 @@ public class PostgreSQLHandleTest {
 		IComponent postgres = new Component("PostgreSQL");
 		IComponentInstance postgresinst = new ComponentInstance(postgres, new HashMap<>(), new HashMap<>());
 		ADatabaseHandle postgresHandle = DBSystemFactory.getInstance().createHandle(postgresinst);
+		postgresHandle.printResultsAfterExecution(true);
 		postgresHandle.initiateServer();
 		double executionTime = postgresHandle.benchmarkQuery("select count(*) from employees");
 		System.out.println(String.format("query was executed in %f miliseconds", executionTime));

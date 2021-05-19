@@ -53,7 +53,11 @@ public class MariaDBHandleTest {
 		IComponentInstance mariainst = new ComponentInstance(maria, new HashMap<>(), new HashMap<>());
 		ADatabaseHandle mariaHandle = DBSystemFactory.getInstance().createHandle(mariainst);
 		System.out.println("Finally connected");
-		//mariaHandle.initiateServer();;
+		mariaHandle.initiateServer();
+		mariaHandle.printResultsAfterExecution(true);
+		double executionTime = mariaHandle.benchmarkQuery("select count(*) from employees");
+		System.out.println(String.format("query was executed in %f miliseconds", executionTime));
+		mariaHandle.stopServer();
 		mariaHandle.cleanup(); 
 	}
 }

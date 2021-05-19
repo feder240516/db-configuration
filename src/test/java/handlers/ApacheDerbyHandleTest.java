@@ -52,6 +52,11 @@ public class ApacheDerbyHandleTest {
 		IComponent postgres = new Component("ApacheDerby");
 		IComponentInstance postgresinst = new ComponentInstance(postgres, new HashMap<>(), new HashMap<>());
 		ADatabaseHandle postgresHandle = DBSystemFactory.getInstance().createHandle(postgresinst);
+		postgresHandle.initiateServer();
+		postgresHandle.printResultsAfterExecution(true);
+		double executionTime = postgresHandle.benchmarkQuery("select count(*) from employees");
+		System.out.println(String.format("query was executed in %f miliseconds", executionTime));
+		postgresHandle.stopServer();
 		postgresHandle.cleanup(); 
 	}
 }
