@@ -54,7 +54,7 @@ public class HSQLDBHandleTest {
 		ADatabaseHandle postgresHandle = DBSystemFactory.getInstance().createHandle(postgresinst);
 		postgresHandle.initiateServer();
 		postgresHandle.printResultsAfterExecution(true);
-		double executionTime = postgresHandle.benchmarkQuery("select count(*) from employees");
+		double executionTime = postgresHandle.benchmarkQuery("select count(*) from employees;");
 		System.out.println(String.format("query was executed in %f miliseconds", executionTime));
 		postgresHandle.stopServer();
 		postgresHandle.cleanup(); 
