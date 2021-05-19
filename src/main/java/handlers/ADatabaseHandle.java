@@ -164,6 +164,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 		File dataDir = new File(getBasePath());
 		File destDir = new File(createdInstancePath);
 	    FileUtils.copyDirectory(dataDir, destDir);
+	    System.out.println(String.format("Copied %s into %s", getBasePath(), createdInstancePath));
 	    System.out.println("The instance " + createdInstancePath + " on port " + port + " was created");
 	}
 	
