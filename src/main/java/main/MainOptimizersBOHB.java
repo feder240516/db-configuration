@@ -103,8 +103,9 @@ public class MainOptimizersBOHB {
 			public Double evaluate(IComponentInstance ci, int budget)
 					throws ObjectEvaluationFailedException, InterruptedException {
 				try {
-					return 42.;//return benchmarker.benchmark(ci);
-				} catch (Exception e) {
+					return benchmarker.benchmark(ci);
+				} catch (InterruptedException | ExecutionException | UnavailablePortsException | IOException
+						| SQLException e) {
 					e.printStackTrace();
 				}
 
