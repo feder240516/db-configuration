@@ -3,6 +3,7 @@ plugins {
     id 'java-library-distribution'
     id 'eclipse-wtp'
     id "org.sonarqube" version "3.1.1"
+    id 'application'
 }
   
 sourceSets {
@@ -150,6 +151,10 @@ tasks.withType(Test) {
     events "started", "skipped", "passed", "failed"
     showStandardStreams true
   }
+}
+
+application {
+    mainClassName = project.hasProperty("mainClass") ? "main." + project.getProperty("mainClass") : "NULL"
 }
 
 repositories {
