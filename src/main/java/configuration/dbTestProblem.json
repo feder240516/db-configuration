@@ -234,14 +234,6 @@
       "max": "8",
       "refineSplits" : 8,
       "minInterval" : 1
-    },{
-      "name" : "replacement_sort_tuples",
-      "type" : "int",
-      "default" : "150000",
-      "min": "10000",
-      "max": "400000",
-      "refineSplits" : 8,
-      "minInterval" : 1
     }],
     "dependencies" : [ ]
     }

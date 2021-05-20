@@ -113,7 +113,7 @@ class SMAC {
 		compPostgres.addParameter(new Parameter("temp_buffers", new NumericParameterDomain(true, 100, 131072), 1024));
 		compPostgres.addParameter(new Parameter("max_prepared_transactions", new NumericParameterDomain(true, 0, 131072), 0));
 		compPostgres.addParameter(new Parameter("hash_mem_multiplier", new NumericParameterDomain(true, 1, 8), 1));
-		compPostgres.addParameter(new Parameter("replacement_sort_tuples", new NumericParameterDomain(true, 10000, 400000), 150000));
+		//compPostgres.addParameter(new Parameter("replacement_sort_tuples", new NumericParameterDomain(true, 10000, 400000), 150000));
 		compPostgres.addProvidedInterface(requiredInterface);
 		
 		components.add(compDerby);

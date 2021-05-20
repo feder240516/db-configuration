@@ -16,7 +16,7 @@ public class PostgreSQLParameterManager implements IDatabaseParameterManager {
 		params.add("hash_mem_multiplier");
 		params.add("temp_buffers");
 		params.add("max_prepared_transactions");
-		params.add("replacement_sort_tuples");
+		//params.add("replacement_sort_tuples");
 	}
 	
 	@Override
