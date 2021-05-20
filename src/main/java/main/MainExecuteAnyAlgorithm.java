@@ -540,7 +540,7 @@ public class MainExecuteAnyAlgorithm {
 		//int[] ports = new int[] { 9901, 9902, 9903, 9904, 9905, 9906, 9907, 9908, 9909 };
 		int amountOfPorts = 1000; 
 		int[] ports = new int[amountOfPorts];
-		for(int i = 9900; i <= 9900+amountOfPorts; ++i) {
+		for(int i = 9900; i < 9900+amountOfPorts; ++i) {
 			ports[i-9900] = i;
 		}
 		for(int i = lastExecution; i < numOfExecutions; ++i) {
