@@ -569,7 +569,7 @@ public class MainExecuteAnyAlgorithm {
 				}
 				System.err.println(String.format("Error: %s", e.getMessage()));
 			}
-			CSVService.getInstance().dumpWithVars2(String.format("%s_EXEC%d_%d", algorithm, i));
+			CSVService.getInstance().dumpWithVars3(String.format("%s_EXEC%d", algorithm, i));
 		}
 	}
 }
