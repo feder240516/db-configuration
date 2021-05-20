@@ -104,13 +104,13 @@ public class MainOptimizersSMAC {
 		};
 	}
 	
-	public static double evaluateComponentInstance(IComponentInstance ci) {
+	public static double evaluateComponentInstance(IComponentInstance ci, Benchmarker benchmarker) {
 		try {
-        	return 42.;
+        	return benchmarker.benchmark(ci);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		return 84.;
+		return Double.MAX_VALUE;
 	}
 	
 	public static IHyperoptObjectEvaluator<IComponentInstance> buildEvaluator(Benchmarker benchmarker) {
@@ -119,7 +119,7 @@ public class MainOptimizersSMAC {
 			public Double evaluate(IComponentInstance ci, int budget)
 					throws ObjectEvaluationFailedException, InterruptedException {
 				try {
-					return evaluateComponentInstance(ci);
+					return evaluateComponentInstance(ci, benchmarker);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -129,7 +129,7 @@ public class MainOptimizersSMAC {
 
 			@Override
 			public int getMaxBudget() {
-				return 9999999;
+				return 999999999;
 			}
 		};
 	}
