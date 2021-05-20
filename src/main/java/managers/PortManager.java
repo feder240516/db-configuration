@@ -33,12 +33,15 @@ public class PortManager {
 		if (ports.size() == 0) {
 			setupAvailablePorts(new int[] {9901,9902,9903,9904,9905,9906,9907,9908,9909});
 		}
-		int portNumber = portsQueue.remove();
-		portsQueue.add(portNumber);
 		int triedPorts = 0;
-		while(!ports.get(portNumber).available && ++triedPorts < ports.size()) {
-			portNumber = portsQueue.remove();
+		while(triedPorts++ < ports.size()) {
+			int portNumber = portsQueue.remove();
 			portsQueue.add(portNumber);
+			Port selectedPort = ports.get(portNumber); 
+			if(selectedPort.available) {
+				selectedPort.available = false;
+				return portNumber;
+			}
 		}
 		throw new UnavailablePortsException("There are no available ports");
 	}
