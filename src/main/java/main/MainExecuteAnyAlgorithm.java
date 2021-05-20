@@ -526,7 +526,7 @@ public class MainExecuteAnyAlgorithm {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		if(args.length < 3) {
+		if(args.length < 4) {
 			System.out.println(String.format("Calling args: %s", String.join(" ", args)));
 			System.err.println("Must be called with 4-6 args: algorithm: (HASCO|BOHB|SMAC|Random), queryProfile: 1-5(sel1,sel2,sel3,ins,upd), threads, timeLimit, numOfExecutions (def=10), numOfLastExecution(def=0)");
 			return;
@@ -535,8 +535,8 @@ public class MainExecuteAnyAlgorithm {
 		int queryProfile = Integer.valueOf(args[1]);
 		int THREADS = Integer.valueOf(args[2]);
 		int timeLimit = Integer.valueOf(args[3]);
-		int numOfExecutions = args.length >= 4 ? Integer.valueOf(args[4]) : 10;
-		int lastExecution = args.length >= 5 ? Integer.valueOf(args[5]) : 0;
+		int numOfExecutions = args.length >= 5 ? Integer.valueOf(args[4]) : 10;
+		int lastExecution = args.length >= 6 ? Integer.valueOf(args[5]) : 0;
 		//int[] ports = new int[] { 9901, 9902, 9903, 9904, 9905, 9906, 9907, 9908, 9909 };
 		int amountOfPorts = 1000; 
 		int[] ports = new int[amountOfPorts];
