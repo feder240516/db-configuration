@@ -160,6 +160,51 @@ public class CSVService {
 		}
 		bwError.close();
 	}
+	
+	public void dumpWithVars3(String suffix) throws IOException {
+		int numTests = testResults.size(); 
+		String algo = numTests > 0 ? testResults.get(testResults.size()-1).getExperimentUUID() : "UNKNOWN";
+		FileWriter fw = new FileWriter(String.format("reports/testResults_%s_%d_%s.csv",suffix,(long)System.currentTimeMillis(),algo));
+		BufferedWriter bw = new BufferedWriter(fw);
+		Set<String> varNames = new HashSet<String>();
+		testResults.forEach((result) -> {
+			varNames.addAll(result.getParameterKeys());
+		});
+		List<String> finalHeaders = new ArrayList<>();
+		finalHeaders.add("RDMS");
+		finalHeaders.add("Component Instance ID");
+		finalHeaders.add("DBInstance GUID");
+		finalHeaders.add("Time");
+		finalHeaders.add("Algorithm");
+		finalHeaders.add("Timestamp");
+		finalHeaders.add("Experiment number");
+		finalHeaders.addAll(varNames);
+		String[] finalHeadersArr = finalHeaders.toArray(new String[0]);
+		try (CSVPrinter printer = new CSVPrinter(bw, CSVFormat.DEFAULT
+			    .withHeader(finalHeadersArr))) {
+			for(TestResult result: testResults) {
+				List<String> valuesToPrint = new ArrayList<>();
+				valuesToPrint.add(result.getRdms());
+				valuesToPrint.add(result.getComponentInstanceID());
+				valuesToPrint.add(result.getDbInstance());
+				valuesToPrint.add(String.valueOf(result.getTime()));
+				valuesToPrint.add(result.getAlgorithm());
+				valuesToPrint.add(String.valueOf(result.getTimestamp() - this.startingPoint));
+				valuesToPrint.add(result.getExperimentUUID());
+				for(int i = 7; i < finalHeadersArr.length; ++i) {
+					valuesToPrint.add(result.getParameterValues(finalHeadersArr[i]));
+				}
+				printer.printRecord(valuesToPrint);
+			}
+		}
+		bw.close();
+		FileWriter fwError = new FileWriter("testFailures.log");
+		BufferedWriter bwError = new BufferedWriter(fwError);
+		for(TestResult fail: failedTests) {
+			bwError.write(String.format("Failed test for db %s, instance %s, testing variable %s with value %f for query profile [%s].\r\n", fail.getRdms(), fail.getComponentInstanceID(), fail.getVariable(), fail.getVariableValue(), fail.getQueryProfileID()));
+		}
+		bwError.close();
+	}
 
 	public void setAlgorithm(String algorithm) {
 		this.algorithm = algorithm;
