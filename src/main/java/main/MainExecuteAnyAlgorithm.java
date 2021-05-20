@@ -305,7 +305,7 @@ public class MainExecuteAnyAlgorithm {
 		sqlnames.put(2, "SEL2");
 		sqlnames.put(4, "INS");
 		sqlnames.put(5, "UPD");
-		TestDescription td = new TestDescription(sqlnames.get(index));
+		TestDescription td = new TestDescription(sqlnames.get(index),3);
 		Query query = null;
 		switch (index) {
 		case 1:
@@ -543,6 +543,7 @@ public class MainExecuteAnyAlgorithm {
 		for(int i = 9900; i < 9900+amountOfPorts; ++i) {
 			ports[i-9900] = i;
 		}
+		PortManager.getInstance().setupAvailablePorts(ports);
 		for(int i = lastExecution; i < numOfExecutions; ++i) {
 			CSVService.getInstance().setStartingPoint();
 			try {
