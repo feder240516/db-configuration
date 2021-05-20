@@ -135,6 +135,7 @@ public class MainOptimizersSMAC {
 	}
 	
 	public static IOptimizer<IPlanningOptimizationTask<IComponentInstance>, IComponentInstance> buildOptimizer(int threads, String requiredInterface, Timeout globalTimeout, Timeout evalTimeout) {
+		int PRECAUTION_OFFSET_MS = 60 * 1000;
 		Benchmarker benchmarker = buildBenchmarker(threads);
 		// Components
 		Collection<Component> components = buildComponents();
@@ -151,8 +152,9 @@ public class MainOptimizersSMAC {
 		
 		IPCSOptimizerConfig pcsConfig = ConfigFactory.create(IPCSOptimizerConfig.class);
 		pcsConfig.setProperty(IPCSOptimizerConfig.K_CPUS, threads + "");
-		
-		return new SMACOptimizer<IComponentInstance>("Experiment", pcsConfig, task);
+		SMACOptimizer<IComponentInstance> optimizer = new SMACOptimizer<IComponentInstance>("Experiment", pcsConfig, task);
+		optimizer.setTimeoutPrecautionOffset(PRECAUTION_OFFSET_MS);
+		return optimizer;
 	}
 	
 	public static void main(String[] args) throws IOException {
