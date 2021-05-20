@@ -30,6 +30,9 @@ public class PortManager {
 	}
 	
 	public synchronized int acquireAnyPort() throws UnavailablePortsException {
+		if (ports.size() == 0) {
+			setupAvailablePorts(new int[] {9901,9902,9903,9904,9905,9906,9907,9908,9909});
+		}
 		int portNumber = portsQueue.remove();
 		portsQueue.add(portNumber);
 		int triedPorts = 0;
