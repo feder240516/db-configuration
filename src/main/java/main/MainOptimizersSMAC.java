@@ -162,7 +162,7 @@ public class MainOptimizersSMAC {
 		int[] ports = new int[] { 9901, 9902, 9903, 9904, 9905, 9906, 9907, 9908, 9909 };
 		String REQUIRED_INTERFACE = "IDatabase";
 
-		final Timeout GLOBAL_TIMEOUT = new Timeout(5, TimeUnit.MINUTES);
+		final Timeout GLOBAL_TIMEOUT = new Timeout(1, TimeUnit.MINUTES);
 		final Timeout EVAL_TIMEOUT = new Timeout(1, TimeUnit.MINUTES);
 		
 		PortManager.getInstance().setupAvailablePorts(ports);
