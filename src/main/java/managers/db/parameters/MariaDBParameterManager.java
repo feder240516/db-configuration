@@ -13,7 +13,6 @@ public class MariaDBParameterManager implements IDatabaseParameterManager{
 		params = new HashSet<>();
 		
 		params.add("DIV_PRECISION_INCREMENT");
-		params.add("EQ_RANGE_INDEX_DIVE_LIMIT");
 		params.add("EXPENSIVE_SUBQUERY_LIMIT");
 		params.add("FLUSH");
 		params.add("JOIN_BUFFER_SIZE");
