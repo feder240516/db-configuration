@@ -44,7 +44,6 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 	@Override
 	protected String[] getStartCommand() {
 		String derbyHome = getDerbyLocation();
-		System.out.println(String.format("Running in port %d", port));
 		if (derbyHome == null || derbyHome.equals("")) throw new RuntimeException("Environment Var DERBY_HOME must be configured to test apache derby");
 		String[] comandoArray = {derbyHome + "/bin/startNetworkServer.bat", "-p", String.valueOf(port)};
 		return comandoArray;
@@ -57,7 +56,6 @@ public class ApacheDerbyHandler extends ADatabaseHandle {
 
 	@Override
 	public void stopServer() {
-		System.out.println("Stopping server");
 		try {
 			String derbyHome = getDerbyLocation();
 			String[] comandoArray = {derbyHome + "/bin/stopNetworkServer.bat", "-p", String.valueOf(port)}; // $DERBY_HOME/bin/stopNetworkServer.bat -p 9901

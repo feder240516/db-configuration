@@ -22,7 +22,6 @@ public class HSQLDBHandleLinux extends HSQLDBHandle {
 		String HSQLDBHome = PropertiesManager.getInstance().getProperty("hsqldb.location");
 		
 		String[] cmdStart = {"bash", "-c", String.format("sudo java -cp %s/lib/hsqldb.jar org.hsqldb.Server -database.0 file:%s/ -port %s", HSQLDBHome, createdInstancePath, port)};
-		System.out.println("Start command on port " + port + ": " + String.format("sudo java -cp %s/lib/hsqldb.jar org.hsqldb.Server -database.0 file:%s -port %s", HSQLDBHome, createdInstancePath, port));
 		return cmdStart;
 	}
 	
@@ -33,8 +32,6 @@ public class HSQLDBHandleLinux extends HSQLDBHandle {
 		String password = "";
 		
 		String dbUrl = String.format("jdbc:hsqldb:hsql://127.0.0.1:%s/?user=%s&password=%s", port, user, password);
-		System.out.println(" #### CONNECTION STRING ####");
-		System.out.println(dbUrl);
 		return dbUrl;
 	}
 

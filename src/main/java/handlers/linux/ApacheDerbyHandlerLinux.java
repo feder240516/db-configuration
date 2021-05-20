@@ -35,22 +35,14 @@ public class ApacheDerbyHandlerLinux extends ApacheDerbyHandler {
 	@Override
 	protected String[] getStartCommand() {
 		String derbyHome = PropertiesManager.getInstance().getProperty("derby.location");
-		//String postgresqlLog = PropertiesManager.getInstance().getProperty("postgres.log.location");
-		
-		System.out.println(String.format("Running in port %d", port));
 		if (derbyHome == null || derbyHome.equals("")) throw new RuntimeException("Connector location not specified");
 		String[] comandoArray = {"sudo", "java", "-jar", derbyHome + "/lib/derbyrun.jar", "server", "start", "-p", String.valueOf(port)};
 		//String[] comandoArray = {postgresqlHome + "/bin/pg_ctl", "-D", createdInstancePath, "-l", postgresqlLog + "/postgresql-13-" + ID.toString() + ".log", "-o", String.format("\"-F -p %d\"", port), "start"};
-		for (String comando: comandoArray) {
-			System.out.print(comando + " ");
-		}
-		System.out.println();
 		return comandoArray;
 	}
 
 	@Override
 	public void stopServer() {
-		System.out.println("Stopping server");
 		try {
 			String derbyHome = PropertiesManager.getInstance().getProperty("derby.location");
 			String[] comandoArray = {"bash", "-c", String.format("sudo java -jar %s/lib/derbyrun.jar server shutdown -p %d", derbyHome, port)};
@@ -67,8 +59,6 @@ public class ApacheDerbyHandlerLinux extends ApacheDerbyHandler {
 		//String user = PropertiesManager.getInstance().getProperty("postgres.user");
 		//String pass = PropertiesManager.getInstance().getProperty("postgres.password");
 		String dbUrl = String.format("jdbc:derby://localhost:%d/%s", port, "employees");
-		System.out.println(" #### CONNECTION STRING ####");
-		System.out.println(dbUrl);
 		return dbUrl;
 	}
 	

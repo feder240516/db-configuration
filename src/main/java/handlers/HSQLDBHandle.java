@@ -48,28 +48,21 @@ public class HSQLDBHandle extends ADatabaseHandle {
 		String hsqldbdbPath = String.format("\"%s%s\"", HSQLDBHome, extraPath);
 		
 		String[] cmdStart = {"cmd.exe", "/c", String.format("java -cp %s org.hsqldb.Server -database.0 file:%s -port %s", hsqldbdbPath, dataDir, port)};
-		System.out.println("Start command on port " + port + ": " + String.format("java -cp %s org.hsqldb.Server -database.0 file:%s -port %s", hsqldbdbPath, dataDir, port));
+		// System.out.println("Start command on port " + port + ": " + String.format("java -cp %s org.hsqldb.Server -database.0 file:%s -port %s", hsqldbdbPath, dataDir, port));
 		return cmdStart;
 	}
 
 	@Override
 	public void stopServer() {
-		System.out.println("Trying to stop server");
 		String sqlBase = "SHUTDOWN;";
 	
 		
 		try(Connection conn = getConnection();) {
 			if(conn != null) {
-				System.out.println("Connected to try and stop server");
-				
 				Statement statement = conn.createStatement();
 	            statement.execute(sqlBase);
 	            statement.close();
-				
-				String msg = String.format("The server on port %d was stopped successfully", port);
-				System.out.println(msg);
 			} else {
-				System.out.println("No connection was made");
 			}
 		}catch(SQLException e) {
 			e.printStackTrace();

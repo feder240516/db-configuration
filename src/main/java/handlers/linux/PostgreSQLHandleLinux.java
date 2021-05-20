@@ -23,10 +23,8 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 						+ "&& sudo -u postgres cp -rf /var/lib/postgresql/13/data /var/lib/postgresql/13/%1$s"
 						+ "&& sudo -u postgres rm -rf /etc/postgresql/13/%1$s"
 						+ "&& sudo -u postgres cp -rf /etc/postgresql/13/data /etc/postgresql/13/%1$s", ID.toString())};
-		System.out.println(String.format("Testing instance %s", ID.toString()));
 		ProcessBuilder processBuilder = new ProcessBuilder(copyCommandArr);
 		Process copyProcess = processBuilder.start();
-		System.out.println(String.valueOf(copyProcess.getInputStream().readAllBytes()));
 		try {
 			copyProcess.waitFor();
 		} catch (InterruptedException e) {
@@ -38,20 +36,13 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 	protected String[] getStartCommand() {
 		String postgresqlHome = PropertiesManager.getInstance().getProperty("postgres.location");
 		String postgresqlLog = PropertiesManager.getInstance().getProperty("postgres.log.location");
-		System.out.println(String.format("Running in port %d", port));
 		if (postgresqlHome == null || postgresqlHome.equals("")) throw new RuntimeException("Connector location not specified");
 		String[] comandoArray = {"bash", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s -o \"-F -p %d\" start", ID.toString(), port)};
-		//String[] comandoArray = {postgresqlHome + "/bin/pg_ctl", "-D", createdInstancePath, "-l", postgresqlLog + "/postgresql-13-" + ID.toString() + ".log", "-o", String.format("\"-F -p %d\"", port), "start"};
-		for (String comando: comandoArray) {
-			System.out.print(comando + " ");
-		}
-		System.out.println();
 		return comandoArray;
 	}
 
 	@Override
 	public void stopServer() {
-		System.out.println("Stopping server");
 		try {
 			String postgresqlHome = PropertiesManager.getInstance().getProperty("postgres.location");
 			String[] comandoArray = {"bash", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s stop", ID.toString(), port)};
@@ -68,8 +59,6 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 		String user = PropertiesManager.getInstance().getProperty("postgres.user");
 		String pass = PropertiesManager.getInstance().getProperty("postgres.password");
 		String dbUrl = String.format("jdbc:postgresql://localhost:%d/?user=%s&password=%s", port, user, pass);
-		System.out.println(" #### CONNECTION STRING ####");
-		System.out.println(dbUrl);
 		return dbUrl;
 	}
 	

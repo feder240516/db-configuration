@@ -66,7 +66,6 @@ public abstract class ADatabaseHandle implements IDatabase {
 		createAndFillDatabase();
 		stopServer();
 		TimeUnit.SECONDS.sleep(5);
-		System.out.println("initiated");
 		}catch(UnavailablePortsException | IOException | SQLException | InterruptedException | ClassNotFoundException e) {
 			e.printStackTrace(); 
 			throw e;
@@ -113,17 +112,15 @@ public abstract class ADatabaseHandle implements IDatabase {
 	
 	// ! ya no hace falta que retorne el puerto
 	public void initiateServer() throws IOException, SQLException, InterruptedException, UnavailablePortsException {
-			//System.out.println("Starting server on port " + port);
 			String[] comandoArray = getStartCommand();	
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
 			//processBuilder.redirectErrorStream();
-			System.out.println(String.format("created instance: %s", createdInstancePath));
+			
 			processBuilder.directory(new File(createdInstancePath));
 			/* if (SystemUtils.IS_OS_LINUX) {
 				processBuilder.redirectOutput(new File("/home/ailibs/output.txt"));
 				processBuilder.redirectError(new File("/home/ailibs/error.txt"));
 			} */
-			//System.out.println("createdInstancePath: " + createdInstancePath);
 			process = null;
 			Connection conn = null;
 			try {
@@ -135,21 +132,19 @@ public abstract class ADatabaseHandle implements IDatabase {
 						inStream.close();
 						errStream.close();
 					}
-					//System.out.println("Server has been inited");
 				} else {
-					System.out.println("Retry for process");
+					
 				}
 				// tries multiple connections to database
 				conn = resillientGetConnection(MAX_CONNECTION_RETRIES);
 				if (conn != null && !conn.isClosed()) {
 					//setupInitedDB();
-					//System.out.println("Server has been inited on port " + port);
 				} else {
 					throw new SQLException(String.format("Could not connect to database after %d tries",MAX_CONNECTION_RETRIES));
 				}
 				conn.close();
 			} catch (IOException | SQLException | InterruptedException e) {
-				System.out.println("Could not connect to port " + port);
+				System.err.println("Could not connect to port " + port);
 				throw e;
 			} finally {
 				if (conn != null && !conn.isClosed()) { conn.close(); }
@@ -164,7 +159,6 @@ public abstract class ADatabaseHandle implements IDatabase {
 		File dataDir = new File(getBasePath());
 		File destDir = new File(createdInstancePath);
 	    FileUtils.copyDirectory(dataDir, destDir);
-	    System.out.println(String.format("Copied %s into %s", getBasePath(), createdInstancePath));
 	    System.out.println("The instance " + createdInstancePath + " on port " + port + " was created");
 	}
 	
@@ -177,13 +171,14 @@ public abstract class ADatabaseHandle implements IDatabase {
 	        String columnName = rsmd.getColumnName(i);
 	        System.out.print(columnName);
 	    }
+		System.out.println();
 		while(resultSet.next()) {
 			for (int i = 1; i <= columnsNumber; i++) {
 		        if (i > 1) System.out.print(",  ");
 		        String columnValue = resultSet.getString(i);
 		        System.out.print(columnValue);
 		    }
-		    //System.out.println("");
+		    System.out.println();
 		}
 	}
 	
@@ -219,8 +214,6 @@ public abstract class ADatabaseHandle implements IDatabase {
 			String dbUrl = getConnectionString();
 			conn = DriverManager.getConnection(dbUrl);	
 		} catch (SQLException e1) {
-			e1.printStackTrace();
-			System.out.println(String.format("Could not connect to port %d", port));
 			conn = null;
 		}
 		return conn;
