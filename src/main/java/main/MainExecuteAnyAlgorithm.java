@@ -439,8 +439,8 @@ public class MainExecuteAnyAlgorithm {
 			}
 		};
 		
-		final Timeout GLOBAL_TIMEOUT = new Timeout(5, TimeUnit.MINUTES);
-		final Timeout EVAL_TIMEOUT = new Timeout(1, TimeUnit.MINUTES);
+		final Timeout GLOBAL_TIMEOUT = new Timeout(TIME_IN_MINUTES, TimeUnit.MINUTES);
+		final Timeout EVAL_TIMEOUT = new Timeout(10, TimeUnit.MINUTES);
 
 		Map<Component, Map<Parameter, ParameterRefinementConfiguration>> parameterRefinementConfiguration = new HashMap<>();
 		IGeneticOptimizerConfig gaConfig = ConfigFactory.create(IGeneticOptimizerConfig.class);
