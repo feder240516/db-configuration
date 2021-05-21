@@ -53,21 +53,23 @@ public abstract class ADatabaseHandle implements IDatabase {
 	}
 	
 	public ADatabaseHandle(IComponentInstance ci, IDatabaseParameterManager databaseParameterManager) throws UnavailablePortsException, IOException, SQLException, InterruptedException, ClassNotFoundException {
-		try{initializeDrivers();
-		this.componentInstance = ci;
-		this.databaseParameterManager = databaseParameterManager;
-		this.ID = UUID.randomUUID();
-		this.port = PortManager.getInstance().acquireAnyPort();
-		this.shouldPrintResults = false;
-		createdInstancePath = getInstancesPath() + "/" + ID;
-		createDBInstance();
-		initiateServer();
-		setupInitedDB();
-		createAndFillDatabase();
-		stopServer();
-		TimeUnit.SECONDS.sleep(5);
+		try{
+			initializeDrivers();
+			this.componentInstance = ci;
+			this.databaseParameterManager = databaseParameterManager;
+			this.ID = UUID.randomUUID();
+			this.port = PortManager.getInstance().acquireAnyPort();
+			this.shouldPrintResults = false;
+			createdInstancePath = getInstancesPath() + "/" + ID;
+			createDBInstance();
+			initiateServer();
+			setupInitedDB();
+			createAndFillDatabase();
+			stopServer();
+			TimeUnit.SECONDS.sleep(5);
 		}catch(UnavailablePortsException | IOException | SQLException | InterruptedException | ClassNotFoundException e) {
 			e.printStackTrace(); 
+			cleanup();
 			throw e;
 		}
 		//initHandler();
