@@ -23,7 +23,7 @@ public class MariaDBParameterManager implements IDatabaseParameterManager{
 		params.add("MAX_LENGTH_FOR_SORT_DATA");
 		params.add("MAX_SEEKS_FOR_KEY");
 		params.add("MIN_EXAMINED_ROW_LIMIT");
-		params.add("OPTIMIZER_PRUNE_LEVEL");
+		//params.add("OPTIMIZER_PRUNE_LEVEL");
 		params.add("OPTIMIZER_SEARCH_DEPTH");
 		params.add("OPTIMIZER_USE_CONDITION_SELECTIVITY");
 	}

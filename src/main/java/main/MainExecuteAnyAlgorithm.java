@@ -429,14 +429,13 @@ public class MainExecuteAnyAlgorithm {
 				} catch (InterruptedException | ExecutionException | UnavailablePortsException | IOException
 						| SQLException e) {
 					e.printStackTrace();
+					throw new ObjectEvaluationFailedException("Failed using BOHB to evaluate");
 				}
-
-				return Double.MAX_VALUE;
 			}
 
 			@Override
 			public int getMaxBudget() {
-				return 9999999;
+				return Integer.MAX_VALUE;
 			}
 		};
 		
