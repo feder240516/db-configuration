@@ -93,10 +93,10 @@ class SMAC {
 		
 		Component compHSQL = new Component("HSQLDB");
 		compHSQL.addParameter(new Parameter("hsqldb.cache_rows", new NumericParameterDomain(true, 100, 4000000), 50000));
-		compHSQL.addParameter(new Parameter("hsqldb.nio_data_file", new CategoricalParameterDomain(new String[] {"TRUE", "FALSE"}), "TRUE"));
-		compHSQL.addParameter(new Parameter("hsqldb.nio_max_size", new CategoricalParameterDomain(new String[] {"64", "128", "256", "512", "1024"}), "256"));
-		compHSQL.addParameter(new Parameter("hsqldb.applog", new CategoricalParameterDomain(new String[] {"0", "1", "2", "3"}), "0"));
-		compHSQL.addParameter(new Parameter("hsqldb.result_max_memory_rows", new CategoricalParameterDomain(new String[] {"0", "1000", "2000", "3000", "5000", "8000", "10000"}), "0"));
+		if(withCategorical) compHSQL.addParameter(new Parameter("hsqldb.nio_data_file", new CategoricalParameterDomain(new String[] {"TRUE", "FALSE"}), "TRUE"));
+		if(withCategorical) compHSQL.addParameter(new Parameter("hsqldb.nio_max_size", new CategoricalParameterDomain(new String[] {"64", "128", "256", "512", "1024"}), "256"));
+		if(withCategorical) compHSQL.addParameter(new Parameter("hsqldb.applog", new CategoricalParameterDomain(new String[] {"0", "1", "2", "3"}), "0"));
+		if(withCategorical) compHSQL.addParameter(new Parameter("hsqldb.result_max_memory_rows", new CategoricalParameterDomain(new String[] {"0", "1000", "2000", "3000", "5000", "8000", "10000"}), "0"));
 		compHSQL.addProvidedInterface(requiredInterface);
 		
 		
@@ -161,7 +161,7 @@ class SMAC {
 		TestDescription td1 = MainExecuteAnyAlgorithm.buildTestDescription(queryProfile);
 		Benchmarker benchmarker = new Benchmarker(td1, threads);
 		// Components
-		Collection<Component> components = buildComponents(true);
+		Collection<Component> components = buildComponents(false);
 		IConverter<ComponentInstance, IComponentInstance> converter = buildConverter();
 		IHyperoptObjectEvaluator<IComponentInstance> evaluator = buildEvaluator(benchmarker);
 		
