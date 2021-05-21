@@ -59,29 +59,22 @@ import services.CSVService;
 
 class SMAC {
 	
-	public static Benchmarker buildBenchmarker(int threads, Query query, String testDescriptionName) {
-		int NUM_TESTS = 3;
-		TestDescription td1 = new TestDescription(testDescriptionName, NUM_TESTS);
-		td1.addQuery(1, query);
-		return new Benchmarker(td1, threads);
-	}
-	
-	public static Collection<Component> buildComponents() {
+	public static Collection<Component> buildComponents(boolean withCategorical) {
 		Collection<Component> components = new ArrayList<Component>();
 		String requiredInterface = "IDatabase";
 		
 		Component compMaria = new Component("MariaDB");
 		compMaria.addParameter(new Parameter("DIV_PRECISION_INCREMENT", new NumericParameterDomain(true, 0, 30), 20));
 		compMaria.addParameter(new Parameter("EXPENSIVE_SUBQUERY_LIMIT", new NumericParameterDomain(true, 0, 100000), 100));
-		compMaria.addParameter(new Parameter("GLOBAL FLUSH", new CategoricalParameterDomain(new String[] {"OFF", "ON"}), "OFF"));
+		if(withCategorical) compMaria.addParameter(new Parameter("GLOBAL FLUSH", new CategoricalParameterDomain(new String[] {"OFF", "ON"}), "OFF"));
 		compMaria.addParameter(new Parameter("JOIN_BUFFER_SIZE", new NumericParameterDomain(true, 128, 4194304), 262144));
 		compMaria.addParameter(new Parameter("JOIN_CACHE_LEVEL", new NumericParameterDomain(true, 0, 8), 2));
-		compMaria.addParameter(new Parameter("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", new CategoricalParameterDomain(new String[] {"OFF", "ON"}), "OFF"));
+		if(withCategorical) compMaria.addParameter(new Parameter("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", new CategoricalParameterDomain(new String[] {"OFF", "ON"}), "OFF"));
 		compMaria.addParameter(new Parameter("LOG_SLOW_RATE_LIMIT", new NumericParameterDomain(true, 1, 10000000), 1));
 		compMaria.addParameter(new Parameter("LONG_QUERY_TIME", new NumericParameterDomain(true, 1, 100000), 10));
 		compMaria.addParameter(new Parameter("MAX_LENGTH_FOR_SORT_DATA", new NumericParameterDomain(true, 4, 16384), 1024));
 		compMaria.addParameter(new Parameter("MIN_EXAMINED_ROW_LIMIT", new NumericParameterDomain(true, 0, 1048576), 0));
-		compMaria.addParameter(new Parameter("OPTIMIZER_PRUNE_LEVEL", new CategoricalParameterDomain(new String[] {"0", "1"}), "1"));
+		if(withCategorical) compMaria.addParameter(new Parameter("OPTIMIZER_PRUNE_LEVEL", new CategoricalParameterDomain(new String[] {"0", "1"}), "1"));
 		compMaria.addParameter(new Parameter("OPTIMIZER_SEARCH_DEPTH", new NumericParameterDomain(true, 0, 62), 62));
 		compMaria.addParameter(new Parameter("OPTIMIZER_USE_CONDITION_SELECTIVITY", new NumericParameterDomain(true, 1, 5), 4));
 		compMaria.addProvidedInterface(requiredInterface);
@@ -89,8 +82,8 @@ class SMAC {
 		
 		Component compDerby = new Component("ApacheDerby");
 		compDerby.addParameter(new Parameter("derby.storage.pageReservedSpace", new NumericParameterDomain(true, 0, 100), 20));
-		compDerby.addParameter(new Parameter("derby.storage.pageSize", new CategoricalParameterDomain(new String[] {"4096", "8192", "16384", "32768"}), "4096"));
-		compDerby.addParameter(new Parameter("derby.storage.rowLocking", new CategoricalParameterDomain(new String[] {"true", "false"}), "true"));
+		if(withCategorical) compDerby.addParameter(new Parameter("derby.storage.pageSize", new CategoricalParameterDomain(new String[] {"4096", "8192", "16384", "32768"}), "4096"));
+		if(withCategorical) compDerby.addParameter(new Parameter("derby.storage.rowLocking", new CategoricalParameterDomain(new String[] {"true", "false"}), "true"));
 		compDerby.addParameter(new Parameter("derby.storage.initialPages", new NumericParameterDomain(true, 1, 1000), 1));
 		compDerby.addParameter(new Parameter("derby.language.statementCacheSize", new NumericParameterDomain(true, 0, 10000), 100));
 		compDerby.addParameter(new Parameter("derby.replication.logBufferSize", new NumericParameterDomain(true, 8192, 1048576), 32768));
@@ -168,7 +161,7 @@ class SMAC {
 		TestDescription td1 = MainExecuteAnyAlgorithm.buildTestDescription(queryProfile);
 		Benchmarker benchmarker = new Benchmarker(td1, threads);
 		// Components
-		Collection<Component> components = buildComponents();
+		Collection<Component> components = buildComponents(true);
 		IConverter<ComponentInstance, IComponentInstance> converter = buildConverter();
 		IHyperoptObjectEvaluator<IComponentInstance> evaluator = buildEvaluator(benchmarker);
 		
@@ -281,7 +274,7 @@ public class MainExecuteAnyAlgorithm {
 		TestDescription td1 = buildTestDescription(queryProfile);
 		Benchmarker benchmarker = new Benchmarker(td1, threads);
 		// Components
-		Collection<Component> components = SMAC.buildComponents();
+		Collection<Component> components = SMAC.buildComponents(true);
 		IConverter<ComponentInstance, IComponentInstance> converter = buildConverter();
 		IHyperoptObjectEvaluator<IComponentInstance> evaluator = buildEvaluator(benchmarker);
 		
@@ -365,7 +358,7 @@ public class MainExecuteAnyAlgorithm {
 				if (now - lastRecordedTime > TEN_MINUTES) {
 					lastRecordedTime = now;
 					try {
-						CSVService.getInstance().dumpWithVars2("PARTIAL");
+						CSVService.getInstance().dumpWithVars3("PARTIAL");
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -381,7 +374,7 @@ public class MainExecuteAnyAlgorithm {
 				System.out.println("Finished");
 				System.out.println(String.format("Best candidate for %d minutes execution with %d threads: %s", TIME_IN_MINUTES, THREADS, new ComponentSerialization().serialize(hasco.getBestSeenSolution().getComponentInstance())));
 				System.out.println(String.format("Time: %f", hasco.getBestScoreKnownToExist()));
-				CSVService.getInstance().dumpWithVars2("COMPLETE");
+				CSVService.getInstance().dumpWithVars3("COMPLETE");
 			} else {
 				System.out.println("Didn't work HASCO. Retrying");
 			}
@@ -392,7 +385,7 @@ public class MainExecuteAnyAlgorithm {
 		int NUM_TESTS = 3;
 		Query selectSalaries = generateQuerySelectSalaries();
 
-		TestDescription td1 = new TestDescription("Only select salaries", NUM_TESTS);
+		TestDescription td1 = buildTestDescription(queryProfile);//new TestDescription("Only select salaries", NUM_TESTS);
 		td1.addQuery(1, selectSalaries);
 
 		Benchmarker benchmarker = new Benchmarker(td1, THREADS);
@@ -502,7 +495,7 @@ public class MainExecuteAnyAlgorithm {
 				if (now - lastRecordedTime > TEN_MINUTES) {
 					lastRecordedTime = now;
 					try {
-						CSVService.getInstance().dumpWithVars2("PARTIAL");
+						CSVService.getInstance().dumpWithVars3("PARTIAL");
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -518,7 +511,7 @@ public class MainExecuteAnyAlgorithm {
 				System.out.println("Finished");
 				System.out.println(String.format("Best candidate for %d minutes execution with %d threads: %s", TIME_IN_MINUTES, THREADS, new ComponentSerialization().serialize(hasco.getBestSeenSolution().getComponentInstance())));
 				System.out.println(String.format("Time: %f", hasco.getBestScoreKnownToExist()));
-				CSVService.getInstance().dumpWithVars2("COMPLETE");
+				CSVService.getInstance().dumpWithVars3("COMPLETE");
 			} else {
 				System.out.println("Didn't work HASCO. Retrying");
 			}
@@ -537,6 +530,7 @@ public class MainExecuteAnyAlgorithm {
 		int timeLimit = Integer.valueOf(args[3]);
 		int numOfExecutions = args.length >= 5 ? Integer.valueOf(args[4]) : 10;
 		int lastExecution = args.length >= 6 ? Integer.valueOf(args[5]) : 0;
+		System.out.println(String.format("%d threads", THREADS));
 		//int[] ports = new int[] { 9901, 9902, 9903, 9904, 9905, 9906, 9907, 9908, 9909 };
 		int amountOfPorts = 1000; 
 		int[] ports = new int[amountOfPorts];

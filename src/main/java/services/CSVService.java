@@ -133,6 +133,7 @@ public class CSVService {
 		finalHeaders.add("Algorithm");
 		finalHeaders.add("Timestamp");
 		finalHeaders.add("Experiment number");
+		finalHeaders.add("Query Profile")
 		finalHeaders.addAll(varNames);
 		String[] finalHeadersArr = finalHeaders.toArray(new String[0]);
 		try (CSVPrinter printer = new CSVPrinter(bw, CSVFormat.DEFAULT
@@ -146,6 +147,7 @@ public class CSVService {
 				valuesToPrint.add(result.getAlgorithm());
 				valuesToPrint.add(String.valueOf(result.getTimestamp() - this.startingPoint));
 				valuesToPrint.add(result.getExperimentUUID());
+				valuesToPrint.add(result.getQueryProfileID())
 				for(int i = 7; i < finalHeadersArr.length; ++i) {
 					valuesToPrint.add(result.getParameterValues(finalHeadersArr[i]));
 				}
