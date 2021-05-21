@@ -119,7 +119,8 @@ public class CSVService {
 	public void dumpWithVars2(String suffix) throws IOException {
 		int numTests = testResults.size(); 
 		String algo = numTests > 0 ? testResults.get(testResults.size()-1).getExperimentUUID() : "UNKNOWN";
-		FileWriter fw = new FileWriter(String.format("reports/testResults_%s_%d_experiment_%s.csv",suffix,(long)System.currentTimeMillis(),algo));
+		String queryProfile = numTests > 0 ? testResults.get(testResults.size()-1).getQueryProfileID() : "NOQP";
+		FileWriter fw = new FileWriter(String.format("reports/testResults_%s_%d_experiment_%s_%s.csv",suffix,(long)System.currentTimeMillis(),algo,queryProfile));
 		BufferedWriter bw = new BufferedWriter(fw);
 		Set<String> varNames = new HashSet<String>();
 		testResults.forEach((result) -> {
