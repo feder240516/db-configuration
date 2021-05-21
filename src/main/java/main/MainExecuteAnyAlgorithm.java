@@ -67,7 +67,7 @@ class SMAC {
 		compMaria.addParameter(new Parameter("DIV_PRECISION_INCREMENT", new NumericParameterDomain(true, 0, 30), 20));
 		compMaria.addParameter(new Parameter("EXPENSIVE_SUBQUERY_LIMIT", new NumericParameterDomain(true, 0, 100000), 100));
 		if(withCategorical) compMaria.addParameter(new Parameter("GLOBAL FLUSH", new CategoricalParameterDomain(new String[] {"OFF", "ON"}), "OFF"));
-		compMaria.addParameter(new Parameter("JOIN_BUFFER_SIZE", new NumericParameterDomain(true, 128, 4194304), 262144));
+		compMaria.addParameter(new Parameter("JOIN_BUFFER_SIZE", new NumericParameterDomain(true, 128, 1048576), 262144));
 		compMaria.addParameter(new Parameter("JOIN_CACHE_LEVEL", new NumericParameterDomain(true, 0, 8), 2));
 		if(withCategorical) compMaria.addParameter(new Parameter("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", new CategoricalParameterDomain(new String[] {"OFF", "ON"}), "OFF"));
 		compMaria.addParameter(new Parameter("LOG_SLOW_RATE_LIMIT", new NumericParameterDomain(true, 1, 10000000), 1));
@@ -144,8 +144,7 @@ class SMAC {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-
-				return Double.MAX_VALUE;
+				throw new ObjectEvaluationFailedException("Failed evaluating candidate");
 			}
 
 			@Override
@@ -181,6 +180,9 @@ class SMAC {
 	}
 	
 	public static void run(int THREADS, int TIME_LIMIT, int queryProfile) {
+		UUID executionUUID = UUID.randomUUID();
+		CSVService.getInstance().setAlgorithm("SMAC");
+		CSVService.getInstance().setExperimentUUID(executionUUID.toString());
 		String REQUIRED_INTERFACE = "IDatabase";
 		int LOCAL_TIME = 5;
 
@@ -389,7 +391,9 @@ public class MainExecuteAnyAlgorithm {
 		td1.addQuery(1, selectSalaries);
 
 		Benchmarker benchmarker = new Benchmarker(td1, THREADS);
-
+		UUID executionUUID = UUID.randomUUID();
+		CSVService.getInstance().setAlgorithm("BOHB");
+		CSVService.getInstance().setExperimentUUID(executionUUID.toString());
 		// Components
 		Collection<Component> components = new ArrayList<Component>();
 		Component compMaria = new Component("MariaDB");
@@ -540,6 +544,7 @@ public class MainExecuteAnyAlgorithm {
 		PortManager.getInstance().setupAvailablePorts(ports);
 		for(int i = lastExecution; i < numOfExecutions; ++i) {
 			CSVService.getInstance().setStartingPoint();
+			CSVService.getInstance().setAlgorithm(algorithm);
 			try {
 				switch(algorithm) {
 				case "HASCO":
