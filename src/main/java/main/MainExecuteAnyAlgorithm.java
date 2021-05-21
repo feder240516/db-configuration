@@ -374,7 +374,7 @@ public class MainExecuteAnyAlgorithm {
 				System.out.println("Finished");
 				System.out.println(String.format("Best candidate for %d minutes execution with %d threads: %s", TIME_IN_MINUTES, THREADS, new ComponentSerialization().serialize(hasco.getBestSeenSolution().getComponentInstance())));
 				System.out.println(String.format("Time: %f", hasco.getBestScoreKnownToExist()));
-				CSVService.getInstance().dumpWithVars3("COMPLETE");
+				CSVService.getInstance().dumpWithVars3("COMPHASCOLETE");
 			} else {
 				System.out.println("Didn't work HASCO. Retrying");
 			}
@@ -511,7 +511,7 @@ public class MainExecuteAnyAlgorithm {
 				System.out.println("Finished");
 				System.out.println(String.format("Best candidate for %d minutes execution with %d threads: %s", TIME_IN_MINUTES, THREADS, new ComponentSerialization().serialize(hasco.getBestSeenSolution().getComponentInstance())));
 				System.out.println(String.format("Time: %f", hasco.getBestScoreKnownToExist()));
-				CSVService.getInstance().dumpWithVars3("COMPLETE");
+				CSVService.getInstance().dumpWithVars3("COMPRANDOMLETE");
 			} else {
 				System.out.println("Didn't work HASCO. Retrying");
 			}
