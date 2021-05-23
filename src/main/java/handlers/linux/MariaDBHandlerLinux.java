@@ -27,9 +27,12 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 		logger.info("To copy");
 		String baseDir = getBasePath();
 		String instancesDir = getInstancesPath();
-		String[] copyCommandArr = new String[] {"bash", "-c", 
+		/*String[] copyCommandArr = new String[] {"bash", "-c", 
 				String.format("sudo -u mysql cp -rf %1$s %2$s/%3$s"
-						+ "&& sudo -u mysql chmod -R 777 %2$s/%3$s", baseDir, instancesDir, ID.toString())};
+						+ "&& sudo -u mysql chmod -R 777 %2$s/%3$s", baseDir, instancesDir, ID.toString())};*/
+		String[] copyCommandArr = new String[] {
+				"sudo", "-u", "mysql", "cp", "-rf", baseDir, instancesDir, ID.toString()
+		};
 		ProcessBuilder processBuilder = new ProcessBuilder(copyCommandArr);
 		logger.info("Prepared to copy");
 		Process copyProcess = processBuilder.start();
