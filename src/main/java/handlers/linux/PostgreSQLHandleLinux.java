@@ -20,9 +20,7 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 		String[] copyCommandArr = new String[] {"bash", "-c", 
 				String.format("sudo -u postgres /usr/bin/pg_createcluster 13 %1$s"
 						+ "&& sudo -u postgres rm -rf /var/lib/postgresql/13/%1$s"
-						+ "&& sudo -u postgres cp -rf /var/lib/postgresql/13/data /var/lib/postgresql/13/%1$s"
-						+ "&& sudo -u postgres rm -rf /etc/postgresql/13/%1$s"
-						+ "&& sudo -u postgres cp -rf /etc/postgresql/13/data /etc/postgresql/13/%1$s", ID.toString())};
+						+ "&& sudo -u postgres cp -rf /var/lib/postgresql/13/data /var/lib/postgresql/13/%1$s", ID.toString())};
 		ProcessBuilder processBuilder = new ProcessBuilder(copyCommandArr);
 		Process copyProcess = processBuilder.start();
 		try {
