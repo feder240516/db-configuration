@@ -61,6 +61,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 			this.port = PortManager.getInstance().acquireAnyPort();
 			this.shouldPrintResults = false;
 			createdInstancePath = getInstancesPath() + "/" + ID;
+			System.out.println("To create");
 			createDBInstance();
 			initiateServer();
 			setupInitedDB();
