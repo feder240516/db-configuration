@@ -57,7 +57,13 @@ class DataProvider implements ArgumentsProvider {
 				args.add(Arguments.of((Data) new Data(createCI(instances[i]), createTD(queries.get(j)), 1)));
 			}
 		}
+		System.out.println("\n\n\n\nPrinting...\n\n\n\n");
+		System.out.println(String.format("Number of instances: %d", instances.length));
+		System.out.println(String.format("Number of queries: %d", queries.size()));
 		//Arrays.asList(instances).stream().map(()->);
+		args.stream().forEach((arg) -> {
+			System.out.println(String.format("%s arg", arg.toString()));
+		});
 		return args.stream();
 		/*Arguments.of((Data) new Data(createCI("MariaDB"), createTD(), 1)), 
 		 Arguments.of((Data) new Data(createCI("HSQLDB"), createTD(), 1))*/
@@ -84,83 +90,17 @@ class DataProvider implements ArgumentsProvider {
 	}
 	
 	public List<Query> getQueries() {
-		// TODO: Fix this test
-		return null;
-		/*
-		DbSpec spec = new DbSpec();
-	    DbSchema schema = spec.addDefaultSchema();
-	 
-	    DbTable employeesTable = schema.addTable("employees");
-	    DbColumn employees_empNoCol = employeesTable.addColumn("emp_no", "int(11)", null);
-	    DbColumn employees_empBirthCol = employeesTable.addColumn("birth_date", "date", null);
-	    DbColumn employees_empfNameCol = employeesTable.addColumn("first_name", "varchar(14)", null);
-	    DbColumn employees_emplNameCol = employeesTable.addColumn("last_name", "varchar(16)", null);
-	    DbColumn employees_empGenderCol = employeesTable.addColumn("gender", "enum('M','F')", null);
-	    DbColumn employees_empHireCol = employeesTable.addColumn("hire_date", "date", null);
-	 
-	    DbTable salariesTable = schema.addTable("salaries");
-	    DbColumn salaries_empNoCol = salariesTable.addColumn("emp_no", "int(11)", null);
-	    DbColumn salaries_salaryCol = salariesTable.addColumn("salary", "int(11)", null);
-	    DbColumn salaries_fromDateCol = salariesTable.addColumn("from_date", "date", null);
-	    DbColumn salaries_toDateCol = salariesTable.addColumn("to_date", "date", null);
-	    
-	    DbTable titlesTable = schema.addTable("titles");
-	    DbColumn titles_empNoCol = titlesTable.addColumn("emp_no", "int(11)", null);
-	    DbColumn titles_titleCol = titlesTable.addColumn("title", "varchar(50)", null);
-	    DbColumn titles_fromDateCol = titlesTable.addColumn("from_date", "date", null);
-	    DbColumn titles_toDateCol = titlesTable.addColumn("to_date", "date", null);
-	    
-	    DbTable deptEmpTable = schema.addTable("dept_emp");
-	    DbColumn deptEmp_empNoCol = deptEmpTable.addColumn("emp_no", "int(11)", null);
-	    DbColumn deptEmp_deptNoCol = deptEmpTable.addColumn("dept_no", "char(4)", null);
-	    DbColumn deptEmp_fromDateCol = deptEmpTable.addColumn("from_date", "date", null);
-	    DbColumn deptEmp_toDateCol = deptEmpTable.addColumn("to_date", "date", null);
-	    
-	    DbTable deptTable = schema.addTable("departments");
-	    DbColumn dept_empNoCol = deptTable.addColumn("emp_no", "int(11)", null);
-	    DbColumn dept_nameCol = deptTable.addColumn("dept_name", "varchar(40)", null);
-	    
-	    DbTable deptMgTable = schema.addTable("dept_manager");
-	    DbColumn deptMg_empNoCol = deptMgTable.addColumn("emp_no", "int(11)", null);
-	    DbColumn deptMg_deptNoCol = deptMgTable.addColumn("dept_no", "char(4)", null);
-	    DbColumn deptMg_fromDateCol = deptMgTable.addColumn("from_date", "date", null);
-	    DbColumn deptMg_toDateCol = deptMgTable.addColumn("to_date", "date", null);
-	    
-	    List<Query> queries = new ArrayList<Query>();
-	    SelectQuery selectSalaries = new SelectQuery()
-	    		.addColumns(employees_empNoCol, employees_empfNameCol, employees_emplNameCol, salaries_salaryCol)
-	    		.addJoin(JoinType.INNER, employeesTable, salariesTable, BinaryCondition.equalTo(employees_empNoCol, salaries_empNoCol))
-	    		.addCondition(BinaryCondition.equalTo(new ExtractExpression(DatePart.YEAR, salaries_toDateCol), 9999))
-	    		.validate();
-	    SelectQuery selectAvgSalaryTitles = new SelectQuery()
-	    		.addCustomColumns(titles_titleCol, FunctionCall.avg().addColumnParams(salaries_salaryCol))
-	    		.addJoin(JoinType.INNER, salariesTable, titlesTable, BinaryCondition.equalTo(salaries_empNoCol, titles_empNoCol))
-	    		.addCondition(BinaryCondition.equalTo(new ExtractExpression(DatePart.YEAR, salaries_toDateCol), 9999))
-	    		.addGroupings(titles_titleCol).validate();
-	    SelectQuery selectAvgSalaryTitlesGender = new SelectQuery()
-	    		.addCustomColumns(titles_titleCol, employees_empGenderCol, FunctionCall.avg().addColumnParams(salaries_salaryCol))
-	    		.addJoin(JoinType.INNER, salariesTable, titlesTable, BinaryCondition.equalTo(salaries_empNoCol, titles_empNoCol))
-	    		.addJoin(JoinType.INNER, salariesTable, employeesTable, BinaryCondition.equalTo(salaries_empNoCol, employees_empNoCol))
-	    		.addCondition(BinaryCondition.equalTo(new ExtractExpression(DatePart.YEAR, salaries_toDateCol), 9999))
-	    		.addGroupings(employees_empGenderCol, titles_titleCol).validate();
-	   
-	    String birthDate = "2000-12-18";
-	    String fName = "Federico";
-	    String lName = "Reina";
-	    char gender = 'M';
-	    Date hireDate = new Date(System.currentTimeMillis());
-	    
-	    InsertSelectQuery insertEmployee2 = new InsertSelectQuery(employeesTable)
-	    		.addColumns(employees_empNoCol, employees_empBirthCol, employees_empfNameCol, employees_emplNameCol, employees_empGenderCol, employees_empHireCol)
-	    		.setSelectQuery(new SelectQuery()
-	    				.addCustomColumns(new CustomSql(String.format("%s%s", FunctionCall.max().addColumnParams(employees_empNoCol), "+1")), birthDate,fName, lName,gender,  new CustomSql(String.format("'%s' %s", hireDate, "FROM employees t0")))).validate();
-
-	    queries.add(selectSalaries);
-	    queries.add(selectAvgSalaryTitles);
-	    queries.add(selectAvgSalaryTitlesGender);
-	    queries.add(insertEmployee2);
-	    
-	    return queries;*/
+		Query q1 = select(field("employees.emp_no"), 
+							field("employees.first_name"), 
+							field("employees.last_name"), 
+							field("salaries.salary"))
+					.from("employees")
+					.join("salaries")
+					.on(field("employees.emp_no").eq(field("salaries.emp_no")))
+					.where(extract(field("salaries.to_date"),DatePart.YEAR).eq(val(9999)));
+		List<Query> queries = new ArrayList<Query>();
+		queries.add(q1);
+		return queries;
 	}
 }
 
