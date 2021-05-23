@@ -42,6 +42,11 @@ class Data {
 		this.componentInstance = componentInstance;
 		this.maxThreads = maxThreads;
 	}
+
+	@Override
+	public String toString() {
+		return "Data [Database=" + componentInstance.getComponent().getName() + ", test=" + test + ", maxThreads=" + maxThreads + "]";
+	}
 }
 
 class DataProvider implements ArgumentsProvider {
