@@ -24,18 +24,22 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 	
 	@Override
 	public void createDBInstance() throws IOException {
+		logger.info("To copy");
 		String baseDir = getBasePath();
 		String instancesDir = getInstancesPath();
 		String[] copyCommandArr = new String[] {"bash", "-c", 
 				String.format("sudo cp -rf %1$s %2$s/%3$s"
 						+ "&& sudo chmod -R 777 %2$s/%3$s", baseDir, instancesDir, ID.toString())};
 		ProcessBuilder processBuilder = new ProcessBuilder(copyCommandArr);
+		logger.info("Prepared to copy");
 		Process copyProcess = processBuilder.start();
 		try {
 			copyProcess.waitFor();
 		} catch (InterruptedException e) {
+			logger.info(e.getMessage());
 			throw new IOException("Couldn't create new PostgreSQL instance");
 		}
+		logger.info("The instance " + createdInstancePath + " on port " + port + " was created");
 	}
 
 	@Override

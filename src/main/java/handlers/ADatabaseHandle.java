@@ -43,7 +43,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 	protected UUID ID;
 	protected boolean shouldPrintResults;
 	protected static boolean driversInitialized = false; 
-	final Logger logger = LoggerFactory.getLogger(ADatabaseHandle.class);
+	protected final Logger logger = LoggerFactory.getLogger(ADatabaseHandle.class);
 
 	
 	public static void initializeDrivers() throws ClassNotFoundException {
