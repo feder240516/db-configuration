@@ -42,7 +42,7 @@ import repositories.QueryRepository;
 public class PostgreSQLHandleTest {
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
-		PortManager.getInstance().setupAvailablePorts(new int[] {9901,9902,9903});
+		PortManager.getInstance().setupAvailablePorts(new int[] {9901,9902,9903,9904,9905,9906,9907,9908,9909});
 	}
 
 	@AfterAll
