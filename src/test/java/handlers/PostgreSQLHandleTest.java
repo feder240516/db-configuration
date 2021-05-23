@@ -4,7 +4,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.jooq.Query;
 import org.jooq.SQLDialect;
@@ -77,5 +84,50 @@ public class PostgreSQLHandleTest {
 		System.out.println(String.format("query was executed in %f miliseconds", executionTime));
 		mariaHandle.stopServer();
 		mariaHandle.cleanup(); 
+	}
+	
+	@Test
+	void testConcurrent() throws ClassNotFoundException, UnavailablePortsException, IOException, SQLException, InterruptedException {
+		IComponent maria = new Component("PostgreSQL");
+		List<IComponentInstance> componentInstances = new ArrayList<>();
+		
+		for(int i = 0; i < 4; ++i) {
+			IComponentInstance mariainst = new ComponentInstance(maria, new HashMap<>(), new HashMap<>());
+			componentInstances.add(mariainst);
+		}
+		
+		
+		int threads = 4;
+		
+		
+		ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(threads);
+		List<Callable<Double>> taskList = new ArrayList<>();
+		for(IComponentInstance instance: componentInstances) {
+			taskList.add(() -> {
+				System.out.println(String.format("\r\n\r\nDESCRIPTION: %s: %s [%s]", instance.getComponent().getName(), instance.getParameterValue("__evalVar"), instance.getParameterValue("__evalVarValue")));
+				ADatabaseHandle mariaHandle = DBSystemFactory.getInstance().createHandle(instance);
+				System.out.println("Finally connected");
+				mariaHandle.initiateServer();
+				mariaHandle.printResultsAfterExecution(false);
+				Query query = QueryRepository.getTestQuery1();
+				query.configuration().set(SQLDialect.MARIADB);
+				double executionTime = mariaHandle.benchmarkQuery(query.getSQL(true));
+				System.out.println(String.format("query was executed in %f miliseconds", executionTime));
+				mariaHandle.stopServer();
+				mariaHandle.cleanup(); 
+				return executionTime;
+			});
+		}
+		List<Future<Double>> resultList = executor.invokeAll(taskList);
+		executor.shutdown();
+		executor.awaitTermination(999, TimeUnit.DAYS);
+		for(Future<Double> result: resultList) {
+			try {
+				System.out.println(result.get());
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			
+		}
 	}
 }
