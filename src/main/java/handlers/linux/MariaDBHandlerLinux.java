@@ -35,6 +35,7 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 		};
 		ProcessBuilder processBuilder = new ProcessBuilder(copyCommandArr);
 		logger.info("Prepared to copy");
+		logger.info(String.join("+", processBuilder.command()));
 		Process copyProcess = processBuilder.start();
 		try {
 			copyProcess.waitFor();
