@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -87,7 +88,7 @@ public class PostgreSQLHandleTest {
 	}
 	
 	@Test
-	void testConcurrent() throws ClassNotFoundException, UnavailablePortsException, IOException, SQLException, InterruptedException {
+	void testConcurrent() throws ClassNotFoundException, UnavailablePortsException, IOException, SQLException, InterruptedException, ExecutionException {
 		IComponent maria = new Component("PostgreSQL");
 		List<IComponentInstance> componentInstances = new ArrayList<>();
 		
@@ -122,12 +123,7 @@ public class PostgreSQLHandleTest {
 		executor.shutdown();
 		executor.awaitTermination(999, TimeUnit.DAYS);
 		for(Future<Double> result: resultList) {
-			try {
-				System.out.println(result.get());
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
-			
+			System.out.println(result.get());
 		}
 	}
 }
