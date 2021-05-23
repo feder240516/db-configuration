@@ -44,6 +44,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 	protected boolean shouldPrintResults;
 	protected static boolean driversInitialized = false; 
 	protected final Logger logger = LoggerFactory.getLogger(ADatabaseHandle.class);
+	protected boolean shouldLogConnectionErrors;
 
 	
 	public static void initializeDrivers() throws ClassNotFoundException {
@@ -57,6 +58,10 @@ public abstract class ADatabaseHandle implements IDatabase {
 	}
 	
 	public ADatabaseHandle(IComponentInstance ci, IDatabaseParameterManager databaseParameterManager) throws UnavailablePortsException, IOException, SQLException, InterruptedException, ClassNotFoundException {
+		this(ci,databaseParameterManager,false);
+	}
+	
+	public ADatabaseHandle(IComponentInstance ci, IDatabaseParameterManager databaseParameterManager, boolean shouldLogConnections) throws UnavailablePortsException, IOException, SQLException, InterruptedException, ClassNotFoundException {
 		try{
 			initializeDrivers();
 			this.componentInstance = ci;
@@ -64,6 +69,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 			this.ID = UUID.randomUUID();
 			this.port = PortManager.getInstance().acquireAnyPort();
 			this.shouldPrintResults = false;
+			this.shouldLogConnectionErrors = shouldLogConnections;
 			createdInstancePath = getInstancesPath() + "/" + ID;
 			logger.info("To create");
 			createDBInstance();
@@ -231,6 +237,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 			conn = DriverManager.getConnection(dbUrl);	
 		} catch (SQLException e1) {
 			conn = null;
+			if(shouldLogConnectionErrors) { logger.error(e1.getMessage()); }
 		}
 		return conn;
 	}
