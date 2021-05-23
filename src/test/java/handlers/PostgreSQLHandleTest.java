@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 
+import org.jooq.Query;
+import org.jooq.SQLDialect;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,6 +29,7 @@ import ai.libs.jaicore.components.model.ComponentInstance;
 import exceptions.UnavailablePortsException;
 import managers.DBSystemFactory;
 import managers.PortManager;
+import repositories.QueryRepository;
 
 public class PostgreSQLHandleTest {
 	@BeforeAll
@@ -58,5 +61,21 @@ public class PostgreSQLHandleTest {
 		System.out.println(String.format("query was executed in %f miliseconds", executionTime));
 		postgresHandle.stopServer();
 		postgresHandle.cleanup(); 
+	}
+	
+	@Test
+	void test2() throws ClassNotFoundException, UnavailablePortsException, IOException, SQLException, InterruptedException {
+		IComponent maria = new Component("PostgreSQL");
+		IComponentInstance mariainst = new ComponentInstance(maria, new HashMap<>(), new HashMap<>());
+		ADatabaseHandle mariaHandle = DBSystemFactory.getInstance().createHandle(mariainst);
+		System.out.println("Finally connected");
+		mariaHandle.initiateServer();
+		mariaHandle.printResultsAfterExecution(false);
+		Query query = QueryRepository.getTestQuery1();
+		query.configuration().set(SQLDialect.MARIADB);
+		double executionTime = mariaHandle.benchmarkQuery(query.getSQL(true));
+		System.out.println(String.format("query was executed in %f miliseconds", executionTime));
+		mariaHandle.stopServer();
+		mariaHandle.cleanup(); 
 	}
 }

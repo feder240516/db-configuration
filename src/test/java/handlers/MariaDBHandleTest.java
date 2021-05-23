@@ -34,6 +34,7 @@ import ai.libs.jaicore.components.model.ComponentInstance;
 import exceptions.UnavailablePortsException;
 import managers.DBSystemFactory;
 import managers.PortManager;
+import repositories.QueryRepository;
 
 public class MariaDBHandleTest {
 	@BeforeAll
@@ -52,17 +53,6 @@ public class MariaDBHandleTest {
 
 	@AfterEach
 	void tearDown() throws Exception {
-	}
-	
-	public Query getTestQuery() {
-		return select(field("employees.emp_no"), 
-				field("employees.first_name"), 
-				field("employees.last_name"), 
-				field("salaries.salary"))
-		.from("employees")
-		.join("salaries")
-		.on(field("employees.emp_no").eq(field("salaries.emp_no")))
-		.where(extract(field("salaries.to_date"),DatePart.YEAR).eq(val(9999)));
 	}
 	
 	@Test
@@ -87,7 +77,7 @@ public class MariaDBHandleTest {
 		System.out.println("Finally connected");
 		mariaHandle.initiateServer();
 		mariaHandle.printResultsAfterExecution(false);
-		Query query = getTestQuery();
+		Query query = QueryRepository.getTestQuery1();
 		query.configuration().set(SQLDialect.MARIADB);
 		double executionTime = mariaHandle.benchmarkQuery(query.getSQL(true));
 		System.out.println(String.format("query was executed in %f miliseconds", executionTime));
