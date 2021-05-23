@@ -25,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.jooq.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ai.libs.jaicore.components.api.IComponentInstance;
 import exceptions.UnavailablePortsException;
@@ -41,6 +43,8 @@ public abstract class ADatabaseHandle implements IDatabase {
 	protected UUID ID;
 	protected boolean shouldPrintResults;
 	protected static boolean driversInitialized = false; 
+	final Logger logger = LoggerFactory.getLogger(ADatabaseHandle.class);
+
 	
 	public static void initializeDrivers() throws ClassNotFoundException {
 		if (!driversInitialized) {
@@ -61,11 +65,14 @@ public abstract class ADatabaseHandle implements IDatabase {
 			this.port = PortManager.getInstance().acquireAnyPort();
 			this.shouldPrintResults = false;
 			createdInstancePath = getInstancesPath() + "/" + ID;
-			System.out.println("To create");
+			logger.info("To create");
 			createDBInstance();
+			logger.info("To initiate");
 			initiateServer();
+			logger.info("To setup");
 			setupInitedDB();
 			createAndFillDatabase();
+			logger.info("To stop");
 			stopServer();
 			TimeUnit.SECONDS.sleep(5);
 		}catch(UnavailablePortsException | IOException | SQLException | InterruptedException | ClassNotFoundException e) {
@@ -159,12 +166,12 @@ public abstract class ADatabaseHandle implements IDatabase {
 	
 	public void createDBInstance() throws IOException {
 		//System.out.println(getBasePath());
-		System.out.println("To copy");
+		logger.info("To copy");
 		File dataDir = new File(getBasePath());
 		File destDir = new File(createdInstancePath);
-		System.out.println("Prepared to copy");
+		logger.info("Prepared to copy");
 	    FileUtils.copyDirectory(dataDir, destDir);
-	    System.out.println("The instance " + createdInstancePath + " on port " + port + " was created");
+	    logger.info("The instance " + createdInstancePath + " on port " + port + " was created");
 	}
 	
 	public void printResultSet(PreparedStatement ps) throws SQLException {
@@ -198,7 +205,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 			Date after = new Date();
 			double score = after.getTime() - before.getTime();
 			ps.close();
-			System.out.println(String.format("Score %f for port %d",score,port));
+			logger.info(String.format("Score %f for port %d",score,port));
 			return score;
 		}	
 	}
