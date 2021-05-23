@@ -28,8 +28,8 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 		String baseDir = getBasePath();
 		String instancesDir = getInstancesPath();
 		String[] copyCommandArr = new String[] {"bash", "-c", 
-				String.format("sudo cp -rf %1$s %2$s/%3$s"
-						+ "&& sudo chmod -R 777 %2$s/%3$s", baseDir, instancesDir, ID.toString())};
+				String.format("sudo -u mysql cp -rf %1$s %2$s/%3$s"
+						+ "&& sudo -u mysql chmod -R 777 %2$s/%3$s", baseDir, instancesDir, ID.toString())};
 		ProcessBuilder processBuilder = new ProcessBuilder(copyCommandArr);
 		logger.info("Prepared to copy");
 		Process copyProcess = processBuilder.start();
@@ -37,7 +37,7 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 			copyProcess.waitFor();
 		} catch (InterruptedException e) {
 			logger.info(e.getMessage());
-			throw new IOException("Couldn't create new PostgreSQL instance");
+			throw new IOException("Couldn't create new MariaDB instance");
 		}
 		logger.info("The instance " + createdInstancePath + " on port " + port + " was created");
 	}
@@ -46,7 +46,8 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 	protected String[] getStartCommand() {
 		String MariaDBHome = PropertiesManager.getInstance().getProperty("mariadb.location");
 		String[] cmdStart = {"sudo", MariaDBHome + "/mysqld", "--datadir=" + createdInstancePath,
-				"--port=" + port, String.format("--socket=%s/mysql.sock", createdInstancePath), 
+				"--port=" + port, String.format("--socket=%s/mysql.sock", createdInstancePath),
+				String.format("--pid-file=%s/mysqld.pid", createdInstancePath),
 				"--query-cache-type=0", "--query-cache-size=0", "--log_bin"};
 		return cmdStart;
 	}
