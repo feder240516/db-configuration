@@ -159,8 +159,10 @@ public abstract class ADatabaseHandle implements IDatabase {
 	
 	public void createDBInstance() throws IOException {
 		//System.out.println(getBasePath());
+		System.out.println("To copy");
 		File dataDir = new File(getBasePath());
 		File destDir = new File(createdInstancePath);
+		System.out.println("Prepared to copy");
 	    FileUtils.copyDirectory(dataDir, destDir);
 	    System.out.println("The instance " + createdInstancePath + " on port " + port + " was created");
 	}
