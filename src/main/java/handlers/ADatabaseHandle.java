@@ -34,7 +34,7 @@ import managers.PortManager;
 import managers.db.parameters.IDatabaseParameterManager;
 
 public abstract class ADatabaseHandle implements IDatabase {
-	protected int MAX_CONNECTION_RETRIES = 3;
+	protected int MAX_CONNECTION_RETRIES = 5;
 	protected Process process;
 	protected IComponentInstance componentInstance;
 	protected String createdInstancePath;
