@@ -104,11 +104,15 @@ public abstract class ADatabaseHandle implements IDatabase {
 		try (Connection conn = getConnection()){
 			
 			for(String param: params.keySet()) {
-				String configurationQuery = databaseParameterManager.getCommand(param, params.get(param));
-				if (configurationQuery != null) {
-					PreparedStatement ps = conn.prepareStatement(configurationQuery);
-					ps.execute();
-					ps.close();
+				try {
+					String configurationQuery = databaseParameterManager.getCommand(param, params.get(param));
+					if (configurationQuery != null) {
+						PreparedStatement ps = conn.prepareStatement(configurationQuery);
+						ps.execute();
+						ps.close();
+					}
+				} catch(SQLException e) {
+					logger.error(e.getMessage());
 				}
 			}
 			
