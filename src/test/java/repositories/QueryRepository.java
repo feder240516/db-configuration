@@ -14,11 +14,13 @@ import static org.jooq.impl.DSL.val;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jooq.DataType;
 import org.jooq.DatePart;
 import org.jooq.Field;
 import org.jooq.InsertValuesStep6;
 import org.jooq.Query;
 import org.jooq.Record;
+import org.jooq.impl.SQLDataType;
 
 public class QueryRepository {
 
@@ -52,7 +54,7 @@ public class QueryRepository {
 						field("emp_no"),field("birth_date"),field("first_name"),
 						field("last_name"),field("gender"),field("hire_date")); 
 		for(int i = 0; i < 1; ++i) {
-			insertQuery = insertQuery.values(123456+i,now(),"Federico","Reina","M",now());
+			insertQuery = insertQuery.values(123456+i,now().cast(SQLDataType.DATE),"Federico","Reina","M",now().cast(SQLDataType.DATE));
 		}
 		return insertQuery;
 	}

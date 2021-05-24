@@ -34,6 +34,7 @@ import org.jooq.DatePart;
 import org.jooq.InsertValuesStep6;
 import org.jooq.Query;
 import org.jooq.Record;
+import org.jooq.impl.SQLDataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -243,7 +244,7 @@ public class MainExecuteAnyAlgorithm {
 				field("emp_no"),field("birth_date"),field("first_name"),
 				field("last_name"),field("gender"),field("hire_date")); 
 		for(int i = 0; i < 1000; ++i) {
-			insertQuery = insertQuery.values(123456+i,now(),"Federico","Reina","M",now());
+			insertQuery = insertQuery.values(123456+i,now().cast(SQLDataType.DATE),"Federico","Reina","M",now().cast(SQLDataType.DATE));
 		}
 		return insertQuery;
 	}
