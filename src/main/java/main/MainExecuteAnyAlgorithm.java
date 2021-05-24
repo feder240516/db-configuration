@@ -290,11 +290,12 @@ public class MainExecuteAnyAlgorithm {
 	
 	public static TestDescription buildTestDescription(int index) {
 		Map<Integer, String> sqlnames = new HashMap<>();
+		int NUM_TESTS = 3;
 		sqlnames.put(1, "SEL1");
 		sqlnames.put(2, "SEL2");
 		sqlnames.put(4, "INS");
 		sqlnames.put(5, "UPD");
-		TestDescription td = new TestDescription(sqlnames.get(index),3);
+		TestDescription td = new TestDescription(sqlnames.get(index),NUM_TESTS);
 		Query query = null;
 		switch (index) {
 		case 1:
@@ -378,34 +379,16 @@ public class MainExecuteAnyAlgorithm {
 	}
 	
 	public static void runBOHB(int THREADS, int TIME_IN_MINUTES, int queryProfile) {
-		int NUM_TESTS = 3;
-		Query selectSalaries = generateQuerySelectSalaries();
+		String requiredInterface = "IDatabase";
 
 		TestDescription td1 = buildTestDescription(queryProfile);//new TestDescription("Only select salaries", NUM_TESTS);
-		td1.addQuery(1, selectSalaries);
-
 		Benchmarker benchmarker = new Benchmarker(td1, THREADS);
 		UUID executionUUID = UUID.randomUUID();
+		CSVService.getInstance().setStartingPoint();
 		CSVService.getInstance().setAlgorithm("BOHB");
 		CSVService.getInstance().setExperimentUUID(executionUUID.toString());
 		// Components
-		Collection<Component> components = new ArrayList<Component>();
-		Component compMaria = new Component("MariaDB");
-		compMaria.addParameter(new Parameter("DIV_PRECISION_INCREMENT", new NumericParameterDomain(true, 0, 30), 4));
-		compMaria.addParameter(new Parameter("JOIN_CACHE_LEVEL", new NumericParameterDomain(true, 0, 8), 2));
-		compMaria.addParameter(new Parameter("LOG_SLOW_RATE_LIMIT", new NumericParameterDomain(true, 1, 10000000), 1));
-		compMaria.addParameter(new Parameter("LONG_QUERY_TIME", new NumericParameterDomain(true, 0, 10000000), 10));
-		compMaria.addParameter(
-				new Parameter("MAX_LENGTH_FOR_SORT_DATA", new NumericParameterDomain(true, 4, 8388608), 1024));
-		compMaria.addParameter(
-				new Parameter("MIN_EXAMINED_ROW_LIMIT", new NumericParameterDomain(true, 0, 4294967295l), 0));
-		compMaria.addParameter(new Parameter("OPTIMIZER_PRUNE_LEVEL", new NumericParameterDomain(true, 0, 1), 1));
-		compMaria.addParameter(new Parameter("OPTIMIZER_SEARCH_DEPTH", new NumericParameterDomain(true, 0, 62), 62));
-		compMaria.addParameter(
-				new Parameter("OPTIMIZER_USE_CONDITION_SELECTIVITY", new NumericParameterDomain(true, 1, 5), 4));
-		String requiredInterface = "IDatabase";
-		compMaria.addProvidedInterface(requiredInterface);
-		components.add(compMaria);
+		Collection<Component> components = SMAC.buildComponents(true);
 
 		IConverter<ComponentInstance, IComponentInstance> converter = new IConverter<ComponentInstance, IComponentInstance>() {
 			@Override
