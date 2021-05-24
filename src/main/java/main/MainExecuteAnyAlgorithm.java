@@ -3,10 +3,15 @@ package main;
 import static org.jooq.impl.DSL.avg;
 import static org.jooq.impl.DSL.extract;
 import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.inline;
+import static org.jooq.impl.DSL.max;
+import static org.jooq.impl.DSL.now;
 import static org.jooq.impl.DSL.select;
+import static org.jooq.impl.DSL.selectFrom;
 import static org.jooq.impl.DSL.table;
 import static org.jooq.impl.DSL.update;
 import static org.jooq.impl.DSL.val;
+import static org.jooq.impl.DSL.insertInto;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +31,9 @@ import org.api4.java.algorithm.exceptions.AlgorithmExecutionCanceledException;
 import org.api4.java.algorithm.exceptions.AlgorithmTimeoutedException;
 import org.api4.java.common.attributedobjects.ObjectEvaluationFailedException;
 import org.jooq.DatePart;
+import org.jooq.InsertValuesStep6;
 import org.jooq.Query;
+import org.jooq.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -231,7 +238,14 @@ public class MainExecuteAnyAlgorithm {
 	}
 	
 	public static Query generateInsertSalaries() {
-		return null;
+		InsertValuesStep6<Record, Object, Object, Object, Object, Object, Object> insertQuery = 
+		insertInto(table("employees"),
+				field("emp_no"),field("birth_date"),field("first_name"),
+				field("last_name"),field("gender"),field("hire_date")); 
+		for(int i = 0; i < 1000; ++i) {
+			insertQuery = insertQuery.values(123456+i,now(),"Federico","Reina","M",now());
+		}
+		return insertQuery;
 	}
 	
 	public static Query generateUpdateSalaries() {

@@ -5,6 +5,7 @@ import static org.jooq.impl.DSL.extract;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.insertInto;
 import static org.jooq.impl.DSL.max;
+import static org.jooq.impl.DSL.now;
 import static org.jooq.impl.DSL.select;
 import static org.jooq.impl.DSL.table;
 import static org.jooq.impl.DSL.update;
@@ -15,7 +16,9 @@ import java.util.List;
 
 import org.jooq.DatePart;
 import org.jooq.Field;
+import org.jooq.InsertValuesStep6;
 import org.jooq.Query;
+import org.jooq.Record;
 
 public class QueryRepository {
 
@@ -30,13 +33,6 @@ public class QueryRepository {
 		.where(extract(field("salaries.to_date"),DatePart.YEAR).eq(val(9999)));
 	}
 	
-	public static Query getInsertQuery() {
-		return insertInto(table("employees"), field("employees.emp_no"), field("employees.birth_date"), field("employees.first_name"), field("employees.last_name"), field("employees.gender"), field("employees.hire_date"))
-				.select(select(field("employees.emp_no").add(1), field("employees.birth_date"), field("employees.first_name"), field("employees.last_name"), field("employees.gender"), field("employees.hire_date")).from("employees")
-						.leftJoin(select(max(field("employees.emp_no")).as("maximia")).from("employees").asTable())
-						.on(field("employees.emp_no").eq(field("maximia"))));
-	}
-	
 	public static Query getUpdateQuery() {
 		/*UpdateQuery updateSalaries = new UpdateQuery(salariesTable)
 		.addSetClause(salaries_salaryCol, new CustomSql(String.format("%s + (%s*20/100)", salaries_salaryCol, salaries_salaryCol)))
@@ -48,6 +44,17 @@ public class QueryRepository {
 		return update(table("salaries"))
 					.set(field("salary"), field("salary").cast(Double.class).mul(1.2));
 					
+	}
+	
+	public static Query getInsertQuery() {
+		InsertValuesStep6<Record, Object, Object, Object, Object, Object, Object> insertQuery = 
+			insertInto(table("employees"),
+						field("emp_no"),field("birth_date"),field("first_name"),
+						field("last_name"),field("gender"),field("hire_date")); 
+		for(int i = 0; i < 1000; ++i) {
+			insertQuery = insertQuery.values(123456+i,now(),"Federico","Reina","M",now());
+		}
+		return insertQuery;
 	}
 	
 	public static List<Query> getAllQueries() {
