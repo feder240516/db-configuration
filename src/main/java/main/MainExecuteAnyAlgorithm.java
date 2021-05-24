@@ -239,67 +239,6 @@ public class MainExecuteAnyAlgorithm {
 				.set(field("salary"), field("salary").cast(Double.class).mul(1.2));
 	}
 	
-	public static IConverter<ComponentInstance, IComponentInstance> buildConverter() {
-		return new IConverter<ComponentInstance, IComponentInstance>() {
-			@Override
-			public IComponentInstance convert(ComponentInstance ci) throws ConversionFailedException {
-				return ci;
-			}
-		};
-	}
-	
-	public static double evaluateComponentInstance(IComponentInstance ci) {
-		try {
-        	return 42.;
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		return 84.;
-	}
-	
-	public static IHyperoptObjectEvaluator<IComponentInstance> buildEvaluator(Benchmarker benchmarker) {
-		return new IHyperoptObjectEvaluator<IComponentInstance>() {
-			@Override
-			public Double evaluate(IComponentInstance ci, int budget)
-					throws ObjectEvaluationFailedException, InterruptedException {
-				try {
-					return evaluateComponentInstance(ci);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				return Double.MAX_VALUE;
-			}
-
-			@Override
-			public int getMaxBudget() {
-				return 9999999;
-			}
-		};
-	}
-	
-	public static IOptimizer<IPlanningOptimizationTask<IComponentInstance>, IComponentInstance> buildOptimizer(int threads, String requiredInterface, Timeout globalTimeout, Timeout evalTimeout, int queryProfile) {
-		TestDescription td1 = buildTestDescription(queryProfile);
-		Benchmarker benchmarker = new Benchmarker(td1, threads);
-		// Components
-		Collection<Component> components = SMAC.buildComponents(true);
-		IConverter<ComponentInstance, IComponentInstance> converter = buildConverter();
-		IHyperoptObjectEvaluator<IComponentInstance> evaluator = buildEvaluator(benchmarker);
-		
-
-		Map<Component, Map<Parameter, ParameterRefinementConfiguration>> parameterRefinementConfiguration = new HashMap<>();
-		IGeneticOptimizerConfig gaConfig = ConfigFactory.create(IGeneticOptimizerConfig.class);
-
-		IPlanningOptimizationTask<IComponentInstance> task = new PlanningOptimizationTask<IComponentInstance>(converter,
-				evaluator, components, requiredInterface, globalTimeout, evalTimeout,
-				parameterRefinementConfiguration);
-		
-		IPCSOptimizerConfig pcsConfig = ConfigFactory.create(IPCSOptimizerConfig.class);
-		pcsConfig.setProperty(IPCSOptimizerConfig.K_CPUS, threads + "");
-		
-		return new SMACOptimizer<IComponentInstance>("Experiment", pcsConfig, task);
-	}
-	
 	public static TestDescription buildTestDescription(int index) {
 		Map<Integer, String> sqlnames = new HashMap<>();
 		int NUM_TESTS = 3;
@@ -451,6 +390,7 @@ public class MainExecuteAnyAlgorithm {
 	}
 	
 	public static void runRandom(int THREADS, int TIME_IN_MINUTES, int queryProfile) throws IOException {
+		System.out.println("Running random");
 		String requiredInterface = "IDatabase";
 		final Timeout GLOBAL_TIMEOUT = new Timeout(TIME_IN_MINUTES, TimeUnit.MINUTES);
 		final Timeout EVAL_TIMEOUT = new Timeout(10, TimeUnit.MINUTES);
@@ -479,7 +419,7 @@ public class MainExecuteAnyAlgorithm {
 			public Double evaluate(IComponentInstance ci, int budget)
 					throws ObjectEvaluationFailedException, InterruptedException {
 				try {
-					logger.info("Checking new instance");
+					System.out.println("Checking new instance of random");
 					return benchmarker.benchmark(ci);
 				} catch (InterruptedException | ExecutionException | UnavailablePortsException | IOException
 						| SQLException e) {

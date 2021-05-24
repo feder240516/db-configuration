@@ -65,14 +65,14 @@ public abstract class ADatabaseHandle implements IDatabase {
 			this.port = PortManager.getInstance().acquireAnyPort();
 			this.shouldPrintResults = false;
 			createdInstancePath = getInstancesPath() + "/" + ID;
-			logger.info("To create");
+			System.out.println("To create");
 			createDBInstance();
-			logger.info("To initiate");
+			System.out.println("To initiate");
 			initiateServer();
-			logger.info("To setup");
+			System.out.println("To setup");
 			setupInitedDB();
 			createAndFillDatabase();
-			logger.info("To stop");
+			System.out.println("To stop");
 			stopServer();
 			TimeUnit.SECONDS.sleep(5);
 		}catch(UnavailablePortsException | IOException | SQLException | InterruptedException | ClassNotFoundException e) {
@@ -112,7 +112,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 						ps.close();
 					}
 				} catch(SQLException e) {
-					logger.error(e.getMessage());
+					System.err.println(e.getMessage());
 				}
 			}
 			
@@ -170,12 +170,12 @@ public abstract class ADatabaseHandle implements IDatabase {
 	
 	public void createDBInstance() throws IOException {
 		//System.out.println(getBasePath());
-		logger.info("To copy");
+		System.out.println("To copy");
 		File dataDir = new File(getBasePath());
 		File destDir = new File(createdInstancePath);
-		logger.info("Prepared to copy");
+		System.out.println("Prepared to copy");
 	    FileUtils.copyDirectory(dataDir, destDir);
-	    logger.info("The instance " + createdInstancePath + " on port " + port + " was created");
+	    System.out.println("The instance " + createdInstancePath + " on port " + port + " was created");
 	}
 	
 	public void printResultSet(PreparedStatement ps) throws SQLException {
@@ -209,7 +209,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 			Date after = new Date();
 			double score = after.getTime() - before.getTime();
 			ps.close();
-			logger.info(String.format("Score %f for port %d",score,port));
+			System.out.println(String.format("Score %f for port %d",score,port));
 			return score;
 		}	
 	}

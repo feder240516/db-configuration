@@ -24,7 +24,7 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 	
 	@Override
 	public void createDBInstance() throws IOException {
-		logger.info("To copy");
+		System.out.println("To copy");
 		String baseDir = getBasePath();
 		String instancesDir = getInstancesPath();
 		String[] copyCommandArr = new String[] {"bash", "-c", 
@@ -34,13 +34,13 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 				"sudo", "cp", "-rf", baseDir, instancesDir, ID.toString()
 		};*/
 		ProcessBuilder processBuilder = new ProcessBuilder(copyCommandArr);
-		logger.info("Prepared to copy");
-		logger.info(String.join("+", processBuilder.command()));
+		System.out.println("Prepared to copy");
+		System.out.println(String.join("+", processBuilder.command()));
 		Process copyProcess = processBuilder.start();
 		try {
 			copyProcess.waitFor();
 		} catch (InterruptedException e) {
-			logger.info(e.getMessage());
+			System.out.println(e.getMessage());
 			throw new IOException("Couldn't create new MariaDB instance");
 		}
 		System.out.println("The instance " + createdInstancePath + " on port " + port + " was created");

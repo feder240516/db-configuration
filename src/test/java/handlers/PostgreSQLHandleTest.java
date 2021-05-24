@@ -110,8 +110,8 @@ public class PostgreSQLHandleTest {
 				System.out.println("Finally connected");
 				mariaHandle.initiateServer();
 				mariaHandle.printResultsAfterExecution(false);
-				Query query = QueryRepository.getTestQuery1();
-				query.configuration().set(SQLDialect.MARIADB);
+				Query query = QueryRepository.getUpdateQuery();
+				query.configuration().set(SQLDialect.POSTGRES);
 				double executionTime = mariaHandle.benchmarkQuery(query.getSQL(true));
 				System.out.println(String.format("query was executed in %f miliseconds", executionTime));
 				mariaHandle.stopServer();
