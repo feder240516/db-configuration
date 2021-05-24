@@ -69,7 +69,7 @@ class SMAC {
 		//if(withCategorical) compMaria.addParameter(new Parameter("GLOBAL FLUSH", new CategoricalParameterDomain(new String[] {"OFF", "ON"}), "OFF"));
 		compMaria.addParameter(new Parameter("JOIN_BUFFER_SIZE", new NumericParameterDomain(true, 128, 1048576), 262144));
 		compMaria.addParameter(new Parameter("JOIN_CACHE_LEVEL", new NumericParameterDomain(true, 0, 8), 2));
-		if(withCategorical) compMaria.addParameter(new Parameter("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", new CategoricalParameterDomain(new String[] {"OFF", "ON"}), "OFF"));
+		//if(withCategorical) compMaria.addParameter(new Parameter("GLOBAL LOG_QUERIES_NOT_USING_INDEXES", new CategoricalParameterDomain(new String[] {"OFF", "ON"}), "OFF"));
 		compMaria.addParameter(new Parameter("LOG_SLOW_RATE_LIMIT", new NumericParameterDomain(true, 1, 10000000), 1));
 		compMaria.addParameter(new Parameter("LONG_QUERY_TIME", new NumericParameterDomain(true, 1, 100000), 10));
 		compMaria.addParameter(new Parameter("MAX_LENGTH_FOR_SORT_DATA", new NumericParameterDomain(true, 4, 16384), 1024));
