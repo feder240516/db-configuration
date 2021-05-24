@@ -28,6 +28,7 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 		} catch (InterruptedException e) {
 			throw new IOException("Couldn't create new PostgreSQL instance");
 		}
+		System.out.println("The instance " + createdInstancePath + " on port " + port + " was created");
 	}
 	
 	@Override

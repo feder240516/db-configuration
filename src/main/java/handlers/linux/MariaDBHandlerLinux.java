@@ -43,7 +43,7 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 			logger.info(e.getMessage());
 			throw new IOException("Couldn't create new MariaDB instance");
 		}
-		logger.info("The instance " + createdInstancePath + " on port " + port + " was created");
+		System.out.println("The instance " + createdInstancePath + " on port " + port + " was created");
 	}
 
 	@Override
