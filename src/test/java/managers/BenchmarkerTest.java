@@ -104,7 +104,7 @@ class DataProvider implements ArgumentsProvider {
 		//Query q1 = QueryRepository.getTestQuery1();
 		//Query q2 = QueryRepository.getInsertQuery();
 		
-		List<Query> queries = Arrays.asList(new Query[] {QueryRepository.getUpdateQuery()});
+		List<Query> queries = Arrays.asList(new Query[] {QueryRepository.getInsertQuery()});
 		return queries;
 	}
 }
