@@ -243,7 +243,7 @@ public class MainExecuteAnyAlgorithm {
 		insertInto(table("employees"),
 				field("emp_no"),field("birth_date"),field("first_name"),
 				field("last_name"),field("gender"),field("hire_date")); 
-		for(int i = 0; i < 1000; ++i) {
+		for(int i = 0; i < 100000; ++i) {
 			insertQuery = insertQuery.values(123456+i,now().cast(SQLDataType.DATE),"Federico","Reina","M",now().cast(SQLDataType.DATE));
 		}
 		return insertQuery;
