@@ -25,6 +25,8 @@ import org.api4.java.algorithm.exceptions.AlgorithmTimeoutedException;
 import org.api4.java.common.attributedobjects.ObjectEvaluationFailedException;
 import org.jooq.DatePart;
 import org.jooq.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -56,6 +58,7 @@ import extras.ParameterRefinementConfiguration;
 import extras.PlanningOptimizationTask;
 import extras.RandomSearch;
 import extras.SMACOptimizer;
+import handlers.ADatabaseHandle;
 import helpers.TestDescription;
 import managers.Benchmarker;
 import managers.PortManager;
@@ -206,6 +209,8 @@ class SMAC {
 }
 
 public class MainExecuteAnyAlgorithm {
+	protected static final Logger logger = LoggerFactory.getLogger(ADatabaseHandle.class);
+	
 	public static Query generateQuerySelectSalaries() {
 		return select(field("employees.emp_no"), field("employees.first_name"), field("employees.last_name"),
 				field("salaries.salary")).from("employees").join("salaries")
@@ -471,11 +476,12 @@ public class MainExecuteAnyAlgorithm {
 			public Double evaluate(IComponentInstance ci, int budget)
 					throws ObjectEvaluationFailedException, InterruptedException {
 				try {
+					logger.info("Checking new instance");
 					return benchmarker.benchmark(ci);
 				} catch (InterruptedException | ExecutionException | UnavailablePortsException | IOException
 						| SQLException e) {
 					e.printStackTrace();
-					throw new ObjectEvaluationFailedException("Failed using BOHB to evaluate");
+					throw new ObjectEvaluationFailedException("Failed using Random to evaluate");
 				}
 			}
 
