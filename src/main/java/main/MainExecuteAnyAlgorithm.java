@@ -4,6 +4,8 @@ import static org.jooq.impl.DSL.avg;
 import static org.jooq.impl.DSL.extract;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.select;
+import static org.jooq.impl.DSL.table;
+import static org.jooq.impl.DSL.update;
 import static org.jooq.impl.DSL.val;
 
 import java.io.File;
@@ -233,7 +235,8 @@ public class MainExecuteAnyAlgorithm {
 	}
 	
 	public static Query generateUpdateSalaries() {
-		return null;
+		return update(table("salaries"))
+				.set(field("salary"), field("salary").cast(Double.class).mul(1.2));
 	}
 	
 	public static IConverter<ComponentInstance, IComponentInstance> buildConverter() {
