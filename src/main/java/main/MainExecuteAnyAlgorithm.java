@@ -39,11 +39,14 @@ import ai.libs.jaicore.components.model.NumericParameterDomain;
 import ai.libs.jaicore.components.model.Parameter;
 import ai.libs.jaicore.components.model.RefinementConfiguredSoftwareConfigurationProblem;
 import ai.libs.jaicore.components.serialization.ComponentSerialization;
+import ai.libs.jaicore.ml.classification.multilabel.learner.IMekaClassifier;
 import benchmark.core.api.ConversionFailedException;
 import benchmark.core.api.IConverter;
 import benchmark.core.api.IHyperoptObjectEvaluator;
 import benchmark.core.api.IOptimizer;
+import benchmark.core.api.input.IOptimizerConfig;
 import benchmark.core.api.output.IOptimizationOutput;
+
 import benchmark.core.impl.optimizer.cfg.ggp.IGeneticOptimizerConfig;
 import benchmark.core.impl.optimizer.pcs.IPCSOptimizerConfig;
 import exceptions.UnavailablePortsException;
@@ -51,6 +54,7 @@ import extras.BOHBOptimizer;
 import extras.IPlanningOptimizationTask;
 import extras.ParameterRefinementConfiguration;
 import extras.PlanningOptimizationTask;
+import extras.RandomSearch;
 import extras.SMACOptimizer;
 import helpers.TestDescription;
 import managers.Benchmarker;
@@ -439,25 +443,58 @@ public class MainExecuteAnyAlgorithm {
 	}
 	
 	public static void runRandom(int THREADS, int TIME_IN_MINUTES, int queryProfile) throws IOException {
-		int NUM_TESTS = 3;
+		String requiredInterface = "IDatabase";
+		final Timeout GLOBAL_TIMEOUT = new Timeout(TIME_IN_MINUTES, TimeUnit.MINUTES);
+		final Timeout EVAL_TIMEOUT = new Timeout(10, TimeUnit.MINUTES);
+		Collection<Component> components = SMAC.buildComponents(true);
 		File newFile = new File("src/main/java/configuration/dbTestProblem.json");
 		System.out.println(newFile.getCanonicalPath());
 		
 		TestDescription td1 = buildTestDescription(queryProfile);
-		Benchmarker b = new Benchmarker(td1, THREADS);
+		Benchmarker benchmarker = new Benchmarker(td1, THREADS);
 		
 		UUID executionUUID = UUID.randomUUID();
+		CSVService.getInstance().setStartingPoint();
 		CSVService.getInstance().setAlgorithm("Random");
 		CSVService.getInstance().setExperimentUUID(executionUUID.toString());
-		RefinementConfiguredSoftwareConfigurationProblem<Double> problem = new RefinementConfiguredSoftwareConfigurationProblem<Double>(newFile, "IDatabase", (ci) -> {
-			try {
-				return b.benchmark(ci);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return Double.POSITIVE_INFINITY;
+		IOptimizerConfig config = ConfigFactory.create(IOptimizerConfig.class);
+		config.setProperty(IOptimizerConfig.K_CPUS, THREADS + "");
+		Map<Component, Map<Parameter, ParameterRefinementConfiguration>> parameterRefinementConfiguration = new HashMap<>();
+		IConverter<ComponentInstance, IComponentInstance> converter = new IConverter<ComponentInstance, IComponentInstance>() {
+			@Override
+			public IComponentInstance convert(ComponentInstance ci) throws ConversionFailedException {
+				return ci;
 			}
-		} )  ;
-		HASCOViaFD<Double> hasco = HASCOBuilder.get()
+		};
+		IHyperoptObjectEvaluator<IComponentInstance> evaluator = new IHyperoptObjectEvaluator<IComponentInstance>() {
+			@Override
+			public Double evaluate(IComponentInstance ci, int budget)
+					throws ObjectEvaluationFailedException, InterruptedException {
+				try {
+					return benchmarker.benchmark(ci);
+				} catch (InterruptedException | ExecutionException | UnavailablePortsException | IOException
+						| SQLException e) {
+					e.printStackTrace();
+					throw new ObjectEvaluationFailedException("Failed using BOHB to evaluate");
+				}
+			}
+
+			@Override
+			public int getMaxBudget() {
+				return 999999999;
+			}
+		};
+		IPlanningOptimizationTask<IComponentInstance> task = new PlanningOptimizationTask<IComponentInstance>(converter,
+				evaluator, components, requiredInterface, GLOBAL_TIMEOUT, EVAL_TIMEOUT,
+				parameterRefinementConfiguration);
+		IOptimizer<IPlanningOptimizationTask<IComponentInstance>, IComponentInstance> opt = new RandomSearch<IComponentInstance>(config, task);
+		try {
+			IOptimizationOutput<IComponentInstance> result = opt.call();
+		} catch (AlgorithmTimeoutedException | InterruptedException | AlgorithmExecutionCanceledException
+				| AlgorithmException e) {
+			e.printStackTrace();
+		}
+		/*HASCOViaFD<Double> hasco = HASCOBuilder.get()
 					.withProblem(problem)
 					.withBlindSearch()
 					.withTimeout(new Timeout(TIME_IN_MINUTES, TimeUnit.MINUTES))
@@ -495,7 +532,7 @@ public class MainExecuteAnyAlgorithm {
 			} else {
 				System.out.println("Didn't work HASCO. Retrying");
 			}
-		}
+		}*/
 	}
 	
 	public static void main(String[] args) throws IOException {
