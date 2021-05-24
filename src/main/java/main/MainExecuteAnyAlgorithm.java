@@ -220,17 +220,11 @@ public class MainExecuteAnyAlgorithm {
 	}
 	
 	public static Query generateInsertSalaries() {
-		return select(field("employees.emp_no"), field("employees.first_name"), field("employees.last_name"),
-				field("salaries.salary")).from("employees").join("salaries")
-						.on(field("employees.emp_no").eq(field("salaries.emp_no")))
-						.where(extract(field("salaries.to_date"), DatePart.YEAR).eq(val(9999)));
+		return null;
 	}
 	
 	public static Query generateUpdateSalaries() {
-		return select(field("employees.emp_no"), field("employees.first_name"), field("employees.last_name"),
-				field("salaries.salary")).from("employees").join("salaries")
-						.on(field("employees.emp_no").eq(field("salaries.emp_no")))
-						.where(extract(field("salaries.to_date"), DatePart.YEAR).eq(val(9999)));
+		return null;
 	}
 	
 	public static IConverter<ComponentInstance, IComponentInstance> buildConverter() {
@@ -435,7 +429,7 @@ public class MainExecuteAnyAlgorithm {
 
 			@Override
 			public int getMaxBudget() {
-				return Integer.MAX_VALUE;
+				return 999999999;
 			}
 		};
 		
