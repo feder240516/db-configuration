@@ -4,6 +4,8 @@
 ### VS Code ###
 .vscode/
 
+/tpami-env/
+
 ### Eclipse ###
 
 .metadata
@@ -257,3 +259,6 @@ JAICore/jaicore-ml/testsrc/ml/scikitwrapper/importfolder_test/__pycache__/
 /docs/Gemfile.lock
 /docs/_site
 /docs/.sass-cache
+
+# allow custom properties
+/resources/config.properties

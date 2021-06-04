@@ -17,7 +17,7 @@ public class MariaDBHandler extends ADatabaseHandle {
 	static String instancesPath = "C:/Users/WIN/Desktop/MariaDB_Handler/instances";
 	static String baseDataPath = "C:/Users/WIN/Desktop/MariaDB_Handler/data";
 	
-	public MariaDBHandler(IComponentInstance ci) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
+	public MariaDBHandler(IComponentInstance ci) throws UnavailablePortsException, IOException, SQLException, InterruptedException, ClassNotFoundException {
 		super(ci, new MariaDBParameterManager());
 	}
 	
@@ -47,7 +47,7 @@ public class MariaDBHandler extends ADatabaseHandle {
 		String mariadbPath = String.format("\"%s%s\"", MariaDBHome, extraPath);
 		
 		String[] cmdStart = {"cmd.exe", "/c", String.format("%s --datadir=%s --port=%s --socket=%s --query-cache-type=0 --query-cache-size=0", mariadbPath, dataDir, port, socketPath)};
-		System.out.println("Start command on port " + port + ": " + String.format("%s --datadir=%s --port=%s --socket=%s --query-cache-type=0 --query-cache-size=0", mariadbPath, dataDir, port, socketPath));
+		// System.out.println("Start command on port " + port + ": " + String.format("%s --datadir=%s --port=%s --socket=%s --query-cache-type=0 --query-cache-size=0", mariadbPath, dataDir, port, socketPath));
 		return cmdStart;
 	}
 
@@ -56,23 +56,18 @@ public class MariaDBHandler extends ADatabaseHandle {
 
 	@Override
 	public void stopServer() {
-		System.out.println("Stopping server on port " + port);
 		String extraPath = "bin\\mysqladmin";
 		String MariaDBHome = System.getenv("MARIADB_HOME");
 		
 		String mariadbPath = String.format("\"%s%s\"", MariaDBHome, extraPath);
 		
 		String[] cmdStop = {"cmd.exe", "/c", String.format("%s -u root --password= --port=%d shutdown", mariadbPath, port)};
-		System.out.println(String.format("%s -u root --password= --port=%d shutdown", mariadbPath, port));
 		
 		try(Connection conn = getConnection();) {
 			if (conn != null && !conn.isClosed()) conn.close();
 			ProcessBuilder processBuilder = new ProcessBuilder();
 			processBuilder.command(cmdStop);
 			processBuilder.start().waitFor();
-			
-			String msg = String.format("The server on port %d was stopped successfully", port);
-			System.out.println(msg);
 			
 			TimeUnit.SECONDS.sleep(5);
 			

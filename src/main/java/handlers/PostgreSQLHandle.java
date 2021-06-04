@@ -22,7 +22,7 @@ public class PostgreSQLHandle extends ADatabaseHandle {
 	static String instancesPath = "D:\\Bibliotecas\\Documents\\_Programming_Assets\\Postgresql\\instances";
 	static String baseDataPath = "D:\\Bibliotecas\\Documents\\_Programming_Assets\\Postgresql\\data";
 	
-	public PostgreSQLHandle(IComponentInstance componentInstance) throws UnavailablePortsException, IOException, SQLException, InterruptedException {
+	public PostgreSQLHandle(IComponentInstance componentInstance) throws UnavailablePortsException, IOException, SQLException, InterruptedException, ClassNotFoundException {
 		super(componentInstance, new PostgreSQLParameterManager());
 	}
 	
@@ -32,7 +32,6 @@ public class PostgreSQLHandle extends ADatabaseHandle {
 	@Override
 	protected String[] getStartCommand() {
 		String postgresqlHome = System.getenv("POSTGRESQL_HOME");
-		System.out.println(String.format("Running in port %d", port));
 		if (postgresqlHome == null || postgresqlHome.equals("")) throw new RuntimeException("Environment Var postgresqlHome must be configured to test PostgreSQL");
 		String[] comandoArray = {"\"" + postgresqlHome + "/bin/pg_ctl" + "\"", "-D", createdInstancePath, "-l", createdInstancePath + "/log.txt", "-o", String.format("\"-F -p %d\"", port), "start"};
 		return comandoArray;
@@ -45,7 +44,6 @@ public class PostgreSQLHandle extends ADatabaseHandle {
 
 	@Override
 	public void stopServer() {
-		System.out.println("Stopping server");
 		try {
 			String postgresqlHome = System.getenv("POSTGRESQL_HOME");
 			String[] comandoArray = {postgresqlHome + "/bin/pg_ctl", "-D", createdInstancePath, "-l", createdInstancePath + "/log.txt", String.format("-o \"-F -p %d\"", port), "stop"};

@@ -12,14 +12,6 @@
       "refineSplits" : 8,
       "minInterval" : 1
     },{
-      "name" : "EQ_RANGE_INDEX_DIVE_LIMIT",
-      "type" : "int",
-      "default" : "200",
-      "min": "0",
-      "max": "8388608",
-      "refineSplits" : 8,
-      "minInterval" : 1
-    },{
       "name" : "EXPENSIVE_SUBQUERY_LIMIT",
       "type" : "int",
       "default" : "100",
@@ -108,5 +100,142 @@
       "minInterval" : 1
     }],
     "dependencies" : [ ]
-  } ]
+  },{
+    "name" : "ApacheDerby",
+    "requiredInterface" : [ ],
+    "providedInterface" : [ "IDatabase" ],
+    "parameters" : [ {
+      "name" : "derby.storage.pageReservedSpace",
+      "type" : "int",
+      "default" : "20",
+      "min": "0",
+      "max": "100",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "derby.storage.pageSize",
+      "type" : "cat",
+      "default" : "4096",
+      "values" : [ "4096", "8192", "16384", "32768" ]
+    },{
+      "name" : "derby.storage.rowLocking",
+      "type" : "cat",
+      "default" : "true",
+      "values" : [ "true", "false" ]
+    },{
+      "name" : "derby.storage.initialPages",
+      "type" : "int",
+      "default" : "1",
+      "min": "1",
+      "max": "1000",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "derby.language.statementCacheSize",
+      "type" : "int",
+      "default" : "100",
+      "min": "0",
+      "max": "10000",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "derby.replication.logBufferSize",
+      "type" : "int",
+      "default" : "32768",
+      "min": "8192",
+      "max": "1048576",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "derby.locks.escalationThreshold",
+      "type" : "int",
+      "default" : "5000",
+      "min": "100",
+      "max": "1048576",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    }],
+    "dependencies" : [ ]
+    },{
+    "name" : "HSQLDB",
+    "requiredInterface" : [ ],
+    "providedInterface" : [ "IDatabase" ],
+    "parameters" : [ {
+      "name" : "hsqldb.cache_rows",
+      "type" : "int",
+      "default" : "50000",
+      "min": "100",
+      "max": "4000000",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "hsqldb.nio_data_file",
+      "type" : "cat",
+      "default" : "TRUE",
+      "values" : [ "TRUE", "FALSE" ]
+    },{
+      "name" : "hsqldb.nio_max_size",
+      "type" : "cat",
+      "default" : "256",
+      "values" : [ "64", "128", "256", "512", "1024" ]
+    },{
+      "name" : "hsqldb.applog",
+      "type" : "cat",
+      "default" : "0",
+      "values" : [ "0", "1", "2", "3" ]
+    },{
+      "name" : "hsqldb.result_max_memory_rows",
+      "type" : "cat",
+      "default" : "0",
+      "values" : [ "0", "1000", "2000", "3000", "5000", "8000", "10000" ]
+    }],
+    "dependencies" : [ ]
+    },{
+    "name" : "PostgreSQL",
+    "requiredInterface" : [ ],
+    "providedInterface" : [ "IDatabase" ],
+    "parameters" : [ {
+      "name" : "work_mem",
+      "type" : "int",
+      "default" : "4096",
+      "min": "64",
+      "max": "2097151",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "shared_buffers",
+      "type" : "int",
+      "default" : "131072",
+      "min": "16",
+      "max": "1048576",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "temp_buffers",
+      "type" : "int",
+      "default" : "1024",
+      "min": "100",
+      "max": "131072",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "max_prepared_transactions",
+      "type" : "int",
+      "default" : "0",
+      "min": "0",
+      "max": "131072",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    },{
+      "name" : "hash_mem_multiplier",
+      "type" : "int",
+      "default" : "1",
+      "min": "1",
+      "max": "8",
+      "refineSplits" : 8,
+      "minInterval" : 1
+    }],
+    "dependencies" : [ ]
+    }
+  ]
 }
