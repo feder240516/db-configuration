@@ -727,6 +727,7 @@ public class MainJOOQ {
 												.on(field("employees.emp_no").eq(field("maximia"))));
 		
 		System.out.println(insertEmployee.getSQL(true));
+		if(1 == 1) return;
 		/*Query insertEmployee = dslContext.insertInto(table("employees"), field("emp_no"), field("birth_date"), field("first_name"), field("last_name"), field("gender"), field("hire_date"))
 											.values(values);*/
 		//select();

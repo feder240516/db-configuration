@@ -6,6 +6,7 @@ import org.jooq.*;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -51,60 +52,92 @@ public class MainHASCO {
 	}
 
 	public static void main(String[] args) throws IOException, AlgorithmTimeoutedException, InterruptedException, AlgorithmExecutionCanceledException, AlgorithmException {
-		int THREADS = 2;
-		int NUM_TESTS = 3;
-		int TIME_IN_MINUTES = 30;
-		int[] ports = new int[] {9901,9902,9903,9904,9905,9906,9907,9908,9909};
-		PortManager.getInstance().setupAvailablePorts(ports);
 		
-		File newFile = new File("src/main/java/configuration/dbTestProblem.json");
-		System.out.println(newFile.getCanonicalPath());
+		int CURRENTLY_EXECUTED = 0;
 		
-		Query selectSalaries = generateQuerySelectSalaries();
-		
-		TestDescription td1 = new TestDescription("Only select salaries", NUM_TESTS);
-	    td1.addQuery(1, selectSalaries);
-		
-		Benchmarker b = new Benchmarker(td1, THREADS);
-		RefinementConfiguredSoftwareConfigurationProblem<Double> problem = new RefinementConfiguredSoftwareConfigurationProblem<Double>(newFile, "IDatabase", (ci) -> {
+		while (CURRENTLY_EXECUTED < 10) {
+			int THREADS = 2;
+			int NUM_TESTS = 3;
+			int TIME_IN_MINUTES = 2;
+			int[] ports = new int[] {9901,9902,9903,9904,9905,9906,9907,9908,9909};
+			PortManager.getInstance().setupAvailablePorts(ports);
+			
+			File newFile = new File("src/main/java/configuration/dbTestProblem.json");
+			System.out.println(newFile.getCanonicalPath());
+			
+			Query selectSalaries = generateQuerySelectSalaries();
+			
+			TestDescription td1 = new TestDescription("Only select salaries", NUM_TESTS);
+		    td1.addQuery(NUM_TESTS, selectSalaries);
+			
+			Benchmarker b = new Benchmarker(td1, THREADS);
+			
+			
+			UUID executionUUID = UUID.randomUUID();
+			CSVService.getInstance().setAlgorithm("HASCO");
+			CSVService.getInstance().setExperimentUUID(executionUUID.toString());
+			RefinementConfiguredSoftwareConfigurationProblem<Double> problem = new RefinementConfiguredSoftwareConfigurationProblem<Double>(newFile, "IDatabase", (ci) -> {
+				try {
+					return b.benchmark(ci);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return Double.POSITIVE_INFINITY;
+				}
+			} )  ;
+			HASCOViaFD<Double> hasco = HASCOBuilder.get()
+						.withProblem(problem)
+						.withBestFirst().withRandomCompletions().withNumSamples(1)
+						.withTimeout(new Timeout(TIME_IN_MINUTES, TimeUnit.MINUTES))
+						.withCPUs(THREADS)
+						.withSeed(42l + CURRENTLY_EXECUTED)
+						.getAlgorithm();
+			double startingTime = System.currentTimeMillis();
+			CSVService.getInstance().setStartingPoint();
+			hasco.registerListener(new Object() {
+				double lastRecordedTime = 0;
+				@Subscribe
+				public void receiveSolution(final HASCOSolutionEvent<?> solutionEvent) {
+					System.out.println(new ComponentSerialization().serialize(solutionEvent.getSolutionCandidate().getComponentInstance()));
+					double now = System.currentTimeMillis();
+					double FIFTEEN_MINUTES = 1000 * 60 * 1;
+					if (now - lastRecordedTime > FIFTEEN_MINUTES) {
+						lastRecordedTime = now;
+						try {
+							CSVService.getInstance().dumpWithVars2("PARTIAL");
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			});
+			//hasco.registerSolutionEventListener(e -> System.out.println(" ------> Received solution with score " + e.getScore() + ": " + e.getSolutionCandidate().getComponentInstance()));
+			
+			/*AlgorithmVisualizationWindow window = new AlgorithmVisualizationWindow(hasco);
+			window.withMainPlugin(new GraphViewPlugin());
+			window.withPlugin(new SolutionPerformanceTimelinePlugin(new HASCOSolutionCandidateRepresenter()));
+			window.withPlugin(new NodeInfoGUIPlugin(new JaicoreNodeInfoGenerator<>(new TFDNodeInfoGenerator())), new HASCOModelStatisticsPlugin());*/
 			try {
-				return b.benchmark(ci);
-			} catch (ExecutionException | UnavailablePortsException | IOException | SQLException e) {
+				hasco.call();
+			} catch (Exception e) {
 				e.printStackTrace();
-				return Double.POSITIVE_INFINITY;
-			}
-		} )  ;
-		HASCOViaFD<Double> hasco = HASCOBuilder.get()
-					.withProblem(problem)
-					.withBestFirst().withRandomCompletions().withNumSamples(3)
-					.withTimeout(new Timeout(TIME_IN_MINUTES, TimeUnit.MINUTES))
-					.withCPUs(2)
-					.getAlgorithm();
-		
-		
-		
-		
-		//hasco.registerSolutionEventListener(e -> System.out.println(" ------> Received solution with score " + e.getScore() + ": " + e.getSolutionCandidate().getComponentInstance()));
-		hasco.registerListener(new Object() {
-
-			@Subscribe
-			public void receiveSolution(final HASCOSolutionEvent<?> solutionEvent) {
-				System.out.println(new ComponentSerialization().serialize(solutionEvent.getSolutionCandidate().getComponentInstance()));
+				//CSVService.getInstance().dumpWithVars("_HASCO1");
+			} finally {
 				
+				if (hasco.getBestScoreKnownToExist() != null) {
+					System.out.println("Finished");
+					System.out.println(String.format("Best candidate for 120 minutes execution: %s", new ComponentSerialization().serialize(hasco.getBestSeenSolution().getComponentInstance())));
+					System.out.println(String.format("Time: %f", hasco.getBestScoreKnownToExist()));
+					CSVService.getInstance().dumpWithVars2("COMPLETE");
+				} else {
+					System.out.println("Didn't work HASCO. Retrying");
+				}
 			}
-		});
-		AlgorithmVisualizationWindow window = new AlgorithmVisualizationWindow(hasco);
-		window.withMainPlugin(new GraphViewPlugin());
-		window.withPlugin(new SolutionPerformanceTimelinePlugin(new HASCOSolutionCandidateRepresenter()));
-		window.withPlugin(new NodeInfoGUIPlugin(new JaicoreNodeInfoGenerator<>(new TFDNodeInfoGenerator())), new HASCOModelStatisticsPlugin());
-		try {
-			hasco.call();
-		} catch (Exception e) {
-			System.out.println("Finished");
-			System.out.println(String.format("Best candidate for 30 minutes execution: %s", new ComponentSerialization().serialize(hasco.getBestSeenSolution().getComponentInstance())));
-			System.out.println(String.format("Time: %f", hasco.getBestScoreKnownToExist()));
-			//CSVService.getInstance().dumpWithVars("_HASCO1");
 		}
+		
+		
+		
+		
+		
 		
 		//System.out.println(String.format("Puntaje: %f", hasco.nextSolutionCandidate().getScore()));
 		/*hasco.getReport().getSolutionCandidates().forEach((candidate) -> {

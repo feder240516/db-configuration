@@ -17,14 +17,13 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.xml.utils.UnImplNode;
 import org.jooq.Query;
 
-import EDU.oswego.cs.dl.util.concurrent.Semaphore;
+import java.util.concurrent.Semaphore;
 import ai.libs.jaicore.components.api.IComponentInstance;
 import exceptions.TooManyFailuresException;
 import exceptions.UnavailablePortsException;
 import handlers.ADatabaseHandle;
 import helpers.TestDescription;
 import helpers.TestResult;
-import junit.framework.AssertionFailedError;
 import services.CSVService;
 
 class QueryCallable implements Callable<Double> {
@@ -137,7 +136,7 @@ public class Benchmarker {
 								.size();
 			
 			if (threads > 1) { executor = (ExecutorService) Executors.newFixedThreadPool(threads); }*/
-			dbHandle = dbSystemFactory.createHandle(componentInstance, test);
+			dbHandle = dbSystemFactory.createHandle(componentInstance);
 			handleID = dbHandle.getUUID();
 			System.out.println(String.format("Number of tests programmed: %d", test.numberOfTests));
 			List<Double> testResults = runAllTests(test.numberOfTests,queries,dbHandle, executor);
@@ -156,7 +155,7 @@ public class Benchmarker {
 				executor.awaitTermination(999999, TimeUnit.DAYS);
 			}
 			semaphore.release();
-			System.out.println(String.format("Semaphore released"));
+			//System.out.println(String.format("Semaphore released"));
 		}
 		if (handleID != null) {
 			// CSVService.getInstance().writeTest(new TestResult(handleID.toString(),score,componentInstance.getComponent().getName()));

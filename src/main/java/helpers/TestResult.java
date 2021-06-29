@@ -14,12 +14,16 @@ public class TestResult {
 	private double variableValue;
 	private String queryProfileID;
 	private String isDefault;
+	private String algorithm;
+	private String experimentUUID;
 	private Map<String, String> parameters;
 	private IComponentInstance componentInstance;
+	private double timestamp;
 	
 	public TestResult(String dbInstance, double time, IComponentInstance componentInstance, String queryProfileID) {
 		super();
 		this.dbInstance = dbInstance;
+		this.timestamp = System.currentTimeMillis();
 		String instanceID = componentInstance.getParameterValue("__instanceID"); 
 		if (instanceID == null) {
 			this.componentInstanceID = "anonymous";
@@ -35,6 +39,8 @@ public class TestResult {
 		this.queryProfileID = queryProfileID;
 		this.isDefault = componentInstance.getParameterValue("__isDefault");
 		this.parameters = componentInstance.getParameterValues();
+		this.algorithm = componentInstance.getParameterValue("__algorithm");
+		this.experimentUUID = componentInstance.getParameterValue("__experimentUUID");
 	}
 
 	private void tryAssignVariableValue(String valStr) {
@@ -86,6 +92,26 @@ public class TestResult {
 	
 	public String getParameterValues(String key) {
 		return this.parameters.get(key);
+	}
+	
+	public double getTimestamp() {
+		return this.timestamp;
+	}
+
+	public String getAlgorithm() {
+		return algorithm;
+	}
+
+	public String getExperimentUUID() {
+		return experimentUUID;
+	}
+
+	public void setAlgorithm(String algorithm) {
+		this.algorithm = algorithm;
+	}
+
+	public void setExperimentUUID(String experimentUUID) {
+		this.experimentUUID = experimentUUID;
 	}
 	
 }

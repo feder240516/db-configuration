@@ -76,6 +76,14 @@ public class TestDescription {
 		return stringMap;
 	}
 	
+	public int getNumberOfTests() {
+		return numberOfTests;
+	}
+
+	public String getID() {
+		return ID;
+	}
+
 	public void print() {
 		for(Entry<Integer, List<Query>> entry: queries.entrySet()) {
 			System.out.println(String.format("Priority: %d", entry.getKey()));
@@ -84,4 +92,6 @@ public class TestDescription {
 			}
 		}
 	}
+	
+	
 }

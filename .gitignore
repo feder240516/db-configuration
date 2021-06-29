@@ -4,6 +4,8 @@
 ### VS Code ###
 .vscode/
 
+/tpami-env/
+
 ### Eclipse ###
 
 .metadata
@@ -157,6 +159,9 @@ fabric.properties
 *.tar.gz
 *.rar
 
+# add libs
+!/libs/*
+
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
@@ -257,3 +262,6 @@ JAICore/jaicore-ml/testsrc/ml/scikitwrapper/importfolder_test/__pycache__/
 /docs/Gemfile.lock
 /docs/_site
 /docs/.sass-cache
+
+# allow custom properties
+/resources/config.properties

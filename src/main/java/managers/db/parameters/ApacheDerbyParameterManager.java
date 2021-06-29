@@ -21,6 +21,9 @@ public class ApacheDerbyParameterManager implements IDatabaseParameterManager {
 		enumParams.put("derby.storage.pageSize", Arrays.asList("4096","8192","16384","32768"));
 		stringParams.add("derby.storage.initialPages");
 		stringParams.add("derby.language.statementCacheSize");
+		enumParams.put("derby.storage.rowLocking", Arrays.asList("true","false"));
+		stringParams.add("derby.replication.logBufferSize");
+		stringParams.add("derby.locks.escalationThreshold");
 	}
 	
 	@Override
