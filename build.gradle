@@ -158,7 +158,7 @@ tasks.withType(Test) {
 }
 
 application {
-    mainClassName = project.hasProperty("mainClass") ? "main." + project.getProperty("mainClass") : "NULL"
+    mainClassName = project.hasProperty("mainClass") ? "main." + project.getProperty("mainClass") : "main.MainExecuteAnyAlgorithm"
 }
 
 repositories {

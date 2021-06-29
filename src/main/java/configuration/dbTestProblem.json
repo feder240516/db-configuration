@@ -29,7 +29,7 @@
       "type" : "int",
       "default" : "262144",
       "min": "128",
-      "max": "4194304",
+      "max": "1048576",
       "refineSplits" : 8,
       "minInterval" : 1
     },{
