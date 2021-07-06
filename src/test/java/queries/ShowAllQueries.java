@@ -17,8 +17,6 @@ import org.slf4j.LoggerFactory;
 import repositories.QueryRepository;
 
 class ShowAllQueries {
-	
-	protected final Logger logger = LoggerFactory.getLogger(ShowAllQueries.class);
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {

@@ -24,10 +24,10 @@ RUN wget https://netactuate.dl.sourceforge.net/project/hsqldb/hsqldb/hsqldb_2_6/
     && unzip hsqldb-2.6.0.zip && rm hsqldb-2.6.0.zip
 
 # data MariaDB
-RUN mkdir ~/DBInstances
-RUN mkdir ~/DBInstances/MariaDB
-RUN cp -r /var/lib/mysql ~/DBInstances/MariaDB/data
-RUN chmod -R 777 ~/DBInstances/MariaDB/data
+RUN mkdir /usr/local/bin/DBInstances
+RUN mkdir /usr/local/bin/DBInstances/MariaDB
+RUN cp -r /var/lib/mysql /usr/local/bin/DBInstances/MariaDB/data
+RUN chmod -R 777 /usr/local/bin/DBInstances/MariaDB/data
 # data Postgres
 RUN pg_createcluster 12 data
 RUN echo -e "host all all 0.0.0.0/0 md5 \nhost all all ::/0 md5" >> /etc/postgresql/12/data/pg_hba.conf
@@ -46,7 +46,10 @@ RUN pip3 install grpcio-tools
 RUN pip3 install hpbandster
 
 # clone repo
-ADD . /opt/db-configuration/
-RUN chmod +x /opt/db-configuration/gradlew
+ADD . /usr/local/bin/db-configuration/
+RUN chmod +x /usr/local/bin/db-configuration/gradlew
+
+# ensure gradle download
+RUN /usr/local/bin/db-configuration/gradlew
 
 CMD [ "/bin/bash" ]
