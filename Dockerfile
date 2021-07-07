@@ -49,7 +49,7 @@ RUN pip3 install hpbandster
 ADD . /usr/local/bin/db-configuration/
 RUN chmod +x /usr/local/bin/db-configuration/gradlew
 
-# ensure gradle download
-RUN /usr/local/bin/db-configuration/gradlew
+# ensure gradle download -- COMMENTED DUE TO FAILURE, GRADLE WILL BE DOWNLOADED DURING NORMAL USAGE
+# RUN /usr/local/bin/db-configuration/gradlew
 
 CMD [ "/bin/bash" ]
