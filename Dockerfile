@@ -45,6 +45,8 @@ RUN pip3 install grpcio
 RUN pip3 install grpcio-tools
 RUN pip3 install hpbandster
 
+RUN apt-get update && apt-get -y install sudo
+
 # clone repo
 ADD . /usr/local/bin/db-configuration/
 RUN chmod +x /usr/local/bin/db-configuration/gradlew
