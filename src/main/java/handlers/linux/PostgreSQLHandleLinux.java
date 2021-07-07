@@ -17,7 +17,7 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 	
 	@Override
 	public void createDBInstance() throws IOException {
-		String[] copyCommandArr = new String[] {"bash", "-c", 
+		String[] copyCommandArr = new String[] {"/bin/bash", "-c", 
 				String.format("sudo -u postgres /usr/bin/pg_createcluster 13 %1$s"
 						+ "&& sudo -u postgres rm -rf /var/lib/postgresql/13/%1$s"
 						+ "&& sudo -u postgres cp -rf /var/lib/postgresql/13/data /var/lib/postgresql/13/%1$s", ID.toString())};
@@ -36,7 +36,7 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 		String postgresqlHome = PropertiesManager.getInstance().getProperty("postgres.location");
 		String postgresqlLog = PropertiesManager.getInstance().getProperty("postgres.log.location");
 		if (postgresqlHome == null || postgresqlHome.equals("")) throw new RuntimeException("Connector location not specified");
-		String[] comandoArray = {"bash", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s -o \"-F -p %d\" start", ID.toString(), port)};
+		String[] comandoArray = {"/bin/bash", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s -o \"-F -p %d\" start", ID.toString(), port)};
 		return comandoArray;
 	}
 
@@ -44,7 +44,7 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 	public void stopServer() {
 		try {
 			String postgresqlHome = PropertiesManager.getInstance().getProperty("postgres.location");
-			String[] comandoArray = {"bash", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s stop", ID.toString(), port)};
+			String[] comandoArray = {"/bin/bash", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s stop", ID.toString(), port)};
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
 			processBuilder.start().waitFor();
 			

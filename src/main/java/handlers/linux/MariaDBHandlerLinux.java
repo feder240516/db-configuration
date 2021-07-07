@@ -27,7 +27,7 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 		System.out.println("To copy");
 		String baseDir = getBasePath();
 		String instancesDir = getInstancesPath();
-		String[] copyCommandArr = new String[] {"bash", "-c", 
+		String[] copyCommandArr = new String[] {"/bin/bash", "-c", 
 				String.format("sudo cp -rf %1$s %2$s/%3$s"
 						+ "&& sudo chmod -R 777 %2$s/%3$s", baseDir, instancesDir, ID.toString())};
 		/*String[] copyCommandArr = new String[] {
@@ -60,7 +60,7 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 	public void stopServer() {
 		String MariaDBHome = PropertiesManager.getInstance().getProperty("mariadb.location");
 		
-		//String[] cmdStart = {"bash", "-c", String.format("sudo %s/bin/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0", MariaDBHome, createdInstancePath, port, createdInstancePath)};
+		//String[] cmdStart = {"/bin/bash", "-c", String.format("sudo %s/bin/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0", MariaDBHome, createdInstancePath, port, createdInstancePath)};
 		String[] cmdStop = {"sudo", "mysqladmin", "--port="+port, "--protocol", "tcp", "shutdown"};
 		
 		try(Connection conn = getConnection();) {
