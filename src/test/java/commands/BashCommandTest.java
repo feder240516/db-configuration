@@ -30,12 +30,20 @@ class BashCommandTest {
 
 	@Test
 	void test() throws IOException, InterruptedException {
-		ProcessBuilder pb = new ProcessBuilder(new String[] {
-			"/bin/bash", "-c", "echo \"hello world\""
-		});
-		Process process = pb.start();
-		process.getInputStream().transferTo(System.out);
-		process.waitFor();
+		String[][] commands = new String[][] {
+			new String[] {
+				"/bin/bash", "-c", "echo \"hello world\""	
+			},
+			new String[] {
+				"/bin/mysqld"
+			},
+		};
+		for (String[] command: commands) {
+			ProcessBuilder pb = new ProcessBuilder(command);
+			Process process = pb.start();
+			process.getInputStream().transferTo(System.out);
+			process.waitFor();
+		}
 	}
 
 }
