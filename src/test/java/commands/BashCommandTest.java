@@ -34,6 +34,7 @@ class BashCommandTest {
 			"/bin/bash", "-c", "echo \"hello world\""
 		});
 		Process process = pb.start();
+		process.getInputStream().transferTo(System.out);
 		process.waitFor();
 	}
 
