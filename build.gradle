@@ -140,7 +140,7 @@ task fatJar(type: Jar) {
 
 task evalcli(type: Jar) {   
 	manifest {
-        attributes 'Main-Class': 'main.MainDrivers'
+        attributes 'Main-Class': 'main.MainProcessBuilderTest'
     }
     zip64 = true
     baseName = 'MainHASCO-cli'
