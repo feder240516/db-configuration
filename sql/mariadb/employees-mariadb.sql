@@ -86,22 +86,6 @@ CREATE OR REPLACE VIEW current_dept_emp AS
 flush /*!50503 binary */ logs;
 
 SELECT 'LOADING departments' as 'INFO';
-source load_departments.dump ;
-SELECT 'LOADING employees' as 'INFO';
-source load_employees.dump ;
-SELECT 'LOADING dept_emp' as 'INFO';
-source load_dept_emp.dump ;
-SELECT 'LOADING dept_manager' as 'INFO';
-source load_dept_manager.dump ;
-SELECT 'LOADING titles' as 'INFO';
-source load_titles.dump ;
-SELECT 'LOADING salaries' as 'INFO';
-source load_salaries1.dump ;
-source load_salaries2.dump ;
-source load_salaries3.dump ;
-
-source show_elapsed.sql ;
-
 INSERT INTO departments VALUES 
 ('d001','Marketing'),
 ('d002','Finance'),
@@ -113,6 +97,7 @@ INSERT INTO departments VALUES
 ('d008','Research'),
 ('d009','Customer Service');
 
+SELECT 'LOADING employees' as 'INFO';
 INSERT INTO employees VALUES (10001,'1953-09-02','Georgi','Facello','M','1986-06-26'),
 (10002,'1964-06-02','Bezalel','Simmel','F','1985-11-21'),
 (10003,'1959-12-03','Parto','Bamford','M','1986-08-28'),
@@ -163,3 +148,19 @@ INSERT INTO employees VALUES (10001,'1953-09-02','Georgi','Facello','M','1986-06
 (10048,'1963-07-11','Florian','Syrotiuk','M','1985-02-24'),
 (10049,'1961-04-24','Basil','Tramer','F','1992-05-04'),
 (10050,'1958-05-21','Yinghua','Dredge','M','1990-12-25');
+
+SELECT 'LOADING dept_emp' as 'INFO';
+
+SELECT 'LOADING dept_manager' as 'INFO';
+
+SELECT 'LOADING titles' as 'INFO';
+
+SELECT 'LOADING salaries' as 'INFO';
+
+
+
+
+
+
+
+
