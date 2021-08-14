@@ -61,6 +61,7 @@ WORKDIR /usr/local/bin/db-configuration
 #     --pid-file="/usr/local/bin/DBInstances/MariaDB/data/mysql.pid" --skip-grant-tables \
 #     && sleep 5 \
 #     && mysql -u root -P 9001 --socket="/usr/local/bin/DBInstances/MariaDB/data/mysql.sock" < /usr/local/bin/db-configuration/sql/mariadb/employees-mariadb.sql
+RUN chmod +x /usr/local/bin/db-configuration/sql/mariadb/load.sh
 RUN /usr/local/bin/db-configuration/sql/mariadb/load.sh
 # RUN mysql < /usr/local/bin/db-configuration/sql/mariadb/employees-mariadb.sql
 
