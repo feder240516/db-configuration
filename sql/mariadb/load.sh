@@ -3,4 +3,4 @@
     --socket="/usr/local/bin/DBInstances/MariaDB/data/mysql.sock" \
     --pid-file="/usr/local/bin/DBInstances/MariaDB/data/mysql.pid" --skip-grant-tables &
 sleep 5
-mysql --socket="/usr/local/bin/DBInstances/MariaDB/data/mysql.sock" < /usr/local/bin/db-configuration/sql/mariadb/employees-mariadb.sql
+mysql -P 9001 --protocol="tcp" --socket="/usr/local/bin/DBInstances/MariaDB/data/mysql.sock" < /usr/local/bin/db-configuration/sql/mariadb/employees-mariadb.sql
