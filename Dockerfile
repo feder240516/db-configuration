@@ -45,7 +45,7 @@ RUN pip3 install grpcio
 RUN pip3 install grpcio-tools
 RUN pip3 install hpbandster
 
-RUN apt-get update && apt-get -y install sudo
+# RUN apt-get update && apt-get -y install sudo
 
 # clone repo
 ADD . /usr/local/bin/db-configuration/
@@ -56,7 +56,7 @@ WORKDIR /usr/local/bin/db-configuration
 # RUN /usr/local/bin/db-configuration/gradlew
 
 # install mariadb sample data
-RUN mysql < /usr/local/bin/db-configuration/sql/mariadb/employees-mariadb.sql
+# RUN mysql < /usr/local/bin/db-configuration/sql/mariadb/employees-mariadb.sql
 
 
 CMD [ "/bin/bash" ]
