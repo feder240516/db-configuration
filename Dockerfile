@@ -53,5 +53,10 @@ RUN chmod +x /usr/local/bin/db-configuration/gradlew
 
 WORKDIR /usr/local/bin/db-configuration
 # ensure gradle download -- COMMENTED DUE TO FAILURE, GRADLE WILL BE DOWNLOADED DURING NORMAL USAGE
-RUN /usr/local/bin/db-configuration/gradlew
+# RUN /usr/local/bin/db-configuration/gradlew
+
+# install mariadb sample data
+RUN mysql < /usr/local/bin/db-configuration/sql/mariadb/employees-mariadb.sql
+
+
 CMD [ "/bin/bash" ]
