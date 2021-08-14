@@ -49,7 +49,7 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 	@Override
 	protected String[] getStartCommand() {
 		String MariaDBHome = PropertiesManager.getInstance().getProperty("mariadb.location");
-		String[] cmdStart = {MariaDBHome + "/mysqld", "--datadir=" + createdInstancePath,
+		String[] cmdStart = {"mysqld", "--datadir=" + createdInstancePath,
 				"--port=" + port, String.format("--socket=%s/mysql.sock", createdInstancePath),
 				String.format("--pid-file=%s/mysqld.pid", createdInstancePath),
 				"--query-cache-type=0", "--query-cache-size=0", "--log_bin"};
