@@ -38,6 +38,10 @@ RUN pip3 install hpbandster
 
 # RUN apt-get update && apt-get -y install sudo
 
+# clone repo
+ADD . /usr/local/bin/db-configuration/
+RUN chmod +x /usr/local/bin/db-configuration/gradlew
+
 # data MariaDB
 RUN mkdir /usr/local/bin/DBInstances
 RUN mkdir /usr/local/bin/DBInstances/MariaDB
@@ -59,10 +63,6 @@ RUN mkdir /usr/local/bin/DBInstances/Derby/data
 RUN mkdir /usr/local/bin/DBInstances/Derby/instances
 WORKDIR /usr/local/bin/DBInstances/Derby/data
 RUN java -jar /opt/Apache/db-derby-10.15.2.0-bin/lib/derbyrun.jar ij /usr/local/bin/db-configuration/sql/Derby/employees-derby.sql
-
-# clone repo
-ADD . /usr/local/bin/db-configuration/
-RUN chmod +x /usr/local/bin/db-configuration/gradlew
 
 WORKDIR /usr/local/bin/db-configuration
 # ensure gradle download -- COMMENTED DUE TO FAILURE, GRADLE WILL BE DOWNLOADED DURING NORMAL USAGE
