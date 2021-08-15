@@ -23,6 +23,21 @@ RUN wget https://netactuate.dl.sourceforge.net/project/hsqldb/hsqldb/hsqldb_2_6/
     && mkdir /opt/HSQLDB && mv hsqldb-2.6.0.zip /opt/HSQLDB/ && cd /opt/HSQLDB \
     && unzip hsqldb-2.6.0.zip && rm hsqldb-2.6.0.zip
 
+# if python2 is installed, these steps are needed to change python alias for python3
+# RUN apt-get install python3.8
+# RUN rm /usr/bin/python
+# RUN ln -s /usr/bin/python3 /usr/bin/python
+
+# install python dependencies
+RUN pip3 install wheel
+RUN pip3 install argparse
+RUN curl https://raw.githubusercontent.com/automl/auto-sklearn/master/requirements.txt | xargs -n 1 -L 1 pip install
+RUN pip3 install grpcio
+RUN pip3 install grpcio-tools
+RUN pip3 install hpbandster
+
+# RUN apt-get update && apt-get -y install sudo
+
 # data MariaDB
 RUN mkdir /usr/local/bin/DBInstances
 RUN mkdir /usr/local/bin/DBInstances/MariaDB
@@ -44,20 +59,6 @@ RUN mkdir /usr/local/bin/DBInstances/Derby/data
 RUN mkdir /usr/local/bin/DBInstances/Derby/instances
 WORKDIR /usr/local/bin/DBInstances/Derby/data
 RUN java -jar /opt/Apache/db-derby-10.15.2.0-bin/lib/derbyrun.jar ij /usr/local/bin/db-configuration/sql/Derby/employees-derby.sql
-# if python2 is installed, these steps are needed to change python alias for python3
-# RUN apt-get install python3.8
-# RUN rm /usr/bin/python
-# RUN ln -s /usr/bin/python3 /usr/bin/python
-
-# install python dependencies
-RUN pip3 install wheel
-RUN pip3 install argparse
-RUN curl https://raw.githubusercontent.com/automl/auto-sklearn/master/requirements.txt | xargs -n 1 -L 1 pip install
-RUN pip3 install grpcio
-RUN pip3 install grpcio-tools
-RUN pip3 install hpbandster
-
-# RUN apt-get update && apt-get -y install sudo
 
 # clone repo
 ADD . /usr/local/bin/db-configuration/
