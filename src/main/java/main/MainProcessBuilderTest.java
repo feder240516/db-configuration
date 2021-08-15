@@ -5,13 +5,20 @@ import java.util.Scanner;
 public class MainProcessBuilderTest {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		Scanner sc = new Scanner(System.in);
 		while (true) {
 			try {
-				ProcessBuilder pb = new ProcessBuilder(); 
-				Scanner sc = new Scanner(System.in);
+				System.out.println("Directory: ");
 				String input = sc.nextLine();
-				pb.command(input);
+				ProcessBuilder pb = new ProcessBuilder(input); 
+				System.out.println("Number of commands: ");
+				int numCommands = Integer.parseInt(sc.nextLine());
+				String[] commands = new String[numCommands];
+				for(int i = 0; i < numCommands; ++i) {
+					System.out.println(String.format("Command #%d", i + 1));
+					commands[i] = sc.nextLine();
+				}
+				pb.command(commands);
 				Process p = pb.start();
 				p.destroy();
 			} catch (Exception e) {
