@@ -43,7 +43,7 @@ RUN mkdir /usr/local/bin/DBInstances/ApacheDerby
 RUN mkdir /usr/local/bin/DBInstances/ApacheDerby/data
 RUN mkdir /usr/local/bin/DBInstances/ApacheDerby/instances
 WORKDIR /usr/local/bin/DBInstances/ApacheDerby/data
-RUN java -jar /opt/Apache/lib/derbyrun.jar ij /usr/local/bin/db-configuration/sql/apacheDerby/employees-apacheDerby.sql
+RUN java -jar /opt/Apache/db-derby-10.15.2.0-bin/lib/derbyrun.jar ij /usr/local/bin/db-configuration/sql/apacheDerby/employees-apacheDerby.sql
 # if python2 is installed, these steps are needed to change python alias for python3
 # RUN apt-get install python3.8
 # RUN rm /usr/bin/python
