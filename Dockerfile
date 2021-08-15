@@ -34,7 +34,7 @@ RUN pg_createcluster 12 data
 RUN echo -e "host all all 0.0.0.0/0 md5 \nhost all all ::/0 md5" >> /etc/postgresql/12/data/pg_hba.conf
 # data HSQLDB
 RUN mkdir /usr/local/bin/DBInstances/HSQLDB
-RUN cp -r /opt/HSQLDB/hsqldb-2.6.0/ /usr/local/bin/DBInstances/HSQLDB/data
+# RUN cp -r /opt/HSQLDB/hsqldb-2.6.0/ /usr/local/bin/DBInstances/HSQLDB/data
 RUN chmod -R 777 /usr/local/bin/DBInstances/HSQLDB/data
 RUN mkdir /usr/local/bin/DBInstances/HSQLDB/instances
 # data Apache Derby
