@@ -39,11 +39,11 @@ RUN mkdir /usr/local/bin/DBInstances/HSQLDB/data
 RUN chmod -R 777 /usr/local/bin/DBInstances/HSQLDB/data
 RUN mkdir /usr/local/bin/DBInstances/HSQLDB/instances
 # data Apache Derby
-RUN mkdir /usr/local/bin/DBInstances/ApacheDerby
-RUN mkdir /usr/local/bin/DBInstances/ApacheDerby/data
-RUN mkdir /usr/local/bin/DBInstances/ApacheDerby/instances
-WORKDIR /usr/local/bin/DBInstances/ApacheDerby/data
-RUN java -jar /opt/Apache/db-derby-10.15.2.0-bin/lib/derbyrun.jar ij /usr/local/bin/db-configuration/sql/apacheDerby/employees-apacheDerby.sql
+RUN mkdir /usr/local/bin/DBInstances/Derby
+RUN mkdir /usr/local/bin/DBInstances/Derby/data
+RUN mkdir /usr/local/bin/DBInstances/Derby/instances
+WORKDIR /usr/local/bin/DBInstances/Derby/data
+RUN java -jar /opt/Apache/db-derby-10.15.2.0-bin/lib/derbyrun.jar ij /usr/local/bin/db-configuration/sql/Derby/employees-derby.sql
 # if python2 is installed, these steps are needed to change python alias for python3
 # RUN apt-get install python3.8
 # RUN rm /usr/bin/python
