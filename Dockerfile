@@ -40,6 +40,7 @@ RUN mkdir /usr/local/bin/DBInstances/HSQLDB/instances
 # data Apache Derby
 RUN mkdir /usr/local/bin/DBInstances/ApacheDerby
 RUN mkdir /usr/local/bin/DBInstances/ApacheDerby/data
+RUN mkdir /usr/local/bin/DBInstances/ApacheDerby/instances
 
 # if python2 is installed, these steps are needed to change python alias for python3
 # RUN apt-get install python3.8
