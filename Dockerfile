@@ -48,6 +48,8 @@ RUN mkdir /usr/local/bin/DBInstances/MariaDB
 RUN cp -r /var/lib/mysql /usr/local/bin/DBInstances/MariaDB/data
 RUN chmod -R 777 /usr/local/bin/DBInstances/MariaDB/data
 RUN mkdir /usr/local/bin/DBInstances/MariaDB/instances
+RUN chmod +x /usr/local/bin/db-configuration/sql/mariadb/load.sh
+RUN /usr/local/bin/db-configuration/sql/mariadb/load.sh
 # data Postgres
 RUN pg_createcluster 12 data
 RUN echo -e "host all all 0.0.0.0/0 md5 \nhost all all ::/0 md5" >> /etc/postgresql/12/data/pg_hba.conf
@@ -76,8 +78,7 @@ WORKDIR /usr/local/bin/db-configuration
 #     --pid-file="/usr/local/bin/DBInstances/MariaDB/data/mysql.pid" --skip-grant-tables \
 #     && sleep 5 \
 #     && mysql -u root -P 9001 --socket="/usr/local/bin/DBInstances/MariaDB/data/mysql.sock" < /usr/local/bin/db-configuration/sql/mariadb/employees-mariadb.sql
-RUN chmod +x /usr/local/bin/db-configuration/sql/mariadb/load.sh
-RUN /usr/local/bin/db-configuration/sql/mariadb/load.sh
+
 # RUN mysql < /usr/local/bin/db-configuration/sql/mariadb/employees-mariadb.sql
 
 
