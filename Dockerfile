@@ -53,6 +53,8 @@ RUN pg_createcluster 12 data
 RUN echo -e "host all all 0.0.0.0/0 md5 \nhost all all ::/0 md5" >> /etc/postgresql/12/data/pg_hba.conf
 # data HSQLDB
 RUN mkdir /usr/local/bin/DBInstances/HSQLDB
+RUN cp /usr/local/bin/db-configuration/sql/hsqldb/employees-hsqldb.script /usr/local/bin/DBInstances/HSQLDB/data/.script
+# RUN sudo java -cp $HSQLDB_HOME/lib/hsqldb.jar org.hsqldb.Server -database.0 file:/home/ailibs/DBInstances/HSQLDB/data -port 9901
 # RUN cp -r /opt/HSQLDB/hsqldb-2.6.0/ /usr/local/bin/DBInstances/HSQLDB/data
 RUN mkdir /usr/local/bin/DBInstances/HSQLDB/data
 RUN chmod -R 777 /usr/local/bin/DBInstances/HSQLDB/data
