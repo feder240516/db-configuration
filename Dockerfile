@@ -52,7 +52,7 @@ RUN chmod +x /usr/local/bin/db-configuration/sql/mariadb/load.sh
 RUN /usr/local/bin/db-configuration/sql/mariadb/load.sh
 # data Postgres
 RUN pg_createcluster 12 data
-RUN echo -e "host all all 0.0.0.0/0 md5 \nhost all all ::/0 md5" >> /etc/postgresql/12/data/pg_hba.conf
+RUN echo -e "host all all 0.0.0.0/0 trust \nhost all all ::/0 trust" >> /etc/postgresql/12/data/pg_hba.conf
 RUN chmod +x /usr/local/bin/db-configuration/sql/postgresql/load.sh
 RUN /usr/local/bin/db-configuration/sql/postgresql/load.sh
 # data HSQLDB
