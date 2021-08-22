@@ -23,7 +23,8 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 						+ "&& rm -rf /var/lib/postgresql/%2$s/%1$s"
 						+ "&& cp -rf /var/lib/postgresql/%2$s/data /var/lib/postgresql/%2$s/%1$s"
 						+ "&& rm /etc/postgresql/%2$s/%1$s/pg_hba.conf"
-						+ "&& cp /etc/postgresql/%2$s/data/pg_hba.conf /etc/postgresql/%2$s/%1$s/", ID.toString(), postgresqlVersion)};
+						+ "&& cp /etc/postgresql/%2$s/data/pg_hba.conf /etc/postgresql/%2$s/%1$s/"
+						+ "&& chown postgres -R /var/lib/postgresql/%2$s/%1$s", ID.toString(), postgresqlVersion)};
 		ProcessBuilder processBuilder = new ProcessBuilder(copyCommandArr);
 		Process copyProcess = processBuilder.start();
 		try {
