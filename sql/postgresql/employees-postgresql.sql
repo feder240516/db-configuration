@@ -1,5 +1,5 @@
-CONNECT 'jdbc:derby:employees;create=true';
-
+CREATE DATABASE employees;
+\c employees;
 CREATE TABLE employees (
     emp_no      INT             NOT NULL,
     birth_date  DATE            NOT NULL,
@@ -44,8 +44,7 @@ CREATE TABLE titles (
     to_date     DATE,
     FOREIGN KEY (emp_no) REFERENCES employees (emp_no) ON DELETE CASCADE,
     PRIMARY KEY (emp_no,title, from_date)
-) 
-; 
+); 
 
 CREATE TABLE salaries (
     emp_no      INT             NOT NULL,
