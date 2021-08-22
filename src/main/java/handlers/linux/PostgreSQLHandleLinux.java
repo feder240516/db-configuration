@@ -17,10 +17,11 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 	
 	@Override
 	public void createDBInstance() throws IOException {
+		String postgresqlVersion = PropertiesManager.getInstance().getProperty("postgres.version");
 		String[] copyCommandArr = new String[] {"/bin/bash", "-c", 
-				String.format("/usr/bin/pg_createcluster 13 %1$s"
-						+ "&& rm -rf /var/lib/postgresql/13/%1$s"
-						+ "&& cp -rf /var/lib/postgresql/13/data /var/lib/postgresql/13/%1$s", ID.toString())};
+				String.format("/usr/bin/pg_createcluster %2$s %1$s"
+						+ "&& rm -rf /var/lib/postgresql/%2$s/%1$s"
+						+ "&& cp -rf /var/lib/postgresql/%2$s/data /var/lib/postgresql/%2$s/%1$s", ID.toString(), postgresqlVersion)};
 		ProcessBuilder processBuilder = new ProcessBuilder(copyCommandArr);
 		Process copyProcess = processBuilder.start();
 		try {
@@ -46,7 +47,8 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 	public void stopServer() {
 		try {
 			String postgresqlHome = PropertiesManager.getInstance().getProperty("postgres.location");
-			String[] comandoArray = {"/bin/bash", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s stop", ID.toString(), port)};
+			String postgresqlVersion = PropertiesManager.getInstance().getProperty("postgres.version");
+			String[] comandoArray = {"/bin/bash", "-c", String.format("postgres pg_ctlcluster %s %s stop", postgresqlVersion, ID.toString())};
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
 			processBuilder.start().waitFor();
 			
