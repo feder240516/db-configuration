@@ -53,6 +53,8 @@ RUN /usr/local/bin/db-configuration/sql/mariadb/load.sh
 # data Postgres
 RUN pg_createcluster 12 data
 RUN echo -e "host all all 0.0.0.0/0 md5 \nhost all all ::/0 md5" >> /etc/postgresql/12/data/pg_hba.conf
+RUN chmod +x /usr/local/bin/db-configuration/sql/postgresql/load.sh
+RUN /usr/local/bin/db-configuration/sql/postgresql/load.sh
 # data HSQLDB
 RUN mkdir /usr/local/bin/DBInstances/HSQLDB
 # RUN sudo java -cp $HSQLDB_HOME/lib/hsqldb.jar org.hsqldb.Server -database.0 file:/home/ailibs/DBInstances/HSQLDB/data -port 9901
