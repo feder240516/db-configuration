@@ -21,7 +21,9 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 		String[] copyCommandArr = new String[] {"/bin/bash", "-c", 
 				String.format("/usr/bin/pg_createcluster %2$s %1$s"
 						+ "&& rm -rf /var/lib/postgresql/%2$s/%1$s"
-						+ "&& cp -rf /var/lib/postgresql/%2$s/data /var/lib/postgresql/%2$s/%1$s", ID.toString(), postgresqlVersion)};
+						+ "&& cp -rf /var/lib/postgresql/%2$s/data /var/lib/postgresql/%2$s/%1$s"
+						+ "&& rm /etc/postgresql/%2$s/%1$s/pg_hba.conf"
+						+ "&& cp /etc/postgresql/%2$s/data/pg_hba.conf /etc/postgresql/%2$s/%1$s/", ID.toString(), postgresqlVersion)};
 		ProcessBuilder processBuilder = new ProcessBuilder(copyCommandArr);
 		Process copyProcess = processBuilder.start();
 		try {
