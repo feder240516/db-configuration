@@ -52,7 +52,9 @@ RUN chmod +x /usr/local/bin/db-configuration/sql/mariadb/load.sh
 RUN /usr/local/bin/db-configuration/sql/mariadb/load.sh
 # data Postgres
 RUN pg_createcluster 12 data
-RUN echo -e "host all all 0.0.0.0/0 trust \nhost all all ::/0 trust" >> /etc/postgresql/12/data/pg_hba.conf
+RUN printf "host all all 0.0.0.0/0 trust \nhost all all ::/0 trust\n" >> /etc/postgresql/12/data/pg_hba.conf
+# if password auth is needed, change the previous line to:
+# RUN printf "host all all 0.0.0.0/0 md5 \nhost all all ::/0 md5\n" >> /etc/postgresql/12/data/pg_hba.conf 
 RUN chmod +x /usr/local/bin/db-configuration/sql/postgresql/load.sh
 RUN /usr/local/bin/db-configuration/sql/postgresql/load.sh
 # data HSQLDB
