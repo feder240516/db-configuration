@@ -53,7 +53,7 @@ RUN /usr/local/bin/db-configuration/sql/mariadb/load.sh
 # data Postgres
 RUN pg_createcluster 12 data
 RUN rm /etc/postgresql/12/data/pg_hba.conf
-RUN cp /usr/local/bin/db-configuration/sql/postgres/pg_hba.conf /etc/postgresql/12/data/
+RUN cp /usr/local/bin/db-configuration/sql/postgresql/pg_hba.conf /etc/postgresql/12/data/
 RUN chmod +x /usr/local/bin/db-configuration/sql/postgresql/load.sh
 RUN /usr/local/bin/db-configuration/sql/postgresql/load.sh
 # data HSQLDB
