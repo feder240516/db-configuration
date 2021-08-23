@@ -11,7 +11,7 @@ public class MainProcessBuilderTest {
 			try {
 				System.out.println("Directory: ");
 				String input = sc.nextLine();
-				ProcessBuilder pb = new ProcessBuilder(input); 
+				ProcessBuilder pb = new ProcessBuilder(input).inheritIO(); 
 				System.out.println("Number of commands: ");
 				int numCommands = Integer.parseInt(sc.nextLine());
 				String[] commands = new String[numCommands];
@@ -19,10 +19,7 @@ public class MainProcessBuilderTest {
 					System.out.println(String.format("Command #%d", i + 1));
 					commands[i] = sc.nextLine();
 				}
-				System.out.println("Log redirection: ");
-				String logFile = sc.nextLine();
 				pb.command(commands);
-				pb.redirectOutput(new File(logFile));
 				Process p = pb.start();
 				p.waitFor();
 			} catch (Exception e) {
