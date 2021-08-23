@@ -217,7 +217,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 	protected Connection resillientGetConnection(int retries) throws InterruptedException {
 		Connection conn = null;
 		for(int i = 0; i < retries && conn == null; ++i) {
-			//if (i > 0) { System.out.println("Retrying..."); }
+			if (i > 0) { System.out.println("Retrying..."); }
 			TimeUnit.SECONDS.sleep(5); // wait 5 seconds to allow server to initiate
 			conn = getConnection();
 		}
@@ -231,6 +231,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 			conn = DriverManager.getConnection(dbUrl);	
 		} catch (SQLException e1) {
 			conn = null;
+			e1.printStackTrace();
 		}
 		return conn;
 	}
