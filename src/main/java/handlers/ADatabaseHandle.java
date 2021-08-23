@@ -127,7 +127,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 	// ! ya no hace falta que retorne el puerto
 	public void initiateServer() throws IOException, SQLException, InterruptedException, UnavailablePortsException {
 			String[] comandoArray = getStartCommand();	
-			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
+			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray).inheritIO();
 			//processBuilder.redirectErrorStream();
 			
 			processBuilder.directory(new File(createdInstancePath));
@@ -217,7 +217,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 	protected Connection resillientGetConnection(int retries) throws InterruptedException {
 		Connection conn = null;
 		for(int i = 0; i < retries && conn == null; ++i) {
-			if (i > 0) { System.out.println("Retrying..."); }
+			//if (i > 0) { System.out.println("Retrying..."); }
 			TimeUnit.SECONDS.sleep(5); // wait 5 seconds to allow server to initiate
 			conn = getConnection();
 		}
@@ -231,7 +231,6 @@ public abstract class ADatabaseHandle implements IDatabase {
 			conn = DriverManager.getConnection(dbUrl);	
 		} catch (SQLException e1) {
 			conn = null;
-			e1.printStackTrace();
 		}
 		return conn;
 	}
