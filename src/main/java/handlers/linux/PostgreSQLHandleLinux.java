@@ -52,7 +52,7 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 		try {
 			String postgresqlHome = PropertiesManager.getInstance().getProperty("postgres.location");
 			String postgresqlVersion = PropertiesManager.getInstance().getProperty("postgres.version");
-			String[] comandoArray = {"/bin/bash", "-c", String.format("postgres pg_ctlcluster %s %s stop", postgresqlVersion, ID.toString())};
+			String[] comandoArray = {"pg_ctlcluster", postgresqlVersion, ID.toString(), "stop"};
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
 			processBuilder.start().waitFor();
 			
@@ -65,7 +65,8 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 	protected String getConnectionString () {
 		String user = PropertiesManager.getInstance().getProperty("postgres.user");
 		String pass = PropertiesManager.getInstance().getProperty("postgres.password");
-		String dbUrl = String.format("jdbc:postgresql://localhost:%d/?user=%s&password=%s", port, user, pass);
+		String db = PropertiesManager.getInstance().getProperty("postgres.dbname");
+		String dbUrl = String.format("jdbc:postgresql://localhost:%d/%s?user=%s&password=%s", port, db, user, pass);
 		return dbUrl;
 	}
 	
