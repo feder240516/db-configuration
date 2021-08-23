@@ -53,7 +53,7 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 			String postgresqlHome = PropertiesManager.getInstance().getProperty("postgres.location");
 			String postgresqlVersion = PropertiesManager.getInstance().getProperty("postgres.version");
 			String[] comandoArray = {"pg_ctlcluster", postgresqlVersion, ID.toString(), "stop"};
-			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray).inheritIO();
+			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
 			processBuilder.start().waitFor();
 			
 		} catch (IOException | InterruptedException e) {
