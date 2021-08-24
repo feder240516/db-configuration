@@ -67,8 +67,6 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 			if (conn != null && !conn.isClosed()) conn.close();
 			ProcessBuilder processBuilder = new ProcessBuilder();
 			processBuilder.command(cmdStop);
-			processBuilder.redirectOutput(new File("/home/ailibs/outputDelete.txt"));
-			processBuilder.redirectError(new File("/home/ailibs/errorDelete.txt"));
 			processBuilder.start().waitFor();
 			
 			TimeUnit.SECONDS.sleep(5);
