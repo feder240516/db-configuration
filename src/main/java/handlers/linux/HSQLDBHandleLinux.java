@@ -20,8 +20,8 @@ public class HSQLDBHandleLinux extends HSQLDBHandle {
 	@Override
 	protected String[] getStartCommand() {
 		String HSQLDBHome = PropertiesManager.getInstance().getProperty("hsqldb.location");
-		
-		String[] cmdStart = {"/bin/bash", "-c", String.format("java -cp %s/lib/hsqldb.jar org.hsqldb.Server -database.employees -port %s", HSQLDBHome, createdInstancePath, port)};
+		String dbName = "employees"
+		String[] cmdStart = {"/bin/bash", "-c", String.format("java -cp %1$s/lib/hsqldb.jar org.hsqldb.Server -database.%3$s --dbname.%3$s file:%3$s xdb -port %2$s", HSQLDBHome, port, employees)};
 		return cmdStart;
 	}
 	
