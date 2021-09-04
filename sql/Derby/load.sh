@@ -1,5 +1,8 @@
 #!/bin/bash
-DB_SCRIPT_FILE="employees-apacheDerby.sql"
+cd /usr/local/bin/DBInstances/Derby/data
+echo "ap path = "
+pwd
+DB_SCRIPT_FILE="/usr/local/bin/db-configuration/sql/employees-apacheDerby.sql"
 #java -jar %DERBY_HOME%/lib/derbyrun.jar server start &
 java -jar /opt/Apache/lib/derbyrun.jar ij $DB_SCRIPT_FILE
 #sleep 5

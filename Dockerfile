@@ -69,8 +69,10 @@ RUN /usr/local/bin/db-configuration/sql/hsqldb/load.sh
 RUN mkdir /usr/local/bin/DBInstances/Derby
 RUN mkdir /usr/local/bin/DBInstances/Derby/data
 RUN mkdir /usr/local/bin/DBInstances/Derby/instances
-WORKDIR /usr/local/bin/DBInstances/Derby/data
-RUN java -jar /opt/Apache/db-derby-10.15.2.0-bin/lib/derbyrun.jar ij /usr/local/bin/db-configuration/sql/Derby/employees-derby.sql
+RUN chmod +x /usr/local/bin/db-configuration/sql/hsqldb/load.sh
+RUN /usr/local/bin/db-configuration/sql/hsqldb/load.sh
+# WORKDIR /usr/local/bin/DBInstances/Derby/data
+# RUN java -jar /opt/Apache/db-derby-10.15.2.0-bin/lib/derbyrun.jar ij /usr/local/bin/db-configuration/sql/Derby/employees-derby.sql
 
 WORKDIR /usr/local/bin/db-configuration
 # ensure gradle download -- COMMENTED DUE TO FAILURE, GRADLE WILL BE DOWNLOADED DURING NORMAL USAGE
