@@ -63,7 +63,8 @@ RUN mkdir /usr/local/bin/DBInstances/HSQLDB
 RUN mkdir /usr/local/bin/DBInstances/HSQLDB/data
 RUN chmod -R 777 /usr/local/bin/DBInstances/HSQLDB/data
 RUN mkdir /usr/local/bin/DBInstances/HSQLDB/instances
-RUN cp /usr/local/bin/db-configuration/sql/hsqldb/employees-hsqldb.script /usr/local/bin/DBInstances/HSQLDB/data/employees.script
+RUN chmod +x /usr/local/bin/db-configuration/sql/hsqldb/load.sh
+RUN /usr/local/bin/db-configuration/sql/hsqldb/load.sh
 # data Apache Derby
 RUN mkdir /usr/local/bin/DBInstances/Derby
 RUN mkdir /usr/local/bin/DBInstances/Derby/data
