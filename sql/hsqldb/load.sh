@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "path = "
 pwd
 exit 1
 DB_SCRIPT_FILE="employees-hsqldb.script"
