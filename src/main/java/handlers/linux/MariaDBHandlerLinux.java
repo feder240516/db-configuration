@@ -27,11 +27,11 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 		System.out.println("To copy");
 		String baseDir = getBasePath();
 		String instancesDir = getInstancesPath();
-		String[] copyCommandArr = new String[] {"bash", "-c", 
-				String.format("sudo cp -rf %1$s %2$s/%3$s"
-						+ "&& sudo chmod -R 777 %2$s/%3$s", baseDir, instancesDir, ID.toString())};
+		String[] copyCommandArr = new String[] {"/bin/bash", "-c", 
+				String.format("cp -rf %1$s %2$s/%3$s"
+						+ "&& chmod -R 777 %2$s/%3$s", baseDir, instancesDir, ID.toString())};
 		/*String[] copyCommandArr = new String[] {
-				"sudo", "cp", "-rf", baseDir, instancesDir, ID.toString()
+				"cp", "-rf", baseDir, instancesDir, ID.toString()
 		};*/
 		ProcessBuilder processBuilder = new ProcessBuilder(copyCommandArr);
 		System.out.println("Prepared to copy");
@@ -49,10 +49,10 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 	@Override
 	protected String[] getStartCommand() {
 		String MariaDBHome = PropertiesManager.getInstance().getProperty("mariadb.location");
-		String[] cmdStart = {"sudo", MariaDBHome + "/mysqld", "--datadir=" + createdInstancePath,
+		String[] cmdStart = {"mysqld", "--datadir=" + createdInstancePath,
 				"--port=" + port, String.format("--socket=%s/mysql.sock", createdInstancePath),
 				String.format("--pid-file=%s/mysqld.pid", createdInstancePath),
-				"--query-cache-type=0", "--query-cache-size=0", "--log_bin"};
+				"--skip-grant-tables"};
 		return cmdStart;
 	}
 
@@ -60,15 +60,13 @@ public class MariaDBHandlerLinux extends MariaDBHandler {
 	public void stopServer() {
 		String MariaDBHome = PropertiesManager.getInstance().getProperty("mariadb.location");
 		
-		//String[] cmdStart = {"bash", "-c", String.format("sudo %s/bin/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0", MariaDBHome, createdInstancePath, port, createdInstancePath)};
-		String[] cmdStop = {"sudo", "mysqladmin", "--port="+port, "--protocol", "tcp", "shutdown"};
+		//String[] cmdStart = {"/bin/bash", "-c", String.format("%s/bin/mysqld --datadir=%s --port=%s --socket=%s/mysql.sock --query-cache-type=0 --query-cache-size=0", MariaDBHome, createdInstancePath, port, createdInstancePath)};
+		String[] cmdStop = {"mysqladmin", "--port="+port, "--protocol", "tcp", "shutdown"};
 		
 		try(Connection conn = getConnection();) {
 			if (conn != null && !conn.isClosed()) conn.close();
 			ProcessBuilder processBuilder = new ProcessBuilder();
 			processBuilder.command(cmdStop);
-			processBuilder.redirectOutput(new File("/home/ailibs/outputDelete.txt"));
-			processBuilder.redirectError(new File("/home/ailibs/errorDelete.txt"));
 			processBuilder.start().waitFor();
 			
 			TimeUnit.SECONDS.sleep(5);

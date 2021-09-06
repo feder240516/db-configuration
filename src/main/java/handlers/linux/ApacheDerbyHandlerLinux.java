@@ -19,7 +19,7 @@ public class ApacheDerbyHandlerLinux extends ApacheDerbyHandler {
 	public void createDBInstance() throws IOException {
 		String derbyData = PropertiesManager.getInstance().getProperty("derby.data.location");
 		String derbyInstances = PropertiesManager.getInstance().getProperty("derby.instances.location");
-		String[] copyCommandArr = new String[] {"bash", "-c", 
+		String[] copyCommandArr = new String[] {"/bin/bash", "-c", 
 				String.format("sudo cp -rf %1$s %2$s", derbyData)};
 		System.out.println(String.format("Testing instance %s", ID.toString()));
 		ProcessBuilder processBuilder = new ProcessBuilder(copyCommandArr);
@@ -36,7 +36,7 @@ public class ApacheDerbyHandlerLinux extends ApacheDerbyHandler {
 	protected String[] getStartCommand() {
 		String derbyHome = PropertiesManager.getInstance().getProperty("derby.location");
 		if (derbyHome == null || derbyHome.equals("")) throw new RuntimeException("Connector location not specified");
-		String[] comandoArray = {"sudo", "java", "-jar", derbyHome + "/lib/derbyrun.jar", "server", "start", "-p", String.valueOf(port)};
+		String[] comandoArray = {/*"sudo",*/ "java", "-jar", derbyHome + "/lib/derbyrun.jar", "server", "start", "-p", String.valueOf(port)};
 		//String[] comandoArray = {postgresqlHome + "/bin/pg_ctl", "-D", createdInstancePath, "-l", postgresqlLog + "/postgresql-13-" + ID.toString() + ".log", "-o", String.format("\"-F -p %d\"", port), "start"};
 		return comandoArray;
 	}
@@ -45,7 +45,8 @@ public class ApacheDerbyHandlerLinux extends ApacheDerbyHandler {
 	public void stopServer() {
 		try {
 			String derbyHome = PropertiesManager.getInstance().getProperty("derby.location");
-			String[] comandoArray = {"bash", "-c", String.format("sudo java -jar %s/lib/derbyrun.jar server shutdown -p %d", derbyHome, port)};
+			//String[] comandoArray = {"/bin/bash", "-c", String.format("sudo java -jar %s/lib/derbyrun.jar server shutdown -p %d", derbyHome, port)};
+			String[] comandoArray = {"java", "-jar", String.format("%s/lib/derbyrun.jar", derbyHome), "server", "shutdown", "-p", String.valueOf(port)};
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
 			processBuilder.start().waitFor();
 			

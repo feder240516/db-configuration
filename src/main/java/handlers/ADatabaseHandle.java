@@ -127,7 +127,7 @@ public abstract class ADatabaseHandle implements IDatabase {
 	// ! ya no hace falta que retorne el puerto
 	public void initiateServer() throws IOException, SQLException, InterruptedException, UnavailablePortsException {
 			String[] comandoArray = getStartCommand();	
-			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
+			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray).inheritIO();
 			//processBuilder.redirectErrorStream();
 			
 			processBuilder.directory(new File(createdInstancePath));
