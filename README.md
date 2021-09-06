@@ -99,3 +99,9 @@ other RDBMSs just ignore these unknown properties).
    address). However, this doesn't mean it hasn't initiated; in fact, if the
    last log line says "database system is ready to accept connections", it means
    that Postgres server was succesfully started.
+
+## About the sample data
+
+Sample data is just a little example based on 
+https://github.com/datacharmer/test_db. It has just a very small sample of data
+for a fast setup.
