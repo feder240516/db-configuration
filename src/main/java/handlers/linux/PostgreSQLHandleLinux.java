@@ -17,10 +17,15 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 	
 	@Override
 	public void createDBInstance() throws IOException {
-		String[] copyCommandArr = new String[] {"bash", "-c", 
-				String.format("sudo -u postgres /usr/bin/pg_createcluster 13 %1$s"
-						+ "&& sudo -u postgres rm -rf /var/lib/postgresql/13/%1$s"
-						+ "&& sudo -u postgres cp -rf /var/lib/postgresql/13/data /var/lib/postgresql/13/%1$s", ID.toString())};
+		String postgresqlVersion = PropertiesManager.getInstance().getProperty("postgres.version");
+		String[] copyCommandArr = new String[] {"/bin/bash", "-c", 
+				String.format("/usr/bin/pg_createcluster %2$s %1$s"
+						+ "&& rm -rf /var/lib/postgresql/%2$s/%1$s"
+						+ "&& cp -rf /var/lib/postgresql/%2$s/data /var/lib/postgresql/%2$s/%1$s"
+						+ "&& rm /etc/postgresql/%2$s/%1$s/pg_hba.conf"
+						+ "&& cp /etc/postgresql/%2$s/data/pg_hba.conf /etc/postgresql/%2$s/%1$s/"
+						+ "&& chown postgres -R /var/lib/postgresql/%2$s/%1$s"
+						+ "&& chown postgres -R /etc/postgresql/%2$s/%1$s", ID.toString(), postgresqlVersion)};
 		ProcessBuilder processBuilder = new ProcessBuilder(copyCommandArr);
 		Process copyProcess = processBuilder.start();
 		try {
@@ -35,8 +40,10 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 	protected String[] getStartCommand() {
 		String postgresqlHome = PropertiesManager.getInstance().getProperty("postgres.location");
 		String postgresqlLog = PropertiesManager.getInstance().getProperty("postgres.log.location");
+		String postgresqlVersion = PropertiesManager.getInstance().getProperty("postgres.version");
 		if (postgresqlHome == null || postgresqlHome.equals("")) throw new RuntimeException("Connector location not specified");
-		String[] comandoArray = {"bash", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s -o \"-F -p %d\" start", ID.toString(), port)};
+		//String[] comandoArray = {"/bin/bash", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s -o \"-F -p %d\" start", ID.toString(), port)};
+		String[] comandoArray = {"pg_ctlcluster", postgresqlVersion, ID.toString(), "-o", String.format("-F -p %d", port), "start"};
 		return comandoArray;
 	}
 
@@ -44,7 +51,8 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 	public void stopServer() {
 		try {
 			String postgresqlHome = PropertiesManager.getInstance().getProperty("postgres.location");
-			String[] comandoArray = {"bash", "-c", String.format("sudo -u postgres pg_ctlcluster 13 %s stop", ID.toString(), port)};
+			String postgresqlVersion = PropertiesManager.getInstance().getProperty("postgres.version");
+			String[] comandoArray = {"pg_ctlcluster", postgresqlVersion, ID.toString(), "stop"};
 			ProcessBuilder processBuilder = new ProcessBuilder(comandoArray);
 			processBuilder.start().waitFor();
 			
@@ -57,7 +65,8 @@ public class PostgreSQLHandleLinux extends PostgreSQLHandle {
 	protected String getConnectionString () {
 		String user = PropertiesManager.getInstance().getProperty("postgres.user");
 		String pass = PropertiesManager.getInstance().getProperty("postgres.password");
-		String dbUrl = String.format("jdbc:postgresql://localhost:%d/?user=%s&password=%s", port, user, pass);
+		String db = PropertiesManager.getInstance().getProperty("postgres.dbname");
+		String dbUrl = String.format("jdbc:postgresql://localhost:%d/%s?user=%s&password=%s", port, db, user, pass);
 		return dbUrl;
 	}
 	

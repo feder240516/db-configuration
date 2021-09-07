@@ -1,0 +1,1 @@
+This folder was created for a specific need of communicating the project on Windows with a Linux client, however due to containerization with Docker, it is not needed anymore.

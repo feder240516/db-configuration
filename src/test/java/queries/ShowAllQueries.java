@@ -17,8 +17,6 @@ import org.slf4j.LoggerFactory;
 import repositories.QueryRepository;
 
 class ShowAllQueries {
-	
-	protected final Logger logger = LoggerFactory.getLogger(ShowAllQueries.class);
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
@@ -48,7 +46,7 @@ class ShowAllQueries {
 		for(Query q: queries) {
 			for(SQLDialect dialect: sqlDialects) {
 				q.configuration().set(dialect);
-				logger.info(String.format("Query in %s: %s", dialect.getName(), q.getSQL(true)));
+				System.out.println(String.format("Query in %s: %s", dialect.getName(), q.getSQL(true)));
 			}
 		}
 	}
