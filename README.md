@@ -36,6 +36,8 @@ where
  - numOfLastExecution (optional) (default=10): If the software hangs for any 
    reason, you can use this parameter to keep the enumeration of the log files.
 
+Every execution result report will be saved on reports folder, in a csv format.
+
 ## However, 
 before running the project, you should setup your databases in the sql folder,
 and the query profiles in the MainExecuteAnyAlgorithm java file. The java 
